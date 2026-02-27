@@ -1,0 +1,1707 @@
+
+<!-- saved from url=(0061)https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	CCSHAU  :: ADMIN
+</title><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"><meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"><meta name="keywords"><link href="./Assign webpage rights to the user_files/default.css" type="text/css" rel="stylesheet"><link href="./Assign webpage rights to the user_files/online.css" type="text/css" rel="stylesheet"><style type="text/css">
+	/* <![CDATA[ */
+	#ctl00_MainMenu img.icon { border-style:none;vertical-align:middle; }
+	#ctl00_MainMenu img.separator { border-style:none;display:block; }
+	#ctl00_MainMenu img.horizontal-separator { border-style:none;vertical-align:middle; }
+	#ctl00_MainMenu ul { list-style:none;margin:0;padding:0;width:auto; }
+	#ctl00_MainMenu ul.dynamic { z-index:1; }
+	#ctl00_MainMenu a { text-decoration:none;white-space:nowrap;display:block; }
+	#ctl00_MainMenu a.static { padding-left:0.15em;padding-right:0.15em; }
+	#ctl00_MainMenu a.popout-dynamic { background:url("../Images/popout.jpg") no-repeat right center;padding-right:14px; }
+	/* ]]> */
+</style><script type="text/javascript">
+//<![CDATA[
+WebForm_AutoFocus('ctl00_ContentPlaceHolder1_D_ddlOffice');//]]>
+</script><script type="text/javascript" src="./Assign webpage rights to the user_files/WebResource.axd"></script><script type="text/javascript" src="./Assign webpage rights to the user_files/WebResource(1).axd"></script><script type="text/javascript" src="./Assign webpage rights to the user_files/WebResource(2).axd"></script><script type="text/javascript" src="./Assign webpage rights to the user_files/WebResource(3).axd"></script><script type="text/javascript" src="./Assign webpage rights to the user_files/CommonJS.js.download"></script><script type="text/javascript">
+//<![CDATA[
+var Page_Validators = new Array();
+function WebForm_OnSubmit() {
+    return true;
+}
+//]]></script><script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+var Anthem_FormID = "aspnetForm";
+//]]>
+</script><script type="text/javascript">
+    function chkAll(chkbok) 
+    {
+        var chkId = chkbok.id;
+        var check = chkbok.checked;
+        var elem = document.getElementById("ctl00_ContentPlaceHolder1_gvWebPages");
+        var arrElemChk = elem.getElementsByTagName('input');
+        var count = 0;
+
+        for (i = 1; i < arrElemChk.length; i++) 
+        {
+            var chkPage = aspnetForm["chkPage" + i];
+            if (chkPage) 
+            {
+                if (chkPage.checked == true) 
+                {
+                    count = count + 1;
+                }
+            }
+        }
+
+        if (count == 0) {
+            for (i = 1; i < arrElemChk.length; i++) {
+                var chki = eval(i);
+                if (chki > 99) {
+                    var j = i;
+                }
+                else {
+                    var j = Right(eval(100 + i), 2);
+                }
+                var chkAdd = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkAdd"];
+                var chkEdit = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkEdit"];
+                var chkDelete = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkDelete"];
+                var chkView = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkView"];
+                if (chkId == "chkAllAdd") {
+                    if (chkAdd) {
+                        chkAdd.checked = check;
+                    }
+                }
+                if (chkId == "chkAllUpdate") {
+                    if (chkEdit) {
+                        chkEdit.checked = check;
+                    }
+                }
+                if (chkId == "chkAllDelete") {
+                    if (chkDelete) {
+                        chkDelete.checked = check;
+                    }
+                }
+                if (chkId == "chkAllView") {
+                    if (chkView) {
+                        chkView.checked = check;
+                    }
+                }
+            }
+        }
+        else {
+            for (i = 1; i < arrElemChk.length; i++) {
+                var sElem1 = arrElemChk[i];
+                var j = Right(eval(100 + (i + 1)), 2); // checkbox id is like ctl02
+                var chkAdd = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkAdd"];
+                var chkEdit = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkEdit"];
+                var chkDelete = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkDelete"];
+                var chkView = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkView"];
+                var chkPage = aspnetForm["chkPage" + i];
+                var sId1 = sElem1.id;
+                if (chkId == "chkAllAdd") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkAdd) {
+                                chkAdd.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllUpdate") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkEdit) {
+                                chkEdit.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllDelete") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkDelete) {
+                                chkDelete.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllView") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkView) {
+                                chkView.checked = check;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script><script type="text/javascript">new Sys.WebForms.Menu({ element: 'ctl00_MainMenu', disappearAfter: 500, orientation: 'horizontal', tabIndex: 0, disabled: false });</script><script type="text/javascript">
+//<![CDATA[
+WebForm_AutoFocus('ctl00_ContentPlaceHolder1_D_ddlLocation');//]]>
+</script><script type="text/javascript">
+    $(document).ready(function () {
+        //Caption Sliding (Partially Hidden to Visible)
+        $('.boxgrid.caption').hover(function () {
+            $(".cover", this).stop().animate({ top: '73px' }, { queue: false, duration: 160 });
+        },
+        function () {
+            $(".cover", this).stop().animate({ top: '83px' }, { queue: false, duration: 160 });
+        });
+    });
+</script><script type="text/javascript">
+        $(document).ready(function () {
+            if ($("table").hasClass("table-grid-view")) {
+                $("table.table-grid-view").wrap("<div class='grid-div'></div>");
+            }
+        });
+    </script><script type="text/javascript">
+        var $ = jQuery.noConflict();
+        $(document).ready(function () {
+            $('.navbar-fostrap').click(function () {
+                $('.nav-fostrap').toggleClass('visible');
+            });
+        });
+</script></head>
+<body>
+    <form name="aspnetForm" method="post" action="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./Assign webpage rights to the user_files/WebResource(4).axd" type="text/javascript"></script>
+
+<script type="text/javascript">
+//<![CDATA[
+var Anthem_FormID = "aspnetForm";
+//]]>
+</script>
+<script src="./Assign webpage rights to the user_files/WebResource(5).axd" type="text/javascript"></script>
+<script src="./Assign webpage rights to the user_files/WebResource(6).axd" type="text/javascript"></script>
+<script src="./Assign webpage rights to the user_files/WebResource(7).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="B782876A">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+	<input type="hidden" name="__PREVIOUSPAGE" id="__PREVIOUSPAGE" value="ytgkvmNanfNveBPeDwYjEtsbfjviPMHV8P4R9JUYF8ooF26jfyNoB6HTS5lXQpKwaQpTxfdl32hvDqkWb8CLNaS_K_Pp0459YQQpYLigpv_zpSKh0">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="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">
+</div>
+        <div id="wrapper">
+            <div class="header">
+                <div class="logo" style="margin-left: 5px; padding-top: 10px;">
+                    
+                    <img src="./Assign webpage rights to the user_files/ccshau-logo.png">
+
+                </div>
+                <div class="loginf">
+                    
+                    <strong>
+                        <span id="ctl00_lblCampus">CCSHAU  :: ADMIN</span></strong>
+                    <br>
+                    <a href="https://admissions.hau.ac.in/UMM/Admin_Home.aspx?MID=1">HOME</a> |
+                <a href="https://admissions.hau.ac.in/Modules.aspx">MODULES</a> |
+                <a href="https://admissions.hau.ac.in/UMM/ChangePassword.aspx">CHANGE PASSWORD</a> |
+                <a href="https://admissions.hau.ac.in/Online/Documents/User_Manual_Colleges_CCSU.pdf" title="College Help File" target="_blank">HELP</a> |
+
+                <span class="logout"><a href="https://admissions.hau.ac.in/Logout.aspx?State=Out">LOG OUT
+                <span id="ctl00_lblUserName"></span></a></span>
+                </div>
+            </div>
+           <div id="nav">
+                        <div class="nav-bg-fostrap">
+                                <div class="navbar-fostrap"><span></span><span></span><span></span></div>
+                            </div>
+                            <a href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#ctl00_MainMenu_SkipLink"><img alt="Skip Navigation Links" src="./Assign webpage rights to the user_files/WebResource(8).axd" width="0" height="0" style="border-width:0px;"></a><div class="nav-fostrap" id="ctl00_MainMenu" style="float: left;">
+	<ul class="level1 static" tabindex="0" role="menubar" style="position: relative; width: auto; float: left;">
+		<li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:2" role="menuitem" style="position: relative; float: left;"><a title="Common Masters" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Common Masters</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:2" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Session Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_AcademicSession_Mst.aspx" tabindex="-1">Academic session Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Degree Type Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_Type_Mst.aspx" tabindex="-1">Degree Type Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Degree Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Degree_Details.aspx" tabindex="-1">Degree Master</a></li><li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:6" role="menuitem" style="position: relative;"><a title="Degree/Degree Mapping" class="popout-dynamic level2 dynamic" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Degree/Degree Mapping</a><ul class="level3 dynamic" id="ctl00_MainMenu:submenu:6" style="display: none; position: absolute; top: 0px; left: 100%;">
+				<li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:7" role="menuitem" style="position: relative;"><a title="University Degree/Mapping" class="popout-dynamic level3 dynamic" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">University Degree/Mapping</a><ul class="level4 dynamic" id="ctl00_MainMenu:submenu:7" style="display: none; position: absolute; top: 0px; left: 100%;">
+					<li role="menuitem" class="dynamic" style="position: relative;"><a title="University Specialization Master" class="level4 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Specialization_Mst_Details.aspx" tabindex="-1">University Specialization Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map University Degree &amp; Specialization" class="level4 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Degree_SpecializationMapping_mst.aspx" tabindex="-1">Map University Degree &amp; Specialization</a></li>
+				</ul></li><li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:11" role="menuitem" style="position: relative;"><a title="Candidate Degree/Mapping" class="popout-dynamic level3 dynamic" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Candidate Degree/Mapping</a><ul class="level4 dynamic" id="ctl00_MainMenu:submenu:11" style="display: none; position: absolute; top: 0px; left: 100%;">
+					<li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Education Qualification Master" class="level4 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Apply_Degree_Mst.aspx" tabindex="-1">Candidate Education Qualification Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Education Specialization Master" class="level4 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Specialization_Mst.aspx" tabindex="-1">Candidate Education Specialization Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map Candidate Education Qualification &amp; Specialization" class="level4 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Qualification_Education_Mapping.aspx" tabindex="-1">Map Candidate Education Qualification &amp; Specialization</a></li>
+				</ul></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map University Degree Specialization with Eligible Candidate Degree " class="level3 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Required_Degree_Spec_Qual_Spec_Mapping.aspx" tabindex="-1">Map University Degree Specialization with Eligible Candidate Degree </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map College &amp;&amp; University Specialization (for Option Form) " class="level3 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_College_Spec_Mapping.aspx" tabindex="-1">Map College &amp;&amp; University Specialization (for Option Form) </a></li>
+			</ul></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Board Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Board_Mst.aspx" tabindex="-1">Board Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Discipline master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Dicipline_Mst.aspx" tabindex="-1">Discipline master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Religion Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Religion_Mst.aspx" tabindex="-1">Religion Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Category Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_StudentCategory_Mst.aspx" tabindex="-1">Student Category Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Previous Exam Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_PreviousExam_Mst.aspx" tabindex="-1">Previous Exam Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Previous Exam Stream Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_PrevExam_Stream_Mst.aspx" tabindex="-1">Previous Exam Stream Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title=" Manage Page Rights" class="level2 dynamic" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx" tabindex="-1"> Manage Page Rights</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Send SMS" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PreAdm_Student_SendSMS.aspx" tabindex="-1">Send SMS</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Attachment Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Attachment_Mst.aspx" tabindex="-1">Attachment Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/College_Master.aspx" tabindex="-1">College Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Degree Mapping" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/College_Degree_Mapping.aspx" tabindex="-1">College Degree Mapping</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Eligiblity Percentage Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Eligiblity_Percentage_LastQualDegree.aspx" tabindex="-1">Eligiblity Percentage Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Name" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_College_Mst.aspx" tabindex="-1">College Name</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Main Page Notifications &amp; Links Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_NotificationLink.aspx" tabindex="-1">Main Page Notifications &amp; Links Master</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:34" role="menuitem" style="position: relative; float: left;"><a title="Configuration Process" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Configuration Process</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:34" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Application Fee Config" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ApplicationFormFee_Config.aspx" tabindex="-1">Application Fee Config</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Admission Process Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_AdmissionProcess_Config.aspx" tabindex="-1">Admission Process Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Counselling Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Counselling_Config.aspx" tabindex="-1">Counselling Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Upward Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Student_Upward_Configuration.aspx" tabindex="-1">Student Upward Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Admit card Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_admitCard_Config.aspx" tabindex="-1">Admit Card Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="UG Seat Matrix Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_UGSeatMatrix.aspx" tabindex="-1">UG Seat Matrix Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Roster Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Roaster_Master.aspx" tabindex="-1">Roster Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Instructions Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Instruction_Mst.aspx" tabindex="-1">Instructions Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Allotment Letter Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Allotment_Letter_Master.aspx" tabindex="-1">Allotment Letter Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Duty Letter Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Duty_Letter_Config.aspx" tabindex="-1">Duty Letter Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Cat_Remuneration_Configuration.aspx" tabindex="-1">Category Remuneration Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Additional Fee Config" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StudentAdditional_Fee.aspx" tabindex="-1">Student Additional Fee Config</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:48" role="menuitem" style="position: relative; float: left;"><a title="Transactions" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Transactions</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:48" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Data Modification" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/AdminStudent_Edit.aspx" tabindex="-1">Student Data Modification</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Marks Upload" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Candidate_Marks_Entry.aspx" tabindex="-1">Marks Upload and Rank Generation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Transfer Student" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Transfer_Final_Student_to_Academic.aspx" tabindex="-1">Transfer Student</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Apply For Upward" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CutOff_Upward.aspx" tabindex="-1">Apply For Upward</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Counselling Raw Data" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Merit_List_Data.aspx" tabindex="-1">Counselling Raw Data</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Generate Merit/Seat Allotment" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Merit_List_Generation.aspx" tabindex="-1">Generate Merit/Seat Allotment</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Sports Quota Documents Verification " class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_VerificationDocumentsSports.aspx" tabindex="-1">Sports Quota Documents Verification </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="PH Candidate Verifications" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PH_Candidates_Verification.aspx" tabindex="-1">PH Candidates verification</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Manual Merit Entry" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Manual_Merit_Entry.aspx" tabindex="-1">Manual Merit Entry</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:59" role="menuitem" style="position: relative; float: left;"><a title="Invigilator Master" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Invigilator</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:59" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ET_Master.aspx" tabindex="-1">ET Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Master" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Exam_Center_Trn.aspx" tabindex="-1">Exam Center Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Copy" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Exam_Center_Copy.aspx" tabindex="-1">Exam Center Copy</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Type Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffType_Mst.aspx" tabindex="-1">Staff Type Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Category Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffCategory_Mst.aspx" tabindex="-1">Staff Category Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_External_Staff_Mst.aspx" tabindex="-1">External Staff Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exemption ET Duties" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Exemption_ET_Duties.aspx" tabindex="-1">Exemption ET Duties</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Duties Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffDuties_Mst.aspx" tabindex="-1">Staff Duties Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Swap Duties" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Swap_Duties.aspx" tabindex="-1">Swap Duties</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Excel_Print.aspx" tabindex="-1">Invigilator Reports</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Duty Letters" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Duty_Letter.aspx" tabindex="-1">Duty Letters</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:72" role="menuitem" style="position: relative; float: left;"><a title="Seat Allocation Process" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Seat Allocation Process</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:72" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Seat Allotment Details" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/SeatAllotmentReport.aspx" tabindex="-1">Seat Allotment</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Seating Arrangement" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_SeatAllotment_Chart.aspx" tabindex="-1">Seating Arrangement</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Roll No./Admit Card Generation" class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Candidate_AdmitCard_Generate.aspx" tabindex="-1">Roll No./Admit Card Generation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ExamCenter_Report.aspx" tabindex="-1">Exam Center Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ExamCenterDetail_Rpt.aspx" tabindex="-1">Exam Center Detail Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Seating Arrangement Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_SeatAllotment_Report.aspx" tabindex="-1">Seating Arrangement Report</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:80" role="menuitem" style="position: relative; float: left;"><a title="Reports" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Reports</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:80" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Condidate Export" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/ACD_Candidates_Report.aspx" tabindex="-1">Candidate Export</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate DashBoard" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/ACD_Pre_Admn_DashBoard.aspx" tabindex="-1">Candidate DashBoard</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Room Availability" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_RoomDetails.aspx" tabindex="-1">Room Availability</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate DashBoard(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CounsRevenue_Report.aspx" tabindex="-1">Candidate DashBoard(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates Payment Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Reports/ACD_Candidates_Payment_Report.aspx" tabindex="-1">Candidates Payment Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates Payment Report(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Reports/ACD_Candidates_Payment_Rpt.aspx" tabindex="-1">Candidates Payment Report(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates List(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CandidateList_Format.aspx" tabindex="-1">Candidates List(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Check Payment Status" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/CheckOnlinePayment_Status.aspx" tabindex="-1">Check Payment Status</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Eligible Specialization Report " class="level2 dynamic" href="https://admissions.hau.ac.in/PreAdm/PA_Required_Degree_Spec_Mapping_Report.aspx" tabindex="-1">Candidate Eligible Specialization Report </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Ex-Student Reports" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StudentList.aspx" tabindex="-1">Ex-Student Reports</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Last Cutoff Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_LastCutoff_Report.aspx" tabindex="-1">Last Cutoff Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Additional Fee Status" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_AdditionalFeeDetails.aspx" tabindex="-1">Additional Fee Status</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Personal Info Request" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Modify_PersonalInfoRequest.aspx" tabindex="-1">Personal Info Request</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:95" role="menuitem" style="position: relative; float: left;"><a title="Merit Reports" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Merit Reports</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:95" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Check Documents Uploaded By Candidates" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_VerifyData.aspx" tabindex="-1">Check Documents Uploaded By Candidates</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Filled/Vacant Seat Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_FilledandVacant_SeatReport.aspx" tabindex="-1">Filled/Vacant Seat Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Upward Upgradation" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_UpwardUpgradation_Report.aspx" tabindex="-1">Student Upward Upgradation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Final Seat Allocation Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_FinalSeatAllocation_Report.aspx" tabindex="-1">Final Seat Allocation Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="CollegeWise DepartmentWise Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/collegewise_departmentwiseAllotment.aspx" tabindex="-1">CollegeWise DepartmentWise Report</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:102" role="menuitem" style="position: relative; float: left;"><a title="Answer Key" class="level1 static" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx#" tabindex="-1">Answer Key</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:102" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Answer Key Details" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Paper_Key_Admin.aspx" tabindex="-1">Answer Key Details</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Upload AnsWer Key" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Answerkey_mst.aspx" tabindex="-1">Upload Answer Key</a></li>
+		</ul></li>
+	</ul>
+</div><div style="clear: left;"></div><div style="clear: left;"></div><div style="clear: left;"></div><div style="clear: left;"></div><a id="ctl00_MainMenu_SkipLink"></a>
+                    </div>
+            <div id="content">
+                <div class="wr-left" style="width: 100%; padding-right: 0; border-right: none;">
+                    
+<script language="javascript" type="text/javascript">
+    function chkAll(chkbok) 
+    {
+        var chkId = chkbok.id;
+        var check = chkbok.checked;
+        var elem = document.getElementById("ctl00_ContentPlaceHolder1_gvWebPages");
+        var arrElemChk = elem.getElementsByTagName('input');
+        var count = 0;
+
+        for (i = 1; i < arrElemChk.length; i++) 
+        {
+            var chkPage = aspnetForm["chkPage" + i];
+            if (chkPage) 
+            {
+                if (chkPage.checked == true) 
+                {
+                    count = count + 1;
+                }
+            }
+        }
+
+        if (count == 0) {
+            for (i = 1; i < arrElemChk.length; i++) {
+                var chki = eval(i);
+                if (chki > 99) {
+                    var j = i;
+                }
+                else {
+                    var j = Right(eval(100 + i), 2);
+                }
+                var chkAdd = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkAdd"];
+                var chkEdit = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkEdit"];
+                var chkDelete = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkDelete"];
+                var chkView = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkView"];
+                if (chkId == "chkAllAdd") {
+                    if (chkAdd) {
+                        chkAdd.checked = check;
+                    }
+                }
+                if (chkId == "chkAllUpdate") {
+                    if (chkEdit) {
+                        chkEdit.checked = check;
+                    }
+                }
+                if (chkId == "chkAllDelete") {
+                    if (chkDelete) {
+                        chkDelete.checked = check;
+                    }
+                }
+                if (chkId == "chkAllView") {
+                    if (chkView) {
+                        chkView.checked = check;
+                    }
+                }
+            }
+        }
+        else {
+            for (i = 1; i < arrElemChk.length; i++) {
+                var sElem1 = arrElemChk[i];
+                var j = Right(eval(100 + (i + 1)), 2); // checkbox id is like ctl02
+                var chkAdd = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkAdd"];
+                var chkEdit = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkEdit"];
+                var chkDelete = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkDelete"];
+                var chkView = aspnetForm["ctl00_ContentPlaceHolder1_gvWebPages_ctl" + j + "_chkView"];
+                var chkPage = aspnetForm["chkPage" + i];
+                var sId1 = sElem1.id;
+                if (chkId == "chkAllAdd") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkAdd) {
+                                chkAdd.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllUpdate") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkEdit) {
+                                chkEdit.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllDelete") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkDelete) {
+                                chkDelete.checked = check;
+                            }
+                        }
+                    }
+                }
+                if (chkId == "chkAllView") {
+                    if (chkPage) {
+                        if (chkPage.checked == true) {
+                            if (chkView) {
+                                chkView.checked = check;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+
+<table border="0" cellpadding="0" cellspacing="0" style="width:100%;text-align:left;" class="table">
+<tbody><tr>
+    <td colspan="3" class="tableheading"><span id="ctl00_ContentPlaceHolder1_lblHeading">Assign webpage rights to the user</span></td>
+</tr>
+<tr>
+    <td class="vtext" id="lblUserName" style="width:12%;">User Name</td>
+    <td class="colon">:</td>
+    <td class="required">
+        <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlUserName__"><select name="ctl00$ContentPlaceHolder1$D_ddlUserName" id="ctl00_ContentPlaceHolder1_D_ddlUserName" class="dropdownlong" onchange="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$D_ddlUserName&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" style="width:800px;">
+	<option value="">-- Select User --</option>
+	<option value="LU-10">ARADATAENTRY ~ ARADATAENTRY</option>
+	<option value="LU-11">UGDATA ~ UGDATA</option>
+	<option value="LU-12">PGDATA ~ PGDATA</option>
+	<option selected="selected" value="LU-2">ms ~ Mr. ms</option>
+	<option value="LU-3">mssport ~ Mr. ms</option>
+	<option value="LU-4">ugdoc ~ UG Document</option>
+	<option value="LU-5">pgdoc ~ PG Document</option>
+	<option value="LU-7">ETWORK ~ ET</option>
+	<option value="LU-8">COE ~ COESTAFF </option>
+	<option value="LU-9">COEADMIN ~ COEADMIN</option>
+
+</select></span>*
+    </td>
+</tr>
+<tr>
+    <td class="vtext" id="lblOffice">Office Type</td>
+    <td class="colon">:</td>
+    <td class="required">
+        <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlOffice__"><select name="ctl00$ContentPlaceHolder1$D_ddlOffice" id="ctl00_ContentPlaceHolder1_D_ddlOffice" class="dropdownlong" onchange="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$D_ddlOffice&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;">
+	<option value="">--Select Office--</option>
+	<option selected="selected" value="1">Hisar</option>
+
+</select></span>*
+    </td>
+</tr>
+<tr>
+    <td class="vtext" id="lblLocation">For Location</td>
+    <td class="colon">:</td>
+    <td class="required">
+        <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlLocation__"><select name="ctl00$ContentPlaceHolder1$D_ddlLocation" id="ctl00_ContentPlaceHolder1_D_ddlLocation" class="dropdownlong" onchange="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$D_ddlLocation&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" style="width:800px;">
+	<option value=""> -- Select Location --</option>
+	<option selected="selected" value="CEOO-1">CCSHAU, Hisar</option>
+
+</select></span>
+    </td>
+</tr>
+<tr>
+    <td class="vtext"></td>
+    <td class="colon"></td>
+    <td class="required"></td>
+</tr>
+<tr>
+    <td class="vtext"></td>
+    <td class="colon"></td>
+    <td class="required"></td>
+</tr>
+<tr>
+    <td colspan="3" class="tablesubheading">Select module (s) to assign pages</td>
+</tr>
+<tr>
+    <td colspan="3" valign="top">
+        <div id="Anthem_ctl00_ContentPlaceHolder1_gvUserModules__"><div>
+	<table class="table-grid-view" cellspacing="1" cellpadding="1" rules="all" border="1" id="ctl00_ContentPlaceHolder1_gvUserModules" style="width:100%;border:1px solid #B0B0B0;border-collapse:collapse; margin:15px 0;">
+		<tbody><tr class="header-style">
+			<th scope="col">
+                    <span id="ctl00_ContentPlaceHolder1_gvUserModules_ctl01_lblgrdsno1">S.No.</span>
+                </th><th scope="col">
+                    <span id="ctl00_ContentPlaceHolder1_gvUserModules_ctl01_lblgrdModule">Module(s) Name</span>
+                </th>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                    1
+                </td><td>
+                    <a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$gvUserModules$ctl02$lnkModule&#39;,&#39;pk_moduleId$1,PreAdmission&#39;,true,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_gvUserModules_ctl02_lnkModule" class="link" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolder1$gvUserModules$ctl02$lnkModule&quot;, &quot;&quot;, false, &quot;&quot;, &quot;Admin_UserAuthorization.aspx&quot;, false, true))">PreAdmission</a>
+                    (Click to view webpages of the module)
+                </td>
+		</tr>
+	</tbody></table>
+</div></div>
+    </td>
+</tr>
+<tr>
+    <td colspan="3"><span id="Anthem_ctl00_ContentPlaceHolder1_lblMsg__"><span id="ctl00_ContentPlaceHolder1_lblMsg" class="lblmessage"></span></span></td>
+</tr>
+<tr>
+    <td colspan="3" align="center" valign="top">
+        <div id="Anthem_ctl00_ContentPlaceHolder1_gvWebPages__"><div>
+	<table class="table-grid-view" cellspacing="1" cellpadding="1" rules="all" border="1" id="ctl00_ContentPlaceHolder1_gvWebPages" style="width:100%;border:1px solid #B0B0B0;border-collapse:collapse; margin:15px 0;">
+		<tbody><tr class="header-style">
+			<th scope="col">
+                        <span id="ctl00_ContentPlaceHolder1_gvWebPages_ctl01_lblgrdsno2">S.No.</span>
+                    </th><th scope="col">&nbsp;</th><th scope="col">
+                        <span id="ctl00_ContentPlaceHolder1_gvWebPages_ctl01_lblMenuName">Menu Name</span>
+                    </th><th scope="col">
+                        <span id="ctl00_ContentPlaceHolder1_gvWebPages_ctl01_lblgrdDescription">Description</span>
+                    </th><th scope="col">
+                        <span id="ctl00_ContentPlaceHolder1_gvWebPages_ctl01_lblgrdParentMenu">Parent Menu</span>
+                    </th><th scope="col">
+                        Add<input id="chkAllAdd" onclick="chkAll(this)" type="checkbox">
+                    </th>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        1
+                    </td><td align="center">
+                        <input id="chkPage1" type="checkbox">
+                    </td><td>
+                        Answer Key Details
+                    </td><td>
+                        
+                    </td><td>
+                        Answer Key
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl02_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl02$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        2
+                    </td><td align="center">
+                        <input id="chkPage2" type="checkbox">
+                    </td><td>
+                        Upload Answer Key
+                    </td><td>
+                        1
+                    </td><td>
+                        Answer Key
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl03_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl03$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        3
+                    </td><td align="center">
+                        <input id="chkPage3" type="checkbox">
+                    </td><td>
+                        Candidate Education Qualification Master
+                    </td><td>
+                        
+                    </td><td>
+                        Candidate Degree/Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl04_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl04$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        4
+                    </td><td align="center">
+                        <input id="chkPage4" type="checkbox">
+                    </td><td>
+                        Candidate Education Specialization Master
+                    </td><td>
+                        
+                    </td><td>
+                        Candidate Degree/Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl05_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl05$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        5
+                    </td><td align="center">
+                        <input id="chkPage5" type="checkbox">
+                    </td><td>
+                        Map Candidate Education Qualification &amp; Specialization
+                    </td><td>
+                        
+                    </td><td>
+                        Candidate Degree/Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl06_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl06$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        6
+                    </td><td align="center">
+                        <input id="chkPage6" type="checkbox">
+                    </td><td>
+                         Manage Page Rights
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl07_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl07$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        7
+                    </td><td align="center">
+                        <input id="chkPage7" type="checkbox">
+                    </td><td>
+                        Academic session Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl08_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl08$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        8
+                    </td><td align="center">
+                        <input id="chkPage8" type="checkbox">
+                    </td><td>
+                        Attachment Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl09_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl09$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        9
+                    </td><td align="center">
+                        <input id="chkPage9" type="checkbox">
+                    </td><td>
+                        Board Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl10_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl10$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        10
+                    </td><td align="center">
+                        <input id="chkPage10" type="checkbox">
+                    </td><td>
+                        College Degree Mapping
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl11_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl11$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        11
+                    </td><td align="center">
+                        <input id="chkPage11" type="checkbox">
+                    </td><td>
+                        College Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl12_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl12$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        12
+                    </td><td align="center">
+                        <input id="chkPage12" type="checkbox">
+                    </td><td>
+                        College Name
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl13_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl13$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        13
+                    </td><td align="center">
+                        <input id="chkPage13" type="checkbox">
+                    </td><td>
+                        Degree Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl14_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl14$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        14
+                    </td><td align="center">
+                        <input id="chkPage14" type="checkbox">
+                    </td><td>
+                        Degree Type Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl15_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl15$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        15
+                    </td><td align="center">
+                        <input id="chkPage15" type="checkbox">
+                    </td><td>
+                        Discipline master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl16_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl16$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        16
+                    </td><td align="center">
+                        <input id="chkPage16" type="checkbox">
+                    </td><td>
+                        Eligiblity Percentage Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl17_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl17$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        17
+                    </td><td align="center">
+                        <input id="chkPage17" type="checkbox">
+                    </td><td>
+                        Main Page Notifications &amp; Links Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl18_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl18$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        18
+                    </td><td align="center">
+                        <input id="chkPage18" type="checkbox">
+                    </td><td>
+                        Previous Exam Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl19_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl19$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        19
+                    </td><td align="center">
+                        <input id="chkPage19" type="checkbox">
+                    </td><td>
+                        Previous Exam Stream Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl20_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl20$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        20
+                    </td><td align="center">
+                        <input id="chkPage20" type="checkbox">
+                    </td><td>
+                        Religion Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl21_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl21$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        21
+                    </td><td align="center">
+                        <input id="chkPage21" type="checkbox">
+                    </td><td>
+                        Send SMS
+                    </td><td>
+                        1
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl22_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl22$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        22
+                    </td><td align="center">
+                        <input id="chkPage22" type="checkbox">
+                    </td><td>
+                        Student Category Master
+                    </td><td>
+                        
+                    </td><td>
+                        Common Masters
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl23_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl23$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        23
+                    </td><td align="center">
+                        <input id="chkPage23" type="checkbox">
+                    </td><td>
+                        Admission Process Configuration
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl24_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl24$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        24
+                    </td><td align="center">
+                        <input id="chkPage24" type="checkbox">
+                    </td><td>
+                        Admit Card Configuration
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl25_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl25$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        25
+                    </td><td align="center">
+                        <input id="chkPage25" type="checkbox">
+                    </td><td>
+                        Allotment Letter Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl26_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl26$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        26
+                    </td><td align="center">
+                        <input id="chkPage26" type="checkbox">
+                    </td><td>
+                        Application Fee Config
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl27_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl27$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        27
+                    </td><td align="center">
+                        <input id="chkPage27" type="checkbox">
+                    </td><td>
+                        Category Remuneration Configuration
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl28_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl28$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        28
+                    </td><td align="center">
+                        <input id="chkPage28" type="checkbox">
+                    </td><td>
+                        Counselling Configuration
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl29_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl29$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        29
+                    </td><td align="center">
+                        <input id="chkPage29" type="checkbox">
+                    </td><td>
+                        Duty Letter Configuration
+                    </td><td>
+                        1
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl30_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl30$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        30
+                    </td><td align="center">
+                        <input id="chkPage30" type="checkbox">
+                    </td><td>
+                        Instructions Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl31_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl31$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        31
+                    </td><td align="center">
+                        <input id="chkPage31" type="checkbox">
+                    </td><td>
+                        Roster Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl32_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl32$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        32
+                    </td><td align="center">
+                        <input id="chkPage32" type="checkbox">
+                    </td><td>
+                        Student Additional Fee Config
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl33_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl33$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        33
+                    </td><td align="center">
+                        <input id="chkPage33" type="checkbox">
+                    </td><td>
+                        Student Upward Configuration
+                    </td><td>
+                        
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl34_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl34$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        34
+                    </td><td align="center">
+                        <input id="chkPage34" type="checkbox">
+                    </td><td>
+                        UG Seat Matrix Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Configuration Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl35_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl35$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        35
+                    </td><td align="center">
+                        <input id="chkPage35" type="checkbox">
+                    </td><td>
+                        Map College &amp;&amp; University Specialization (for Option Form) 
+                    </td><td>
+                        
+                    </td><td>
+                        Degree/Degree Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl36_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl36$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        36
+                    </td><td align="center">
+                        <input id="chkPage36" type="checkbox">
+                    </td><td>
+                        Map University Degree Specialization with Eligible Candidate Degree 
+                    </td><td>
+                        
+                    </td><td>
+                        Degree/Degree Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl37_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl37$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        37
+                    </td><td align="center">
+                        <input id="chkPage37" type="checkbox">
+                    </td><td>
+                        Duty Letters
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl38_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl38$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        38
+                    </td><td align="center">
+                        <input id="chkPage38" type="checkbox">
+                    </td><td>
+                        ET Master
+                    </td><td>
+                        
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl39_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl39$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        39
+                    </td><td align="center">
+                        <input id="chkPage39" type="checkbox">
+                    </td><td>
+                        Exam Center Copy
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl40_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl40$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        40
+                    </td><td align="center">
+                        <input id="chkPage40" type="checkbox">
+                    </td><td>
+                        Exam Center Master
+                    </td><td>
+                        
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl41_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl41$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        41
+                    </td><td align="center">
+                        <input id="chkPage41" type="checkbox">
+                    </td><td>
+                        Exemption ET Duties
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl42_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl42$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        42
+                    </td><td align="center">
+                        <input id="chkPage42" type="checkbox">
+                    </td><td>
+                        External Staff Master
+                    </td><td>
+                        
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl43_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl43$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        43
+                    </td><td align="center">
+                        <input id="chkPage43" type="checkbox">
+                    </td><td>
+                        Invigilator Reports
+                    </td><td>
+                        
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl44_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl44$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        44
+                    </td><td align="center">
+                        <input id="chkPage44" type="checkbox">
+                    </td><td>
+                        Staff Category Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl45_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl45$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        45
+                    </td><td align="center">
+                        <input id="chkPage45" type="checkbox">
+                    </td><td>
+                        Staff Duties Master
+                    </td><td>
+                        
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl46_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl46$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        46
+                    </td><td align="center">
+                        <input id="chkPage46" type="checkbox">
+                    </td><td>
+                        Staff Type Master
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl47_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl47$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        47
+                    </td><td align="center">
+                        <input id="chkPage47" type="checkbox">
+                    </td><td>
+                        Swap Duties
+                    </td><td>
+                        1
+                    </td><td>
+                        Invigilator
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl48_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl48$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        48
+                    </td><td align="center">
+                        <input id="chkPage48" type="checkbox">
+                    </td><td>
+                        Check Documents Uploaded By Candidates
+                    </td><td>
+                        
+                    </td><td>
+                        Merit Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl49_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl49$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        49
+                    </td><td align="center">
+                        <input id="chkPage49" type="checkbox">
+                    </td><td>
+                        CollegeWise DepartmentWise Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Merit Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl50_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl50$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        50
+                    </td><td align="center">
+                        <input id="chkPage50" type="checkbox">
+                    </td><td>
+                        Filled/Vacant Seat Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Merit Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl51_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl51$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        51
+                    </td><td align="center">
+                        <input id="chkPage51" type="checkbox">
+                    </td><td>
+                        Final Seat Allocation Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Merit Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl52_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl52$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        52
+                    </td><td align="center">
+                        <input id="chkPage52" type="checkbox">
+                    </td><td>
+                        Student Upward Upgradation
+                    </td><td>
+                        
+                    </td><td>
+                        Merit Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl53_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl53$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        53
+                    </td><td align="center">
+                        <input id="chkPage53" type="checkbox">
+                    </td><td>
+                        Additional Fee Status
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl54_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl54$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        54
+                    </td><td align="center">
+                        <input id="chkPage54" type="checkbox">
+                    </td><td>
+                        Candidate DashBoard
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl55_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl55$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        55
+                    </td><td align="center">
+                        <input id="chkPage55" type="checkbox">
+                    </td><td>
+                        Candidate DashBoard(Counselling)
+                    </td><td>
+                        
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl56_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl56$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        56
+                    </td><td align="center">
+                        <input id="chkPage56" type="checkbox">
+                    </td><td>
+                        Candidate Eligible Specialization Report 
+                    </td><td>
+                        
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl57_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl57$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        57
+                    </td><td align="center">
+                        <input id="chkPage57" type="checkbox">
+                    </td><td>
+                        Candidate Export
+                    </td><td>
+                        
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl58_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl58$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        58
+                    </td><td align="center">
+                        <input id="chkPage58" type="checkbox">
+                    </td><td>
+                        Candidates List(Counselling)
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl59_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl59$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        59
+                    </td><td align="center">
+                        <input id="chkPage59" type="checkbox">
+                    </td><td>
+                        Candidates Payment Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl60_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl60$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        60
+                    </td><td align="center">
+                        <input id="chkPage60" type="checkbox">
+                    </td><td>
+                        Candidates Payment Report(Counselling)
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl61_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl61$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        61
+                    </td><td align="center">
+                        <input id="chkPage61" type="checkbox">
+                    </td><td>
+                        Check Payment Status
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl62_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl62$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        62
+                    </td><td align="center">
+                        <input id="chkPage62" type="checkbox">
+                    </td><td>
+                        Ex-Student Reports
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl63_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl63$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        63
+                    </td><td align="center">
+                        <input id="chkPage63" type="checkbox">
+                    </td><td>
+                        Last Cutoff Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl64_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl64$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        64
+                    </td><td align="center">
+                        <input id="chkPage64" type="checkbox">
+                    </td><td>
+                        Personal Info Request
+                    </td><td>
+                        1
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl65_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl65$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        65
+                    </td><td align="center">
+                        <input id="chkPage65" type="checkbox">
+                    </td><td>
+                        Room Availability
+                    </td><td>
+                        
+                    </td><td>
+                        Reports
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl66_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl66$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        66
+                    </td><td align="center">
+                        <input id="chkPage66" type="checkbox">
+                    </td><td>
+                        Exam Center Detail Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl67_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl67$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        67
+                    </td><td align="center">
+                        <input id="chkPage67" type="checkbox">
+                    </td><td>
+                        Exam Center Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl68_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl68$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        68
+                    </td><td align="center">
+                        <input id="chkPage68" type="checkbox">
+                    </td><td>
+                        Roll No./Admit Card Generation
+                    </td><td>
+                        
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl69_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl69$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        69
+                    </td><td align="center">
+                        <input id="chkPage69" type="checkbox">
+                    </td><td>
+                        Seat Allotment
+                    </td><td>
+                        1
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl70_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl70$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        70
+                    </td><td align="center">
+                        <input id="chkPage70" type="checkbox">
+                    </td><td>
+                        Seating Arrangement
+                    </td><td>
+                        1
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl71_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl71$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        71
+                    </td><td align="center">
+                        <input id="chkPage71" type="checkbox">
+                    </td><td>
+                        Seating Arrangement Report
+                    </td><td>
+                        1
+                    </td><td>
+                        Seat Allocation Process
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl72_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl72$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        72
+                    </td><td align="center">
+                        <input id="chkPage72" type="checkbox">
+                    </td><td>
+                        Apply For Upward
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl73_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl73$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        73
+                    </td><td align="center">
+                        <input id="chkPage73" type="checkbox">
+                    </td><td>
+                        Counselling Raw Data
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl74_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl74$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        74
+                    </td><td align="center">
+                        <input id="chkPage74" type="checkbox">
+                    </td><td>
+                        Generate Merit/Seat Allotment
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl75_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl75$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        75
+                    </td><td align="center">
+                        <input id="chkPage75" type="checkbox">
+                    </td><td>
+                        Manual Merit Entry
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl76_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl76$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        76
+                    </td><td align="center">
+                        <input id="chkPage76" type="checkbox">
+                    </td><td>
+                        Marks Upload and Rank Generation
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl77_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl77$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        77
+                    </td><td align="center">
+                        <input id="chkPage77" type="checkbox">
+                    </td><td>
+                        PH Candidates verification
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl78_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl78$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        78
+                    </td><td align="center">
+                        <input id="chkPage78" type="checkbox">
+                    </td><td>
+                        Sports Quota Documents Verification 
+                    </td><td>
+                        
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl79_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl79$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        79
+                    </td><td align="center">
+                        <input id="chkPage79" type="checkbox">
+                    </td><td>
+                        Student Data Modification
+                    </td><td>
+                        1
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl80_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl80$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        80
+                    </td><td align="center">
+                        <input id="chkPage80" type="checkbox">
+                    </td><td>
+                        Transfer Student
+                    </td><td>
+                        1
+                    </td><td>
+                        Transactions
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl81_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl81$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:White;">
+			<td align="center">
+                        81
+                    </td><td align="center">
+                        <input id="chkPage81" type="checkbox">
+                    </td><td>
+                        Map University Degree &amp; Specialization
+                    </td><td>
+                        
+                    </td><td>
+                        University Degree/Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl82_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl82$chkAdd"></span>
+                    </td>
+		</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+			<td align="center">
+                        82
+                    </td><td align="center">
+                        <input id="chkPage82" type="checkbox">
+                    </td><td>
+                        University Specialization Master
+                    </td><td>
+                        
+                    </td><td>
+                        University Degree/Mapping
+                    </td><td align="center" style="width:7%;">
+                        <span class="chkbox"><input id="ctl00_ContentPlaceHolder1_gvWebPages_ctl83_chkAdd" type="checkbox" name="ctl00$ContentPlaceHolder1$gvWebPages$ctl83$chkAdd"></span>
+                    </td>
+		</tr>
+	</tbody></table>
+</div></div>
+    </td>
+</tr>
+<tr>
+    <td colspan="3">
+        <div id="Anthem_ctl00_ContentPlaceHolder1_tblSave__" style=""><div id="ctl00_ContentPlaceHolder1_tblSave">
+	
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr>
+            <td>
+                <span id="Anthem_ctl00_ContentPlaceHolder1_btnSave__"><!--START:ctl00$ContentPlaceHolder1$btnSave--><input type="submit" name="ctl00$ContentPlaceHolder1$btnSave" value="SAVE" onclick="return SubmitMasterValidate(aspnetForm);javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$btnSave&#39;,&#39;&#39;,true,&#39;&#39;,&#39;&#39;,&#39;SAVING...&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_btnSave"><!--END:ctl00$ContentPlaceHolder1$btnSave--></span>
+            </td>
+            <td class="btngap"></td>
+            <td>
+                <span id="Anthem_ctl00_ContentPlaceHolder1_btnCancel__"><!--START:ctl00$ContentPlaceHolder1$btnCancel--><!--END:ctl00$ContentPlaceHolder1$btnCancel--></span>
+            </td>
+        </tr>
+        </tbody></table>
+        
+</div></div>
+    </td>
+</tr>
+</tbody></table>
+
+                </div>
+            </div>
+            <br clear="all">
+
+        </div>
+
+        <div class="footermainadmin">
+
+            
+        </div>
+        <span id="ctl00_lblCheck" class="HeadingRed"></span>
+        
+    
+<script type="text/javascript">new Sys.WebForms.Menu({ element: 'ctl00_MainMenu', disappearAfter: 500, orientation: 'horizontal', tabIndex: 0, disabled: false });</script>
+<script type="text/javascript">
+//<![CDATA[
+WebForm_AutoFocus('ctl00_ContentPlaceHolder1_D_ddlUserName');//]]>
+</script>
+</form>
+
+<script language="javascript" src="./Assign webpage rights to the user_files/CommonJS.js.download" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Caption Sliding (Partially Hidden to Visible)
+        $('.boxgrid.caption').hover(function () {
+            $(".cover", this).stop().animate({ top: '73px' }, { queue: false, duration: 160 });
+        },
+        function () {
+            $(".cover", this).stop().animate({ top: '83px' }, { queue: false, duration: 160 });
+        });
+    });
+</script>
+        <script src="./Assign webpage rights to the user_files/jquery.min.js.download"></script>
+    <script>
+        $(document).ready(function () {
+            if ($("table").hasClass("table-grid-view")) {
+                $("table.table-grid-view").wrap("<div class='grid-div'></div>");
+            }
+        });
+    </script>
+
+    <script>
+        var $ = jQuery.noConflict();
+        $(document).ready(function () {
+            $('.navbar-fostrap').click(function () {
+                $('.nav-fostrap').toggleClass('visible');
+            });
+        });
+</script>
+
+</body></html>

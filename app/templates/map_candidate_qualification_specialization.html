@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Map Candidate Qualification & Specialization</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.map_candidate_qualification_specialization') }}">
+        <tr>
+            <td class="vtext">Qualification</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="qual_id" required style="width: 300px;">
+                    <option value="">-- Select Qualification --</option>
+                    {% for q in quals %}
+                    <option value="{{ q.id }}">{{ q.description }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">Specialization</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="spec_id" required style="width: 300px;">
+                    <option value="">-- Select Specialization --</option>
+                    {% for s in specs %}
+                    <option value="{{ s.id }}">{{ s.description }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">MAP</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.map_candidate_qualification_specialization') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Map Qualification Education</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:10%">S.No.</th>
+            <th>Degree Name</th>
+            <th>Specialization</th>
+            <th style="width:10%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in mappings %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align: center;">{{ m.qualification.description if m.qualification else '' }}</td>
+            <td style="text-align: left;">{{ m.specialization.description if m.specialization else '' }}</td>
+            <td style="text-align: center;">
+                <a href="#" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this mapping?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" style="text-align: center;">No records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.map_candidate_qualification_specialization' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

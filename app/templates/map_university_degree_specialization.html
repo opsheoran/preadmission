@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Map University Degree & Specialization</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.map_university_degree_specialization') }}">
+        <input type="hidden" name="mid" value="{{ edit_obj.id if edit_obj else '' }}">
+        <tr>
+            <td class="vtext">University Degree</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select id="ddlDegree" name="degree_id" required class="dropdownlong" onchange="fetchColleges()">
+                    <option value=""> -- Select Degree --</option>
+                    {% for d in degrees %}
+                    <option value="{{ d.id }}" {% if edit_obj and edit_obj.fk_degreeid == d.id %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">College Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select id="ddlCollege" name="college_id" required class="dropdownlong" onchange="fetchSpecializations()">
+                    <option value="">-- Select College Name --</option>
+                    {% if edit_obj %}
+                        {% for c in edit_colleges %}
+                        <option value="{{ c.id }}" {% if edit_obj.fk_collegeid == c.id %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">University Specialization</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select id="ddlSpec" name="spec_id" required class="dropdownlong">
+                    <option value=""> -- Select Specialization --</option>
+                    {% if edit_obj %}
+                        {% for s in edit_specs %}
+                        <option value="{{ s.id }}" {% if edit_obj.fk_sid == s.id %}selected{% endif %}>{{ s.description }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Exam Type</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="exam_type" maxlength="50" placeholder="Optional" value="{{ edit_obj.exam_type if edit_obj and edit_obj.exam_type else '' }}">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_obj else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.map_university_degree_specialization') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Mapping(s)</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:5%">S.No.</th>
+            <th>Degree Name</th>
+            <th>College Name</th>
+            <th>Specialization</th>
+            <th>Exam Type</th>
+            <th style="width:10%">EDIT</th>
+            <th style="width:10%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in mappings %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align: left;">{{ m.degree.name if m.degree else '' }}</td>
+            <td style="text-align: left;">{{ m.college.name if m.college else '' }}</td>
+            <td style="text-align: left;">{{ m.specialization.description if m.specialization else '' }}</td>
+            <td style="text-align: center;">{{ m.exam_type if m.exam_type else '' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.map_university_degree_specialization', edit_id=m.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.delete_uds_map', id=m.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure?')"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align: center;">No records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.map_university_degree_specialization' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+function fetchColleges() {
+    var degreeId = document.getElementById('ddlDegree').value;
+    var ddlCollege = document.getElementById('ddlCollege');
+    var ddlSpec = document.getElementById('ddlSpec');
+    
+    ddlCollege.innerHTML = '<option value="">-- Select College Name --</option>';
+    ddlSpec.innerHTML = '<option value=""> -- Select Specialization --</option>';
+    
+    if (degreeId) {
+        fetch('/api/get-colleges-by-degree/' + degreeId)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(c => {
+                    var opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.innerHTML = c.name;
+                    ddlCollege.appendChild(opt);
+                });
+            });
+    }
+}
+
+function fetchSpecializations() {
+    var degreeId = document.getElementById('ddlDegree').value;
+    var collegeId = document.getElementById('ddlCollege').value;
+    var ddlSpec = document.getElementById('ddlSpec');
+    
+    ddlSpec.innerHTML = '<option value=""> -- Select Specialization --</option>';
+    
+    if (degreeId && collegeId) {
+        fetch('/api/get-specializations/' + degreeId + '/' + collegeId)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(s => {
+                    var opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.innerHTML = s.name;
+                    ddlSpec.appendChild(opt);
+                });
+            });
+    }
+}
+</script>
+{% endblock %}

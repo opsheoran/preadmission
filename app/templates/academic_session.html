@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Academic Session Master</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.academic_session') }}">
+        <input type="hidden" name="session_id" value="{{ edit_session.id if edit_session else '' }}">
+        <tr>
+            <td class="vtext">Session</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="session_name" maxlength="25" required placeholder="e.g. 2025-2026" value="{{ edit_session.session_name if edit_session else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">Session Order</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="session_order" required value="{{ edit_session.session_order if edit_session else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">From Date</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="from_date" class="datepicker-input" required value="{{ edit_session.from_date.strftime('%Y-%m-%d') if edit_session and edit_session.from_date else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td></td>
+            <td class="vtext">To Date</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="to_date" class="datepicker-input" required value="{{ edit_session.to_date.strftime('%Y-%m-%d') if edit_session and edit_session.to_date else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Remarks</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="remarks" maxlength="100" value="{{ edit_session.remarks if edit_session else '' }}">
+            </td>
+            <td></td>
+            <td class="vtext">Active</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_active" {{ 'checked' if not edit_session or edit_session.is_active else '' }} style="width: auto;">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_session else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.academic_session') }}'">RESET</button>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Academic Session</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:10%">S. No.</th>
+            <th>Session</th>
+            <th>From Date</th>
+            <th>To Date</th>
+            <th>Session Order</th>
+            <th style="width:10%">Active</th>
+            <th style="width:10%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in sessions %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align: center;">{{ session.session_name }}</td>
+            <td style="text-align: center;">{{ session.from_date.strftime('%d %b %Y') if session.from_date else '' }}</td>
+            <td style="text-align: center;">{{ session.to_date.strftime('%d %b %Y') if session.to_date else '' }}</td>
+            <td style="text-align: center;">{{ session.session_order }}</td>
+            <td style="text-align: center;">{{ 'YES' if session.is_active else 'NO' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.academic_session', edit_id=session.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align: center;">No academic sessions found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.academic_session' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

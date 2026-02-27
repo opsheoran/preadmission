@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">List of Notifications & Links</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.notifications_links') }}">
+        <input type="hidden" name="nid" value="{{ edit_obj.id if edit_obj else '' }}">
+        <tr>
+            <td class="vtext">Link Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="name" maxlength="255" required value="{{ edit_obj.name if edit_obj else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">Order No.</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="number" name="order" required value="{{ edit_obj.order if edit_obj else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Degree</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="degree_id">
+                    <option value="">-- Select Degree --</option>
+                    {% for d in degrees %}
+                    <option value="{{ d.id }}" {{ 'selected' if edit_obj and edit_obj.fk_degreeid == d.id else '' }}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext">Session</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="session_id">
+                    <option value="">-- Select Session --</option>
+                    {% for s in sessions %}
+                    <option value="{{ s.id }}" {{ 'selected' if edit_obj and edit_obj.fk_sessionid == s.id else '' }}>{{ s.session_name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Active</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_active" {{ 'checked' if not edit_obj or edit_obj.active else '' }} style="width: auto;">
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_obj else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.notifications_links') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Notifications & Links(s)</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:5%">S.No</th>
+            <th>Link Name</th>
+            <th>File Name</th>
+            <th style="width:10%">Order By</th>
+            <th style="width:10%">Active</th>
+            <th style="width:10%">EDIT</th>
+            <th style="width:10%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for link in links %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align: left;">{{ link.name }}</td>
+            <td style="text-align: left;">{{ link.filename if link.filename else '' }}</td>
+            <td style="text-align: center;">{{ link.order }}</td>
+            <td style="text-align: center;">{{ 'YES' if link.active else 'NO' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.notifications_links', edit_id=link.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.delete_notification_link', id=link.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Delete?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align: center;">No records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.notifications_links' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

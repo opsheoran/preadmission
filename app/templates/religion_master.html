@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Religion Master</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.religion_master') }}">
+        <input type="hidden" name="religion_id" value="{{ edit_religion.id if edit_religion else '' }}">
+        <tr>
+            <td class="vtext">Religion Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="description" maxlength="100" required value="{{ edit_religion.description if edit_religion else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_religion else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.religion_master') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Religion(s)</div>
+
+<table class="grid-table" style="width: 60%;">
+    <thead>
+        <tr>
+            <th style="width:10%">S.No.</th>
+            <th>Religion Name</th>
+            <th style="width:15%">EDIT</th>
+            <th style="width:15%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for religion in religions %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ religion.description }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.religion_master', edit_id=religion.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.delete_religion', id=religion.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this religion?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" style="text-align: center;">No religions found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.religion_master' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

@@ -1,0 +1,2036 @@
+﻿/* Function to show the confirm message to delete the record Added By Rajeev Ranjan*/
+var strMsg='is required';
+function ConfirmDelete(strMsg)
+{
+    if(confirm(strMsg)==true)
+	    return(true);
+    else
+        return (false);
+}
+
+
+
+function upperCase(x)
+{
+var y=document.getElementById(x).value;
+document.getElementById(x).value=y.toUpperCase();
+}
+
+
+
+/* Function Prevent entry on textbox Added By Vinod Gupta*/
+ function NoEntry()
+{ 
+    if(event.keyCode==9 || event.keyCode==8 || event.keyCode==46)
+    {    
+        return true;
+    }
+    else
+    {
+        alert("Please Select date from Calendar!")
+        return false;
+    }
+}
+ function OnlyFromBrowser()
+{
+    if(event.keyCode==9 || event.keyCode==8 || event.keyCode==46)
+    {    
+        return true;
+    }
+    else
+    {
+        alert("Please Select file from Browse Button!")
+        return false;
+    }
+}
+
+function Check_Before_Delete()
+{
+    var x=confirm("Are you sure to delete this record?");
+    if(x==true) 
+    return true;
+    else
+    return false;
+}
+
+var str = "www.expedien.net"
+var a1 = "  ";
+var i = 0;
+
+function blockError()
+{
+return true;
+}
+window.onerror = blockError;
+
+//Use to set message in status bar
+function Scroll()
+{
+    //window.status = str.substring(i,str.length) + a1 + str.substring(0,i) + "  |  " 
+    window.status = 'SKRAU';	
+	+ Date()
+	i++;
+	if (i > str.length)
+	i = 0;
+	window.setTimeout("Scroll()", 1000)
+}
+Scroll()
+
+//******************************AJAX CONTROL PORTION*************************************//
+//added by mukund,anand for ajax
+
+function btnSave_PreCallBack(button)
+{
+    var t = SubmitMasterValidate(document.forms[0]);
+    //var t=SubmitMasterValidate(aspnetForm);
+    if (t == false)
+    {
+	    return false;
+    }
+	else
+	{
+	    return true;
+	}
+}
+
+function btnSave_PreCallBack_lbl(button) {
+
+    var t = SubmitMasterValidate_lbl(aspnetForm);
+
+    if (t == false) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+
+
+function btnDelete_PreCallBack(button)
+{
+    var t=Check_Before_Delete();//MasterDeleteValidate(aspnetForm); 
+	if (t==false)
+	{
+	    return false;
+	}
+	else
+	{
+	    return true;
+    }
+}	
+
+function allBtn_PreSubmitNotConfirm(button)
+{
+    var t=ValidateNotConfirm(aspnetForm);
+	if (t==false)
+	{
+	    return false;
+    }
+	else
+	    return true;
+}
+
+//for lbl:anand
+function SubmitMasterValidate_lbl(oForm, strMsg) {
+    //var lang = document.getElementById("ctl00_hiddenlang").value;
+    var iCounter = 0;
+    var sFldval, sFldname, sFldType;
+    var iLength;
+    var intLoop;
+    var intStatus = 0;
+    iLength = oForm.elements.length;
+
+    while (iCounter < iLength) {
+        //we are taking 26 because client id will be like this for each control ctl00_ContentPlaceHolder1_R_txt
+        sFldval = oForm.elements[iCounter].value;
+        sFldval = AllTrim(sFldval);
+        nameLen = oForm.elements[iCounter].id.length;
+        controlClientId = oForm.elements[iCounter].id;
+
+        var chk = controlClientId.indexOf('dg');
+        if (chk == -1) {
+            sFldname = oForm.elements[iCounter].id.substring(26, nameLen);
+        }
+        else {
+            sFldname = oForm.elements[iCounter].id.substring(44, nameLen);
+        }
+
+        if (sFldval != null) {
+            sFldlen = sFldval.length
+            sFldType = sFldname.substring(2, 5);
+            sFldType = sFldType.toUpperCase();
+        }
+
+        if (sFldType == "DDL") {
+            if (sFldname.charAt(0) == "D") {
+                var lbl = document.getElementById("ctl00_ContentPlaceHolder1_lbl" + sFldname.substring(5, sFldname.length));
+                var ddl = document.getElementById(controlClientId);
+                if (ddl.selectedIndex == 0) {
+                   
+                   // if (lang == "en-US") {
+                        alert(lbl.innerText + " " + "can't be blank")
+                   // }
+                   // else {
+                   //     alert(lbl.innerText + " " + "रिक्त नहीं हो सकता")
+                    //}
+                   
+                    ddl.focus();
+                    return false;
+                }
+            }
+            else if (sFldname.charAt(0) == "I") {
+                var lbl = document.getElementById("ctl00_ContentPlaceHolder1_lbl" + sFldname.substring(5, sFldname.length));
+                var ddl = document.getElementById(controlClientId);
+                // get the combo from the passed-in id                
+                var combo = igcmbo_getComboById(controlClientId);
+
+                //get the currently selected row in webcombo
+                var index = combo.getSelectedIndex();
+
+                if (index <= 0) {
+                    //alert("Please Select valid"+" "+lbl.innerText);
+                    alert(lbl.innerText + " " + strMsg)
+                    combo.focus();
+                    return false;
+                }
+            }
+        }
+
+        if (sFldType == "TXT") {
+            var lbl = document.getElementById("ctl00_ContentPlaceHolder1_lbl" + sFldname.substring(5, sFldname.length));
+            if (sFldname.charAt(0) == "R" && sFldval.length == 0) {
+               // if (lang == "en-US") {
+                    alert(lbl.innerText + " " + "can't be blank")
+              //  }
+               // else {
+               //     alert(lbl.innerText + " " + "रिक्त नहीं हो सकता")
+               // }
+               
+                sFldval.length = 0;
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+
+            //Update by anil for check the doc extension in uploaded file
+            if (sFldname.charAt(0) == "F" && sFldval.length == 0) {
+                alert(lbl.innerHTML + " " + "can't be blank");
+                //alert(lbl.innerHTML+ " " + strMsg)
+                sFldval.length = 0;
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            else if (sFldname.charAt(0) == "F" && sFldval.length != 0) {
+                var index = sFldval.lastIndexOf(".");
+                var len = sFldval.length;
+                if (index != -1)
+                    var extension = sFldval.substring(index + 1, len);
+                if (extension == "doc" || extension == "pdf" || extension == "xls") {
+                }
+                else {
+                    alert(lbl.innerHTML + " " + "can be only doc/pdf/xls file");
+                    sFldval.length = 0;
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+            }
+            if (sFldname.charAt(0) == "V" && sFldval.length == 0) {
+               // if (lang == "en-US") {
+                    alert(lbl.innerText + " " + "can't be blank")
+               // }
+               // else {
+                 //   alert(lbl.innerText + " " + "रिक्त नहीं हो सकता")
+               // }
+                // alert(lbl.innerText + " " + "can't be blank");
+                sFldval.length = 0;
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            else if (sFldname.charAt(0) == "V" && sFldval.length != 0) {
+                if (!ValidateDate(sFldval)) {
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+            }
+            if (sFldname.charAt(0) == "E" && sFldval.length == 0) {
+              //  if (lang == "en-US") {
+                    alert(lbl.innerText + " " + "can't be blank")
+               // }
+              //  else {
+               //     alert(lbl.innerText + " " + "रिक्त नहीं हो सकता")
+              //  }
+                //alert(lbl.innerText + " " + "can't be blank")
+                sFldval.length = 0;
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            else if (sFldname.charAt(0) == "E" && sFldval.length != 0) {
+                if (!CheckEMail(sFldval)) {
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+            }
+            else if (sFldname.charAt(0) == "M" && sFldval.length != 0) {
+                if (!CheckEMail(sFldval)) {
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+            }
+        }
+
+        if (sFldname.charAt(0) == "K" && (sFldval.length > 0) && (sFldval != " ")) {
+            var str = sFldval;
+            var str1, str2, strcolon;
+            strcolon = str.substring(2, 3);
+            str1 = str.substring(0, 2);
+            str2 = str.substring(3, 5);
+            str = str1 + str2;
+
+            if (strcolon != ":") {
+                alert("Please Enter a Valid Time like (01:30 or 09:00)");
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            if ((parseInt(str.length) < 4) || (parseInt(str.length) > 4)) {
+                alert("Please Enter a Valid Time like (01:30or 09:00)");
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            if (isNaN(str)) {
+                alert("Please Enter a Valid Time like (01:30or 09:00)");
+                eval("sFldval=oForm." + controlClientId + ".focus()");
+                return false;
+            }
+            if (parseInt(str.length) == 4) {
+                if (parseInt(str1) > 23) {
+                    alert("Please Enter a Valid Time like (01:30or 09:00)");
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+                if (parseInt(str2) > 60) {
+                    alert("Please Enter a Valid Time like (01:30or 09:00)");
+                    eval("sFldval=oForm." + controlClientId + ".focus()");
+                    return false;
+                }
+            }
+        }
+        else if ((sFldname.charAt(0) == "K") && (sFldval.charAt(0) == " ")) {
+            alert("Please Enter a Valid Time like (01:30or 09:00)");
+            eval("sFldval=oForm." + controlClientId + ".focus()");
+            return false;
+        }
+        iCounter = iCounter + 1;
+    }
+} //End of the function
+			
+//Trim left hand side blanks
+function LTrim(value)
+{
+    var newValue="";
+    var i,ch;
+    for(i=0;i<value.length;i++)
+    {
+        ch=	value.charAt(i);
+        if(ch==" ")
+	        continue;
+        else
+	        break;				
+        }
+    newValue=value.substring(i);
+    return newValue;
+}
+
+
+
+//Trim right hand side blanks
+function RTrim(value)
+{
+    var newValue="";
+	var i,ch;
+	for(i=value.length-1;i>=0;i--)
+	{
+	    ch=value.charAt(i);
+		if(ch==" ")
+		    continue;
+        else
+		    break;
+	}
+    newValue=value.substring(0,i+1)
+    return newValue;
+}
+
+//Trim both side blanks
+function AllTrim(value)
+{
+    var newValue=RTrim(LTrim(value));
+	return newValue;
+}
+
+// This function dose not allow zero value in the textbox in the recruitment module only	
+function ZeroNotAllow(val)
+{
+    var jobvalue;
+    jobvalue=val.ctl00_ContentPlaceHolder1_R_txtPostno.value;
+    if(jobvalue==0 || jobvalue=='.')
+    {
+        alert("No. of Post can't be 0");
+        document.aspnetForm.ctl00_ContentPlaceHolder1_R_txtPostno.focus(); 
+        return false;
+    }
+}
+
+//*****email validation:AKM
+function echeck(obj) 
+{
+       var str=obj.value
+       if(str!="")
+       {
+       var at="@"
+		var dot="."
+		var lat=str.indexOf(at)
+		var lstr=str.length
+		var ldot=str.indexOf(dot)
+		if (str.indexOf(at)==-1){
+		   alert("Invalid E-mail ID")
+		      obj.focus()
+		   return false
+		}
+
+		if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr){
+		   alert("Invalid E-mail ID")
+		      obj.focus()
+		   return false
+		}
+
+		if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr){
+		    alert("Invalid E-mail ID")
+		       obj.focus()
+		    return false
+		}
+
+		 if (str.indexOf(at,(lat+1))!=-1){
+		    alert("Invalid E-mail ID")
+		       obj.focus()
+		    return false
+		 }
+
+		 if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot){
+		    alert("Invalid E-mail ID")
+		       obj.focus()
+		    return false
+		 }
+
+		 if (str.indexOf(dot,(lat+2))==-1){
+		    alert("Invalid E-mail ID")
+		       obj.focus()
+		    return false
+		 }
+		
+		 if (str.indexOf(" ")!=-1){
+		    alert("Invalid E-mail ID")
+		     obj.focus()
+		    return false
+		   
+		 }
+		 }
+
+ 		 return true					
+	}
+
+
+//NumberOnly with one decimal, Modified by:Anand,Mod.Date:18 Julay 2013
+function NumberOnlywithdecimal(obj, vl) {
+    var navigatorVersion = navigator.appVersion;
+    var navigatorAgent = navigator.userAgent;
+    var browserName = navigator.appName;
+    var fullVersionName = '' + parseFloat(navigator.appVersion);
+    var majorVersionName = parseInt(navigator.appVersion, 10);
+    var nameOffset, verOffset, ix;
+    // For FireFox Browser
+    if ((verOffset = navigatorAgent.indexOf("Firefox")) != -1) {
+        browserName = "Firefox";
+        var intKey = (window.Event) ? obj.which : obj.keyCode;
+        if (obj.shiftKey && intKey != 9)  //Block the special charecter which pressed with shift key
+        {
+            return false
+        }
+        if (intKey >= 48 && intKey <= 57)//for 0-9 front keys
+        {
+            return true;
+        }
+        else if (intKey >= 96 && intKey <= 105)//for 0-9 front keys
+        {
+            return true;
+        }
+        else if (intKey == 46 || intKey == 110 || intKey == 190)//for decimals
+        {
+            var val = vl.value;
+            for (i = 0; i < val.length; i++) {
+                var cchar = val.charAt(i);
+                if (cchar == '.') {
+                    return false;
+                }
+            }
+        }
+        else if (intKey == 36 || intKey == 37 || intKey == 39 || intKey == 8 || intKey == 46 || intKey == 35 || intKey == 9) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    } //For Other Browsers
+    else {
+        if (window.event.shiftKey && event.keyCode != 9)  //Block the special charecter which pressed with shift key
+        {
+            event.returnValue = false;
+            return false
+        }
+        if (event.keyCode >= 48 && event.keyCode <= 57)//for 0-9 front keys
+        {
+            event.returnValue = true;
+            return true;
+        }
+        else if (event.keyCode >= 96 && event.keyCode <= 105)//for 0-9 right keys
+        {
+            event.returnValue = true;
+            return true;
+        }
+        else if (event.keyCode == 46 || event.keyCode == 110 || event.keyCode == 190)//for decimals
+        {
+            var val = vl.value;
+            for (i = 0; i < val.length; i++) {
+                var cchar = vl.value.charAt(i);
+                if (cchar == '.') {
+                    event.returnValue = false;
+                    return false;
+                }
+            }
+        }
+        else if (event.keyCode == 36 || event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 35 || event.keyCode == 9) {
+            event.returnValue = true;
+            return true;
+        }
+        else {
+            event.returnValue = false;
+            return false;
+        }
+    }
+}
+//Enable entering only numeric values
+//Added by Vinod gupta on 8 aug 2007
+function clear()
+{
+    NumberOnly.counter=0;  // Reset the Counter 
+}
+//Added By Mukund for allowing number and comma only
+function Number_CommaOnly(obj)
+{
+    
+    if(NumberOnly(obj))
+    {
+         if(event.keyCode==186|| event.keyCode==222 || event.keyCode==190|| event.keyCode==191 )
+         {
+             event.returnValue = false;
+             return false;
+         }  
+         else
+         {
+             event.returnValue = true;
+             return true;
+         }
+    }
+    else
+    {
+        event.returnValue = false;
+        return false;
+    }
+}
+//Created By Abhishek Kumar Dated:11 jan 2010 For Marks feeding sheet 
+
+function DropDownAlert(obj)
+{
+    var obid=obj.id;
+    var x=obid.substr(0,37);
+    var y=obid.substr(37,2)+"_txtbx" ;
+    var z=obid.substr(45,1);
+    var ctl1=x+y+z;
+    var p=obid.substr(37,2)+"_ddlGr";
+    var q=obid.substr(45,1);
+    var ctl2=x+p+q;
+    if(obj.value == 'A'|| obid ==ctl2  )
+    {
+    var nval=document.getElementById(ctl1);
+    nval.value="0";
+    nval.disabled=true;
+    }
+    else
+    {
+  
+      var dval=document.getElementById(ctl2);   
+      var nval=document.getElementById(ctl1);
+    // alert(dval) ;
+     if(dval==null)
+      nval.disabled=false;
+      else
+      nval.disabled=true;
+      
+    }
+    
+   
+}
+
+function CheckAlert(obj)
+{
+   var obid=obj.id;
+    if(obj.checked==true)
+    {
+    var x=obid.substr(0,37);
+    var y=obid.substr(37,2)+"_txtbx" ;
+    var z=obid.substr(43,1);
+    //alert(x+y+z);
+    //var ctl1="ctl00_ContentPlaceHolder1_gvMarks_ctl04_txtbx5";
+    var ctl1=x+y+z;
+    var nval=document.getElementById(ctl1);
+ 
+    nval.value="0";
+    obj.checked==true;
+    nval.disabled=true;
+    }
+    else
+    {
+    var x=obid.substr(0,37);
+    var y=obid.substr(37,2)+"_txtbx" ;
+    var z=obid.substr(43,1);
+    //alert(x+y+z);
+    //var ctl1="ctl00_ContentPlaceHolder1_gvMarks_ctl04_txtbx5";
+    var ctl1=x+y+z;
+    var nval=document.getElementById(ctl1);
+    nval.disabled=false;
+    }
+    
+   
+}
+
+////NumberOnly with one decimal, Modified by:Anand,Mod.Date:18 Julay 2013
+function NumberOnly(obj, vl) {
+    var navigatorVersion = navigator.appVersion;
+    var navigatorAgent = navigator.userAgent;
+    var browserName = navigator.appName;
+    var fullVersionName = '' + parseFloat(navigator.appVersion);
+    var majorVersionName = parseInt(navigator.appVersion, 10);
+    var nameOffset, verOffset, ix;
+    // For FireFox Browser
+    if ((verOffset = navigatorAgent.indexOf("Firefox")) != -1) {
+        browserName = "Firefox";
+        var intKey = (window.Event) ? obj.which : obj.keyCode;
+        if (obj.shiftKey && intKey != 9)  //Block the special charecter which pressed with shift key
+        {
+            return false
+        }
+        if (intKey >= 48 && intKey <= 57)//for 0-9 front keys
+        {
+            return true;
+        }
+        else if (intKey >= 96 && intKey <= 105)//for 0-9 front keys
+        {
+            return true;
+        }
+        else if (intKey == 46 || intKey == 110 || intKey == 190)//for decimals
+        {
+            var val = vl.value;
+            for (i = 0; i < val.length; i++) {
+                var cchar = val.charAt(i);
+                if (cchar == '.') {
+                    return false;
+                }
+            }
+        }
+        else if (intKey == 36 || intKey == 37 || intKey == 39 || intKey == 8 || intKey == 46 || intKey == 35 || intKey == 9) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    } //For Other Browsers
+    else {
+        if (window.event.shiftKey && event.keyCode != 9)  //Block the special charecter which pressed with shift key
+        {
+            event.returnValue = false;
+            return false
+        }
+        if (event.keyCode >= 48 && event.keyCode <= 57)//for 0-9 front keys
+        {
+            event.returnValue = true;
+            return true;
+        }
+        else if (event.keyCode >= 96 && event.keyCode <= 105)//for 0-9 right keys
+        {
+            event.returnValue = true;
+            return true;
+        }
+        else if (event.keyCode == 46 || event.keyCode == 110 || event.keyCode == 190)//for decimals
+        {
+            var val = vl.value;
+            for (i = 0; i < val.length; i++) {
+                var cchar = vl.value.charAt(i);
+                if (cchar == '.') {
+                    event.returnValue = false;
+                    return false;
+                }
+            }
+        }
+        else if (event.keyCode == 36 || event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 8 || event.keyCode == 46 || event.keyCode == 35 || event.keyCode == 9) {
+            event.returnValue = true;
+            return true;
+        }
+        else {
+            event.returnValue = false;
+            return false;
+        }
+    }
+}
+//Changed by Mukund for returning compulsory value
+//function NumberOnly(obj)
+//{
+    
+//    if (window.event.shiftKey )  //Block the special charecter which pressed with shift key
+//    {          
+//        event.returnValue = false;
+//        return false
+//    }
+//    if(event.keyCode >=48 && event.keyCode<=57)//for 0-9 front keys
+//    {
+//       event.returnValue = true;
+//	   return true;
+//    }
+//    else if(event.keyCode >=96 && event.keyCode<=105)//for 0-9 right keys
+//    {
+//        event.returnValue = true;
+//	    return true;
+//    }
+  
+//    else if(event.keyCode==190 || event.keyCode==110)//for decimals
+//    {
+//        var val = obj.value;
+//        for (i = 0; i < val.length; i++)
+//        {
+//            var cchar = obj.value.charAt(i);
+//            if (cchar == '.')
+//            {
+//                event.returnValue = false;
+//                return false;
+//            }
+//        }
+//    }
+//    else if(event.keyCode==36 || event.keyCode==37 || event.keyCode==39 || event.keyCode==8 || event.keyCode==46 ||event.keyCode==35 ||event.keyCode==9)
+//    {
+//        event.returnValue = true;
+//	    return true;
+//    }
+//    else
+//    {
+//       event.returnValue = false;
+//       return false;
+//    }
+//}
+
+////Changed by Mukund for returning compulsory value
+//function IntegerOnly(obj)
+//{	
+//    //Check to see if the counter has been initialized
+    
+//     if(obj.value=="")  // for a new textbox on Form
+//    {
+//        clear();
+//    }
+//    if (window.event.shiftKey)  //Block the special charecter which pressed with shift key
+//    {          
+//        event.returnValue = false;
+//        return false
+//    }
+//    else if(event.keyCode >=48 && event.keyCode<=57)//for 0-9 front keys
+//    {
+//       event.returnValue = true;
+//	   return true;
+//    }
+//    else if(event.keyCode >=96 && event.keyCode<=105)//for 0-9 right keys
+//    {
+//        event.returnValue = true;
+//	    return true;
+//    }
+  
+//    else if(event.keyCode==37 || event.keyCode==39 || event.keyCode==8 || event.keyCode==46 ||event.keyCode==35 ||event.keyCode==9 )
+//    {
+        
+//          event.returnValue = true;
+//	      return true;
+//    }
+//    else
+//    {
+//       event.returnValue = false;
+//       return false;
+//    }
+        
+//}
+
+//function IntegerOnly(event, source)
+
+function IntegerOnly(event) {
+    var ev = (event) ? (event) : window.event;
+    var code = ev.which ? ev.which : ev.keyCode;
+    if (ev.shiftKey) {
+        alert("Shift key not allowed ");
+        return false;
+    }
+    else if (code >= 48 && code <= 57 || code == 8 || code == 9 || code >= 96 && code <= 105)
+        return true;
+    else if (ev.altKey) {
+        alert("ALT Key is not allowed");
+        return false;
+    }
+    else
+        return false;
+}
+
+//Enable entering only numeric values
+function NumberOnly1()
+{
+    if ((event.keyCode <65  || event.keyCode >90)||  (event.keyCode==13)|| (event.keyCode==45) ) 
+	    event.returnValue = true;
+    else
+	event.returnValue = false;
+}
+
+//Enable entering only textual values
+function TextOnly()
+{         
+    if ((event.keyCode >=65  && event.keyCode <=90)||event.keyCode==32 || event.keyCode==8 || event.keyCode==46 || event.keyCode==37 || event.keyCode==39 || event.keyCode==9)
+	    event.returnValue = true;
+    else
+	    event.returnValue = false;
+}
+
+//Added By Rajeev Ranjan to Enter Only Numeric. "." is also not allowed.(0-9) Only Allowed
+function NumCheck()
+{
+    if((event.keyCode > 47 && event.keyCode < 58) || event.keyCode == 9 || event.keyCode == 8 || event.keyCode == 37
+    || event.keyCode == 39 || event.keyCode == 8 || (event.keyCode > 95 && event.keyCode < 106) || event.keyCode == 46 || event.keyCode == 16)
+    {
+        event.returnValue = true;
+    }
+    else
+    {
+        event.returnValue = false;
+    }
+    if (window.event.shiftKey && event.keyCode!=9)  //Block the special charecter which pressed with shift key
+    {          
+        event.returnValue = false;
+        return false
+    }
+}
+
+
+//Added By Rajeev Ranjan 
+function NegAndnumber(ctl)
+{
+    var ctl1="ctl00_ContentPlaceHolder1_";
+    var nval=document.getElementById(ctl1+ctl).value;
+	var val1=event.keyCode;	
+	if (((val1>=48 && val1<=57) && (val1!=45)) || (val1==8) || (val1==46 && nval.indexOf('.')==-1))
+	{
+	    event.returnValue = true;
+    }
+	else
+	{
+	    event.returnValue = false;
+	}	
+}
+
+//Added By Rajeev Ranjan : To Not Accept User Input in a Multiline TextBox if the Specified Limit Exceeds.
+function MaxTextInput(ctl, limit)
+{
+    var ctl1="ctl00_ContentPlaceHolder1_";
+    if(document.getElementById(ctl1+ctl).value.length >= parseInt(limit))
+    {			 
+        return false;			  
+    }
+}
+
+//Added By Rajeev Ranjan : To Not Allow pasting of records if the Specified Limit Exceeds.
+function MaxTextPaste(ctl, limit)
+{
+    var ctl1="ctl00_ContentPlaceHolder1_";
+    if((document.getElementById(ctl1+ctl).value.length + window.clipboardData.getData("Text").length )>= parseInt(limit))
+    {
+        return false;			  
+    }
+}
+
+//Maximize the windows
+function FullWindow()
+{
+    window.resizeTo(1024,745);
+    window.moveTo(0,0);
+}
+    
+//Set date format
+function FormatDate(DateToFormat,FormatAs)
+{
+    if(DateToFormat=="")
+    {
+        return"";
+    }
+    
+    if(!FormatAs)
+    {
+        FormatAs="dd/mm/yyyy";
+    }
+
+    var strReturnDate;
+    FormatAs = FormatAs.toLowerCase();
+    DateToFormat = DateToFormat.toLowerCase();
+    var arrDate
+    var arrMonths = new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+    var strMONTH;
+    var Separator;
+
+    while(DateToFormat.indexOf("st")>-1)
+    {
+        DateToFormat = DateToFormat.replace("st","");
+    }
+
+    while(DateToFormat.indexOf("nd")>-1)
+    {
+        DateToFormat = DateToFormat.replace("nd","");
+    }
+
+    while(DateToFormat.indexOf("rd")>-1)
+    {
+        DateToFormat = DateToFormat.replace("rd","");
+    }
+
+    while(DateToFormat.indexOf("th")>-1)
+    {
+        DateToFormat = DateToFormat.replace("th","");
+    }
+
+    if(DateToFormat.indexOf(".")>-1)
+    {
+        Separator = ".";
+    }
+
+    if(DateToFormat.indexOf("-")>-1)
+    {
+        Separator = "-";
+    }
+
+    if(DateToFormat.indexOf("/")>-1)
+    {
+        Separator = "/";
+    }
+
+    if(DateToFormat.indexOf(" ")>-1)
+    {
+        Separator = " ";
+    }
+
+    arrDate = DateToFormat.split(Separator);
+    DateToFormat = "";
+    for(var iSD = 0;iSD < arrDate.length;iSD++)
+    {
+	    if(arrDate[iSD]!="")
+	    {
+	        DateToFormat += arrDate[iSD] + Separator;
+        }
+    }
+    DateToFormat = DateToFormat.substring(0,DateToFormat.length-1);
+    arrDate = DateToFormat.split(Separator);
+
+    if(arrDate.length < 3)
+    {
+        return "";
+    }
+
+    var DAY = arrDate[0];
+    var MONTH = arrDate[1];
+    var YEAR = arrDate[2];
+
+    if(parseFloat(arrDate[1]) > 12)
+    {
+        DAY = arrDate[1];
+        MONTH = arrDate[0];
+    }
+
+    if(parseFloat(DAY) && DAY.toString().length==4)
+    {
+        YEAR = arrDate[0];
+        DAY = arrDate[2];
+        MONTH = arrDate[1];
+    }
+
+    for(var iSD = 0;iSD < arrMonths.length;iSD++)
+    {
+        var ShortMonth = arrMonths[iSD].substring(0,3).toLowerCase();
+        var MonthPosition = DateToFormat.indexOf(ShortMonth);
+        if(MonthPosition > -1)
+        {
+            MONTH = iSD + 1;
+	        if(MonthPosition == 0)
+	        {
+	            DAY = arrDate[1];
+	            YEAR = arrDate[2];
+	        }
+            break;
+        }
+    }
+
+    var strTemp = YEAR.toString();
+    if(strTemp.length==2)
+    {
+        if(parseFloat(YEAR)>40)
+        {
+            YEAR = "19" + YEAR;
+        }
+        else
+        {
+            YEAR = "20" + YEAR;
+        }
+    }
+
+    if(parseInt(MONTH)< 10 && MONTH.toString().length < 2)
+    {
+        MONTH = "0" + MONTH;
+    }
+    if(parseInt(DAY)< 10 && DAY.toString().length < 2)
+    {
+        DAY = "0" + DAY;
+    }
+    switch (FormatAs)
+    {
+        case "dd/mm/yyyy":
+        return DAY + "/" + MONTH + "/" + YEAR;
+        case "mm/dd/yyyy":
+        return MONTH + "/" + DAY + "/" + YEAR;
+        case "dd/mmm/yyyy":
+        return DAY + " " + arrMonths[MONTH -1].substring(0,3) + " " + YEAR;
+        case "mmm/dd/yyyy":
+        return arrMonths[MONTH -1].substring(0,3) + " " + DAY + " " + YEAR;
+        case "dd/mmmm/yyyy":
+        return DAY + " " + arrMonths[MONTH -1] + " " + YEAR;	
+        case "mmmm/dd/yyyy":
+        return arrMonths[MONTH -1] + " " + DAY + " " + YEAR;
+    }
+    return DAY + "/" + strMONTH + "/" + YEAR;;
+} 
+
+//Multiline textbox MaxLength
+function CheckMaxLength(txt,max)
+{ 
+
+if(txt.value.length > (max-1))
+            return false;  
+
+}
+   
+   
+//Handling enter press
+function HandleEnter()
+{	
+    if (event.keyCode == 13)
+    {
+	    event.keyCode = 9;
+    }
+}	
+
+//Get substring  from the right side of the string
+function Right(str, n)
+{
+    if (n <= 0)     // Invalid bound, return blank string
+       return "";
+    else if (n > String(str).length)   // Invalid bound, return
+       return str;                     // entire string
+    else { // Valid bound, return appropriate substring
+       var iLen = String(str).length;
+       return String(str).substring(iLen, iLen - n);
+    }
+}
+    
+//Check the validity of the email id
+function CheckEMail(mailids)
+{
+    var arr = new Array
+    (
+    '.com','.net','.org','.biz','.coop','.info','.museum','.name','.pro',
+    '.edu','.gov','.int','.mil','.ac','.ad','.ae','.af','.ag','.ai','.al',
+    '.am','.an','.ao','.aq','.ar','.as','.at','.au','.aw','.az','.ba','.bb',
+    '.bd','.be','.bf','.bg','.bh','.bi','.bj','.bm','.bn','.bo','.br','.bs',
+    '.bt','.bv','.bw','.by','.bz','.ca','.cc','.cd','.cf','.cg','.ch','.ci',
+    '.ck','.cl','.cm','.cn','.co','.cr','.cu','.cv','.cx','.cy','.cz','.de',
+    '.dj','.dk','.dm','.do','.dz','.ec','.ee','.eg','.eh','.er','.es','.et',
+    '.fi','.fj','.fk','.fm','.fo','.fr','.ga','.gd','.ge','.gf','.gg','.gh',
+    '.gi','.gl','.gm','.gn','.gp','.gq','.gr','.gs','.gt','.gu','.gv','.gy',
+    '.hk','.hm','.hn','.hr','.ht','.hu','.id','.ie','.il','.im','.in','.io',
+    '.iq','.ir','.is','.it','.je','.jm','.jo','.jp','.ke','.kg','.kh','.ki',
+    '.km','.kn','.kp','.kr','.kw','.ky','.kz','.la','.lb','.lc','.li','.lk',
+    '.lr','.ls','.lt','.lu','.lv','.ly','.ma','.mc','.md','.mg','.mh','.mk',
+    '.ml','.mm','.mn','.mo','.mp','.mq','.mr','.ms','.mt','.mu','.mv','.mw',
+    '.mx','.my','.mz','.na','.nc','.ne','.nf','.ng','.ni','.nl','.no','.np',
+    '.nr','.nu','.nz','.om','.pa','.pe','.pf','.pg','.ph','.pk','.pl','.pm',
+    '.pn','.pr','.ps','.pt','.pw','.py','.qa','.re','.ro','.rw','.ru','.sa',
+    '.sb','.sc','.sd','.se','.sg','.sh','.si','.sj','.sk','.sl','.sm','.sn',
+    '.so','.sr','.st','.sv','.sy','.sz','.tc','.td','.tf','.tg','.th','.tj',
+    '.tk','.tm','.tn','.to','.tp','.tr','.tt','.tv','.tw','.tz','.ua','.ug',
+    '.uk','.um','.us','.uy','.uz','.va','.vc','.ve','.vg','.vi','.vn','.vu',
+    '.ws','.wf','.ye','.yt','.yu','.za','.zm','.zw');
+
+    var sd = mailids;
+    var ids = sd.split("\n");
+    var val = true;
+
+    for(var j=0; j<ids.length; j++)
+    {
+        var mai = ids[j];
+        var dot = mai.lastIndexOf(".");
+        var ext = mai.substring(dot,mai.length);
+        var at = mai.indexOf("@");
+        if(dot > 5 && at >1)
+        {
+	        for(var i=0; i<arr.length; i++)
+	        {
+		        if(ext == arr[i])
+		        {
+		            val = true;
+		            break;
+		        }
+		        else
+		        {
+		            val = false;
+		        }
+	        }
+	        if(val == false)
+	        {
+		        alert("Your Email Id  "+mai+" is not corrrrect");
+		        return false;
+	        }
+        }
+        else
+        {
+            alert("Your Email Id "+mai+" is not correct");
+            return false;
+        }
+    }
+    return true;
+}
+
+//Disable single quote
+function NoQuotes()
+{
+    if(event.keyCode==222 || event.keyCode==220)
+	    return false;
+	    return true;
+}
+	
+//Enable entering only numerice value without special character
+function NumSplOnly()
+{  
+    if(event.keyCode==190 || event.keyCode==110 || event.keyCode==9)
+    {        
+        return true;
+    }
+    if(event.keyCode==222 || event.keyCode==220 || event.keyCode==9 || event.keyCode==18)
+    {    
+        return false;
+    }
+    if(!(event.keyCode>=95 && event.keyCode<=105) &&!(event.keyCode>=47 && event.keyCode<=58) && event.keyCode!=8 && event.keyCode!=46 && !(event.keyCode>=37 && event.keyCode<=40))
+    {
+        return false
+    }    
+}
+
+/////////////////To check Ledger duploicacy----by:Anand///////////////////////
+function chk_dupli(oForm,obj)
+{       
+    var iCounter=0;
+	var sFldval,sFldname,sFldType;
+	var iLength;
+	var intLoop;
+	var intStatus=0;
+	iLength=oForm.elements.length;
+	while(iCounter<iLength)
+	{ 
+        // we are taking 26 because client id will be like this for each control ctl00_ContentPlaceHolder1_		
+		sFldval=oForm.elements[iCounter].value;
+		sFldval=AllTrim(sFldval);
+		nameLen=oForm.elements[iCounter].id.length;
+		controlClientId=oForm.elements[iCounter].id;
+		var x=obj.value;
+		var y=oForm.elements[iCounter].value;
+		if(oForm.elements[iCounter].id!=obj.id && x!="")
+		{
+		    if(x==y)
+		    {
+		        obj.focus();
+		        alert("Duplicate Ledger Name..");
+		        return 1;
+		        break; 
+            }
+        }
+        iCounter=iCounter+1;
+    }
+}
+
+//For checking that the compulsory textboxes should not be blank
+//Prerequisite:Name of the textbox should start with R_ Label name after prefix should be same as of textbox
+//using with master page concept
+//Change By Rajeev Kumar Ranjan to Show Dynamic Message From Table
+function SubmitMasterValidate(oForm, strMsg)
+{   strMsg='is required';
+    var iCounter=0;
+	var sFldval,sFldname,sFldType;
+	var iLength;
+	var intLoop;
+	var intStatus=0;
+	iLength=oForm.elements.length;
+    
+    while(iCounter<iLength)
+	{
+        // we are taking 26 because client id will be like this for each control ctl00_ContentPlaceHolder1_		
+		sFldval=oForm.elements[iCounter].value;
+		sFldval=AllTrim(sFldval);
+		nameLen=oForm.elements[iCounter].id.length;
+		controlClientId=oForm.elements[iCounter].id;
+		
+		var chk=controlClientId.indexOf('dg');
+        if(chk==-1)
+		{
+		    sFldname=oForm.elements[iCounter].id.substring(26,nameLen);
+        }
+		else if(chk==0)
+		{
+		    sFldname=oForm.elements[iCounter].id.substring(44,nameLen);
+        }
+        else
+        {
+            sFldname=oForm.elements[iCounter].id.substring(26,nameLen);
+        }
+        
+        if (sFldval != null)
+		{ 
+		    sFldlen=sFldval.length
+		    sFldType = sFldname.substring(2,5);
+		    sFldType = sFldType.toUpperCase();
+        }
+      
+        if(sFldType=="DDL")
+        {
+            if(sFldname.charAt(0) == "D")
+			{
+			    var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+				var ddl=document.getElementById(controlClientId);
+                if(ddl.selectedIndex == 0)
+                {
+                    alert(lbl.innerHTML+ " " + strMsg)
+                    ddl.focus();
+                    return false;
+                }
+            }
+            else if(sFldname.charAt(0) == "I")
+			{   			    
+			    var lbl=document.getElementById("ctl00_ContentPlaceHolder1_lbl"+sFldname.substring(5,sFldname.length));
+				var ddl=document.getElementById(controlClientId);
+				// get the combo from the passed-in id                
+                var combo = igcmbo_getComboById(controlClientId);
+                                
+                //get the currently selected row in webcombo
+                var index = combo.getSelectedIndex();
+                if(index <= 0)
+                {
+                    alert(lbl.innerHTML+ " " + strMsg)
+                    combo.focus();
+                    return false;
+                }
+            }
+        }                
+        
+        if (sFldType =="TXT")
+        {
+            var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+        	if(sFldname.charAt(0) == "R" && sFldval.length==0)
+			{
+                alert(lbl.innerHTML+ " " + strMsg)
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;
+            }
+            
+            //Update by anil for check the doc extension in uploaded file
+			if(sFldname.charAt(0) == "F" && sFldval.length==0)
+			{
+			    alert(lbl.innerHTML+ " " + strMsg)
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;				
+            }
+			else if(sFldname.charAt(0) == "F" && sFldval.length!=0)
+			{
+			    var index=sFldval.lastIndexOf(".");
+				var len=sFldval.length;
+				if(index!=-1)
+				var extension=sFldval.substring(index+1,len);
+				if(extension=="doc" || extension=="pdf" ||extension=="xls")
+				{
+				}
+				else
+				{
+				    alert(lbl.innerHTML + " " + "can be only doc/pdf/xls file");
+					sFldval.length=0;
+					eval("sFldval=oForm."+ controlClientId+".focus()");
+					return false;	
+                }
+            }
+			if(sFldname.charAt(0) == "V" && sFldval.length==0)
+			{
+			    alert(lbl.innerHTML+ " " + strMsg)
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;
+            }
+			else if(sFldname.charAt(0) == "V" && sFldval.length!=0)
+			{ 
+			    if(!ValidateDate(sFldval))
+                {
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+                }
+            }
+			if(sFldname.charAt(0) == "E" && sFldval.length==0)
+			{   	             
+			    //alert(lbl.innerText + " " + "can't be blank")
+			    alert(lbl.innerHTML+ " " + strMsg)
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;				
+            }
+			else if(sFldname.charAt(0) == "E" && sFldval.length!=0)
+			{   	
+			    if(!CheckEMail(sFldval))
+				{
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+				 }
+            }
+            else if(sFldname.charAt(0) == "M" && sFldval.length!=0)
+			{   	
+			    if(!CheckEMail(sFldval))
+				{
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+				 }
+            }
+             else if(sFldname.charAt(0) == "U" && sFldval.length!=0)
+			{   	
+			   if(!ValidateDate(sFldval))
+                {
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+                }
+            }
+        }
+        
+		if(sFldname.charAt(0) == "K" && (sFldval.length > 0)&& (sFldval!=" ")) 	
+		{
+		    var str=sFldval;
+			var str1,str2,strcolon;
+			strcolon = str.substring(2,3);
+			str1 = str.substring(0,2);
+			str2 = str.substring(3,5);
+			str = str1 + str2;
+					
+			if (strcolon!=":")
+			{
+			    alert("Please Enter a Valid Time like (01:30 or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if((parseInt(str.length) <4) || (parseInt(str.length) >4))
+			{
+			    alert("Please Enter a Valid Time like (01:30or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if (isNaN(str))
+			{
+			    alert("Please Enter a Valid Time like (01:30or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if (parseInt(str.length)==4)
+            {
+			    if (parseInt(str1)>23)
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+controlClientId+".focus()");
+					return false;
+                }
+                if (parseInt(str2)>60)
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+controlClientId+".focus()");
+					return false;
+                }
+            }
+        }
+		else if ((sFldname.charAt(0) == "K") && (sFldval.charAt(0)==" "))
+		{
+		    alert("Please Enter a Valid Time like (01:30or 09:00)");
+		    eval("sFldval=oForm."+controlClientId+".focus()");
+		    return false;
+        }
+		iCounter=iCounter+1;		
+    }
+}//End of the function
+
+function ConfirmDelete(oForm)
+{
+    return confirm("Are you sure to delete the record ?? ");
+}
+
+//For checking that the compulsory textboxes should not be blank
+//Prerequisite:Name of the textbox should start with R_
+//Label name after prefix should be same as of textbox
+//using with master page concept 
+//added by mukund for validation on update button
+function ValidateNotConfirm(oForm)
+{    
+    var strMsg='is required';   
+    var iCounter=0;
+	var sFldval,sFldname,sFldType;
+	var iLength;
+	var intLoop;
+	var intStatus=0;
+	iLength=oForm.elements.length;
+    while(iCounter<iLength)
+	{
+        // we are taking 26 because client id will be like this for each control ctl00_ContentPlaceHolder1_		
+		sFldval=oForm.elements[iCounter].value;
+		sFldval=AllTrim(sFldval);
+		nameLen=oForm.elements[iCounter].id.length;
+		controlClientId=oForm.elements[iCounter].id;
+		var chk=controlClientId.indexOf('dg');
+        if(chk==-1)
+		{
+		    sFldname=oForm.elements[iCounter].id.substring(26,nameLen);
+        }
+		else
+		{
+		    sFldname=oForm.elements[iCounter].id.substring(44,nameLen);
+        }
+		if (sFldval != null)
+		{ 
+		    sFldlen=sFldval.length
+		    sFldType = sFldname.substring(2,5);
+		    sFldType = sFldType.toUpperCase();
+        }
+        if(sFldType=="DDL")
+        {
+		    if(sFldname.charAt(0) == "D")
+			{
+			    var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+				var ddl=document.getElementById(controlClientId);
+        		if(ddl.selectedIndex == 0)
+                { 
+                    alert(lbl.innerText +" "+ strMsg);
+                    ddl.focus(); 
+                    return false;
+                }
+            }
+        }   
+		if (sFldType =="TXT")
+		{     			
+            var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+        	if(sFldname.charAt(0) == "R" && sFldval.length==0)
+			{      		            
+			    alert(lbl.innerHTML + " " +  strMsg)
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;				
+            }
+			if(sFldname.charAt(0) == "V" && sFldval.length==0)
+			{                 
+			    alert(lbl.innerHTML + " " +  strMsg);
+				sFldval.length=0;
+				eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;				
+            }
+			else if(sFldname.charAt(0) == "V" && sFldval.length!=0)
+			{ 
+			    if(!ValidateDate(sFldval))
+				{
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+				}
+            }
+			if(sFldname.charAt(0) == "E" && sFldval.length==0)
+			{   	             
+			    alert(lbl.innerHTML + " " +  strMsg)
+				sFldval.length=0;
+                eval("sFldval=oForm."+ controlClientId+".focus()");
+				return false;				
+			}
+			else if(sFldname.charAt(0) == "E" && sFldval.length!=0)
+			{   	
+			    if(!CheckEMail(sFldval))
+				{
+				    eval("sFldval=oForm."+ controlClientId+".focus()");
+				    return false;
+				}
+            }
+        }
+		if(sFldname.charAt(0) == "K" && (sFldval.length > 0)&& (sFldval!=" ")) 	
+		{
+		    var str=sFldval;
+			var str1,str2,strcolon;
+			strcolon = str.substring(2,3);
+			str1 = str.substring(0,2);
+			str2 = str.substring(3,5);
+			str = str1 + str2;
+			if (strcolon!=":")
+			{
+			    alert("Please Enter a Valid Time like (01:30 or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if((parseInt(str.length) <4) || (parseInt(str.length) >4))
+			{
+			    alert("Please Enter a Valid Time like (01:30or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if (isNaN(str))
+			{
+			    alert("Please Enter a Valid Time like (01:30or 09:00)");
+				eval("sFldval=oForm."+controlClientId+".focus()");
+				return false;
+            }
+			if (parseInt(str.length)==4)
+			{
+			    if (parseInt(str1)>23)
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+controlClientId+".focus()");
+					return false;
+                }
+				if (parseInt(str2)>60)
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+controlClientId+".focus()");
+					return false;
+                }
+            }
+	    }
+		else if ((sFldname.charAt(0) == "K") && (sFldval.charAt(0)==" "))
+		{
+		    alert("Please Enter a Valid Time like (01:30or 09:00)");
+			eval("sFldval=oForm."+controlClientId+".focus()");
+			return false;
+        }		
+		iCounter=iCounter+1;
+    }
+}//End of the function
+
+// Declaring valid date character, minimum year and maximum year
+function DtVald(fldValue)
+{
+    if (IsDate2(fldValue)==false)
+    {	
+        return false
+    }
+    return true
+}
+	
+// Declaring valid date character, minimum year and maximum year
+function ValidateDate(fldValue)
+{
+    //CHANGED FOR 29 FEB CONDITION BY :MUKUND,SAURABH 25FEB
+    if (IsDate(fldValue)==false)
+	{	
+		return false
+	}	
+    return true
+}
+
+var dtCh= "/";
+var minYear=1900;
+var maxYear=2100;
+
+function IsInteger(s)
+{
+	var i;
+    for (i = 0; i < s.length; i++){   
+        //Check that current character is number.
+        var c = s.charAt(i);
+        if (((c < "0") || (c > "9"))) return false;
+    }
+    // All characters are numbers.
+    return true;
+}
+
+function StripCharsInBag(s, bag)
+{
+    var i;
+    var returnString = "";
+    // Search through string's characters one by one.
+    // If character is not in bag, append to returnString.
+    for (i = 0; i < s.length; i++)
+    {
+        var c = s.charAt(i);
+        if (bag.indexOf(c) == -1) returnString += c;
+    }
+    return returnString;
+}
+
+function DaysInFebruary (year)
+{
+    return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
+}
+
+function DaysArray(n) {
+	for (var i = 1; i <= n; i++) {
+		this[i] = 31
+		if (i==4 || i==6 || i==9 || i==11) {this[i] = 30}
+		if (i==2) {this[i] = 29}
+   } 
+   return this
+}
+
+function IsDate2(dtStr)
+{
+    
+    var dateRegxp = /^(?:(?:0?[1-9]|1\d|2[0-8])(\/|-)(?:0?[1-9]|1[0-2]))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(?:(?:31(\/|-)(?:0?[13578]|1[02]))|(?:(?:29|30)(\/|-)(?:0?[1,3-9]|1[0-2])))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(29(\/|-)0?2)(\/|-)(?:(?:0[48]00|[13579][26]00|[2468][048]00)|(?:\d\d)?(?:0[48]|[2468][048]|[13579][26]))$ / ;
+    if (dateRegxp.test(dtStr) !=true)
+    {
+        alert("Invalid Date: - " +dtStr);
+        return false;
+    }
+    return true ;
+}
+
+//# Tis Function check date in mm/dd/yyyy format.
+function IsDate(dtStr)
+{
+	var daysInMonth = DaysArray(12)
+	var pos1=dtStr.indexOf(dtCh)
+	var pos2=dtStr.indexOf(dtCh,pos1+1)
+	var strDay=dtStr.substring(0,pos1)
+	var strMonth =dtStr.substring(pos1+1,pos2)
+	var strYear=dtStr.substring(pos2+1)
+	strYr=strYear
+	if (strDay.charAt(0)=="0" && strDay.length>1) strDay=strDay.substring(1)
+	if (strMonth.charAt(0)=="0" && strMonth.length>1) strMonth=strMonth.substring(1)
+	for (var i = 1; i <= 3; i++)
+	{
+		if (strYr.charAt(0)=="0" && strYr.length>1) strYr=strYr.substring(1)
+	}
+	month=parseInt(strMonth)
+	day=parseInt(strDay)
+	year=parseInt(strYr)
+	if (pos1==-1 || pos2==-1)
+	{
+        alert("Please enter valid date : dd/mm/yyyy")
+		return false;
+	}
+	if (strMonth.length<1 || month<1 || month>12)
+	{
+		alert("Please enter a valid month")
+		return false;
+	}
+	if (strDay.length<1 || day<1 || day>31 || (month==2 && day>DaysInFebruary(year)) || day > daysInMonth[month])
+	{
+		alert("Please enter a valid day")
+		return false;
+	}
+	if (strYear.length != 4 || year==0 || year<minYear || year>maxYear)
+	{
+		alert("Please enter a valid 4 digit year between "+minYear+" and "+maxYear)
+		return false;
+	}
+	if (dtStr.indexOf(dtCh,pos2+1)!=-1 || IsInteger(StripCharsInBag(dtStr, dtCh))==false)
+	{
+		alert("Please enter a valid date")
+		return false;
+	}
+    return true
+}
+
+function submitValidate(oForm)
+{       
+    var iCounter=0;
+	var sFldval,sFldname,sFldType;
+	var iLength;
+	var intLoop;
+	var intStatus=0;
+	iLength=oForm.elements.length;
+    while(iCounter<iLength)
+	{
+        sFldval=oForm.elements[iCounter].value;
+	    sFldname=oForm.elements[iCounter].id;
+        if (sFldval != null)
+		{
+		    sFldlen=sFldval.length
+		    sFldType = sFldname.substring(2,5);
+		    sFldType = sFldType.toUpperCase();
+        }
+        if (sFldType =="TXT" || sFldType=="DDL")
+		{
+            var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+        	if(sFldname.charAt(0) == "R" && sFldval.length==0)
+			{      		            
+			    alert(lbl.innerHTML + " " + "can't be blank")
+				sFldval.length=0;
+				eval("sFldval=oForm."+ sFldname+".focus()");
+				return false;				
+            }
+			if(sFldname.charAt(0) == "D")
+			{
+			    var lbl=document.getElementById("lbl"+sFldname.substring(5,sFldname.length));
+        		var ddl=document.getElementById(sFldname);
+        		if(ddl.selectedIndex == 0)
+                { 
+                    alert("Please Select valid"+" "+lbl.innerHTML);
+                    ddl.focus(); 
+                    return false;
+                }
+            }
+			if(sFldname.charAt(0) == "E" && sFldval.length==0)
+			{   	             
+			    alert(lbl.innerHTML + " " + "can't be blank")
+				sFldval.length=0;
+				eval("sFldval=oForm."+ sFldname+".focus()");
+				return false;				
+            }
+			else if(sFldname.charAt(0) == "E" && sFldval.length!=0)
+			{   	
+			    if(!CheckEMail(sFldval))
+				{
+				    eval("sFldval=oForm."+ sFldname+".focus()");
+				    return false;
+                }
+            }
+			if(sFldname.charAt(0) == "K" && (sFldval.length > 0)&& (sFldval!=" ")) 	
+			{
+			    var str=sFldval;
+				var str1,str2,strcolon;
+				strcolon = str.substring(2,3);
+				str1 = str.substring(0,2);
+				str2 = str.substring(3,5);
+				str = str1 + str2;
+				if (strcolon!=":")
+				{
+				    alert("Please Enter a Valid Time like (01:30 or 09:00)");
+					eval("sFldval=oForm."+sFldname+".focus()");
+					return false;
+                }
+				if((parseInt(str.length) <4) || (parseInt(str.length) >4))
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+sFldname+".focus()");
+					return false;
+                }
+				if (isNaN(str))
+				{
+				    alert("Please Enter a Valid Time like (01:30or 09:00)");
+					eval("sFldval=oForm."+sFldname+".focus()");
+					return false;
+                }
+				if (parseInt(str.length)==4)
+				{
+				    if (parseInt(str1)>23)
+				    {
+					    alert("Please Enter a Valid Time like (01:30or 09:00)");
+						eval("sFldval=oForm."+sFldname+".focus()");
+						return false;
+                    }
+					if (parseInt(str2)>60)
+					{
+					    alert("Please Enter a Valid Time like (01:30or 09:00)");
+						eval("sFldval=oForm."+sFldname+".focus()");
+						return false;
+                    }
+                }
+	        }
+			else if ((sFldname.charAt(0) == "K") && (sFldval.charAt(0)==" "))
+			{
+			    alert("Please Enter a Valid Time like (01:30or 09:00)");
+				eval("sFldval=oForm."+sFldname+".focus()");
+				return false;
+            }		
+        }
+		iCounter=iCounter+1;
+    }
+	return true;
+}
+
+//IT WORKS ON BLUR PROMPTS YOU MESSAGE , ALLOWS VALUES "0123456789" ONLY 
+//OPTIONALLY YOU CAN ALLOW COMMA,PERIOD,HYPHEN
+//CREATED BY SANGEET
+
+function checkNumeric(objName,minval, maxval,comma,period,hyphen)
+{
+
+	var numberfield = objName;
+	if (chkNumeric(objName,minval,maxval,comma,period,hyphen) == false)
+	{
+		numberfield.select();
+		numberfield.focus();
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+function chkNumeric(objName,minval,maxval,comma,period,hyphen)
+{
+// only allow 0-9 be entered, plus any values passed
+// (can be in any order, and don't have to be comma, period, or hyphen)
+// if all numbers allow commas, periods, hyphens or whatever,
+// just hard code it here and take out the passed parameters
+var checkOK = "0123456789" + comma + period + hyphen;
+var checkStr = objName;
+var allValid = true;
+var decPoints = 0;
+var allNum = "";
+
+for (i = 0;  i < checkStr.value.length;  i++)
+{
+ch = checkStr.value.charAt(i);
+for (j = 0;  j < checkOK.length;  j++)
+if (ch == checkOK.charAt(j))
+break;
+if (j == checkOK.length)
+{
+allValid = false;
+break;
+}
+if (ch != ",")
+allNum += ch;
+}
+if (!allValid)
+{	
+alertsay = "Please enter only these values \""
+alertsay = alertsay + checkOK 
+alert(alertsay);
+return (false);
+}
+
+// set the minimum and maximum
+var chkVal = allNum;
+var prsVal = parseInt(allNum);
+if (chkVal != "" && !(prsVal >= minval && prsVal <= maxval))
+{
+alertsay = "Please enter a value greater than or "
+alertsay = alertsay + "equal to \"" + minval + "\" and less than or "
+alertsay = alertsay + "equal to \"" + maxval 
+alert(alertsay);
+return (false);
+}
+}
+
+function validateDateorblank(fld)
+{
+ var dateRegxp = /^(?:(?:0?[1-9]|1\d|2[0-8])(\/|-)(?:0?[1-9]|1[0-2]))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(?:(?:31(\/|-)(?:0?[13578]|1[02]))|(?:(?:29|30)(\/|-)(?:0?[1,3-9]|1[0-2])))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(29(\/|-)0?2)(\/|-)(?:(?:0[48]00|[13579][26]00|[2468][048]00)|(?:\d\d)?(?:0[48]|[2468][048]|[13579][26]))$ / ;
+    var errorMessage = 'Please enter valid date as month, day, and four digit year.\n The date must be a real date. 2-30-2000 would not be accepted.\nFormay mm/dd/yyyy.';
+    if ((fld.value.match(dateRegxp)) || (fld.value=='')) 
+    {
+       return true;
+    } 
+    else 
+    {
+       alert(errorMessage);
+       fld.focus();
+    } 
+}
+
+//Pass textbox,sign to use between month day year 
+//for example onKeyUp="javascript:return mask(this,'/');"
+//IT supports dd/mm/yyyy format only
+//CREATED BY SANGEET
+
+function mask(textbox,delim)
+{
+str=textbox.value
+    for (var k = 0; k <= str.length; k++)
+    {
+     if (k == 2 || k == 5)
+         {
+	        if (str.substring(k, k+1) != delim){
+	        str = str.substring(0,k) + delim + str.substring(k,str.length)
+	     }
+	 } 
+ }
+ textbox.value = str
+}
+
+function NumberOnlyWithoutMsg(obj)
+{	
+    //Check to see if the counter has been initialized
+
+    if(obj.value=="")  // for a new textbox on Form
+    {
+        clear();
+    }
+    if(event.keyCode==190 || event.keyCode==110)//for decimals
+    {  
+    
+        if (typeof NumberOnly.counter == 'undefined')
+        {
+            //It has not... perform the initilization
+            NumberOnly.counter = 0;
+        }
+        else
+        {
+            // Do something stupid to indicate the value
+            NumberOnly.counter = NumberOnly.counter+1;
+        }
+    }
+    
+    if (window.event.shiftKey)  //Block the special charecter which pressed with shift key
+    {          
+        event.returnValue = false;
+        return false
+    }
+    else
+    {
+        if(NumberOnly.counter > 1)
+        {
+             //*****************FOR SPECIAL CHARACTERS ADDED BY MUKUND****************
+            //191 "/" 188 "," 186 ";" 222 "'" 219 "[" 221 "]" 220 "\" 187 "=" 192 "`"
+             if((event.keyCode==191  || event.keyCode ==188)||  (event.keyCode==186)|| (event.keyCode==222)|| (event.keyCode==219)|| (event.keyCode==221)|| (event.keyCode==220)|| (event.keyCode ==187)|| (event.keyCode ==192))
+            {
+	           
+	            event.returnValue = false;
+	        	return false;
+	        }  
+            /////////////////////////////////////////////////////////////////////////
+            
+            if(event.keyCode==189 || event.keyCode==190 || event.keyCode==110)  
+                return false;//  to Block negative value
+            if((event.keyCode <65  || event.keyCode >90)||  (event.keyCode==13)|| (event.keyCode==45))
+            {
+	            event.returnValue = true;
+	            return true;
+	        }
+            else
+            {
+	            event.returnValue = false;
+	            return false;
+	         }
+	        
+        }
+        else
+        {
+                //*****************FOR SPECIAL CHARACTERS ADDED BY MUKUND****************
+            //191 "/" 188 "," 186 ";" 222 "'" 219 "[" 221 "]" 220 "\" 187 "=" 192 "`"
+             if((event.keyCode==191  || event.keyCode ==188)||  (event.keyCode==186)|| (event.keyCode==222)|| (event.keyCode==219)|| (event.keyCode==221)|| (event.keyCode==220)|| (event.keyCode ==187)|| (event.keyCode ==192))
+            {
+	            
+	            event.returnValue = false;
+	        	return false;
+	        }  
+            /////////////////////////////////////////////////////////////////////////
+        
+            if(event.keyCode==189 )  
+                return false;//Addeby harendra to Block negative value
+            if((event.keyCode <65  || event.keyCode >90)||  (event.keyCode==13)|| (event.keyCode==45))
+            {
+	            event.returnValue = true;
+	            return true;
+	         }
+            else
+            {
+	            event.returnValue = false;
+	            return false;
+	         }   
+	         
+        }
+       
+        if(event.keyCode==189 )  
+            return false;
+        if((event.keyCode <65  || event.keyCode >90)||  (event.keyCode==13)|| (event.keyCode==45))
+        {
+	        event.returnValue = true;
+	        return true;
+	    }   
+        else
+        {
+	        event.returnValue = false;
+	        return false;
+	    }   
+    }
+}
+
+function NaturalNumberOnly(obj)
+{	
+    //Check to see if the counter has been initialized
+    //alert(event.keyCode);
+    
+     if(obj.value=="")  // for a new textbox on Form
+    {
+        clear();
+    }
+    if (window.event.shiftKey)  //Block the special charecter which pressed with shift key
+    {          
+        event.returnValue = false;
+        return false
+    }
+    if(event.keyCode >48 && event.keyCode<=57)//for 1-9 front keys
+    {
+       event.returnValue = true;
+	   return true;
+    }
+    else if(event.keyCode >96 && event.keyCode<=105)//for 1-9 right keys
+    {
+        event.returnValue = true;
+	    return true;
+    }
+  
+   else if(event.keyCode==190 || event.keyCode==110)//for decimals
+    {  
+    
+        if (typeof NumberOnly.counter == 'undefined')
+        {
+            //It has not... perform the initilization
+            NumberOnly.counter = 0;
+        }
+        else
+        {
+            // Do something stupid to indicate the value
+            NumberOnly.counter = NumberOnly.counter+1;
+        }
+    }
+    else if(event.keyCode==37 || event.keyCode==39 || event.keyCode==8 || event.keyCode==46 ||event.keyCode==35 ||event.keyCode==9 )
+    {
+        
+            event.returnValue = true;
+	        return true;
+    }
+    else
+    {
+       event.returnValue = false;
+       return false;
+    }
+     if(NumberOnly.counter > 1)//decimal checking
+      {
+            event.returnValue = false;
+	        return false;
+      }
+      else
+      {
+            event.returnValue = true;
+	        return true;
+      }
+    
+}

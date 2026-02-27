@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">College Master</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.college_master') }}">
+        <input type="hidden" name="college_id" value="{{ edit_college.id if edit_college else '' }}">
+        
+        <tr>
+            <td class="vtext">College Category</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="category" required>
+                    <option value="">-- Select College Category --</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {{ 'selected' if edit_college and edit_college.parent_id == cat.id else '' }}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">College Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="name" maxlength="100" required value="{{ edit_college.name if edit_college else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext">College Code</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="code" maxlength="10" required value="{{ edit_college.code if edit_college else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td></td>
+            <td class="vtext">College Type</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="type" required>
+                    <option value="">-- Select College Type --</option>
+                    {% for t in types %}
+                    <option value="{{ t.id }}" {{ 'selected' if edit_college and edit_college.type_id == t.id else '' }}>{{ t.description }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext">Remarks</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="remarks" maxlength="250" value="{{ edit_college.remarks if edit_college else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td></td>
+            <td class="vtext">City</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="city" required>
+                    <option value="">-- Select City --</option>
+                    {% for c in cities %}
+                    <option value="{{ c.id }}" {{ 'selected' if edit_college and edit_college.city_id == c.id else '' }}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext">Contact Person</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="contact_person" maxlength="50" value="{{ edit_college.contact_person if edit_college else '' }}">
+            </td>
+            <td></td>
+            <td class="vtext">Contact Number</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="contact_number" maxlength="20" value="{{ edit_college.mobile if edit_college else '' }}">
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext">Address</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="address" maxlength="150" value="{{ edit_college.address if edit_college else '' }}">
+            </td>
+            <td></td>
+            <td class="vtext">Website Address</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="website" maxlength="50" value="{{ edit_college.website if edit_college else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext">Email Address</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="email" name="email" maxlength="50" required value="{{ edit_college.email if edit_college else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td colspan="4" style="color: #666; font-style: italic; vertical-align: middle;">* It helps in communication</td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_college else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.college_master') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of College Master Details</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:5%">S. No.</th>
+            <th>College Name</th>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th style="width:10%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for college in colleges %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ college.name }}</td>
+            <td style="text-align: center;">{{ college.code }}</td>
+            <td style="text-align: center;">{{ college.college_type.description if college.college_type else '' }}</td>
+            <td>{{ college.category.name if college.category else '' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.college_master', edit_id=college.id) }}" class="action-icon icon-edit" title="Edit"></a>
+                <a href="{{ url_for('main.delete_college', id=college.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this college?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align: center;">No records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.college_master' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

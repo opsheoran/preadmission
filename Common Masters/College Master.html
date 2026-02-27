@@ -1,0 +1,578 @@
+
+<!-- saved from url=(0055)https://admissions.hau.ac.in/Preadm/College_Master.aspx -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	CCSHAU  :: ADMIN
+</title><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"><meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"><meta name="keywords"><link href="./College Master_files/default.css" type="text/css" rel="stylesheet"><link href="./College Master_files/online.css" type="text/css" rel="stylesheet"><style type="text/css">
+	/* <![CDATA[ */
+	#ctl00_MainMenu img.icon { border-style:none;vertical-align:middle; }
+	#ctl00_MainMenu img.separator { border-style:none;display:block; }
+	#ctl00_MainMenu img.horizontal-separator { border-style:none;vertical-align:middle; }
+	#ctl00_MainMenu ul { list-style:none;margin:0;padding:0;width:auto; }
+	#ctl00_MainMenu ul.dynamic { z-index:1; }
+	#ctl00_MainMenu a { text-decoration:none;white-space:nowrap;display:block; }
+	#ctl00_MainMenu a.static { padding-left:0.15em;padding-right:0.15em; }
+	#ctl00_MainMenu a.popout-dynamic { background:url("../Images/popout.jpg") no-repeat right center;padding-right:14px; }
+	/* ]]> */
+</style><script type="text/javascript" src="./College Master_files/WebResource.axd"></script><script type="text/javascript" src="./College Master_files/WebResource(1).axd"></script><script type="text/javascript" src="./College Master_files/WebResource(2).axd"></script><script type="text/javascript" src="./College Master_files/WebResource(3).axd"></script><script type="text/javascript" src="./College Master_files/WebResource(4).axd"></script><script type="text/javascript" src="./College Master_files/WebResource(5).axd"></script><script type="text/javascript" src="./College Master_files/CommonJS.js.download"></script><script type="text/javascript">
+//<![CDATA[
+var Page_Validators = new Array();
+function WebForm_OnSubmit() {
+    return true;
+}
+//]]></script><script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+var Anthem_FormID = "aspnetForm";
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+var form = Anthem_GetForm();
+if (typeof(form) != "undefined" && form != null) {
+  Anthem_AddEvent(form, "onsubmit", "return WebForm_OnSubmit();");
+}
+//]]></script><script type="text/javascript">
+        // WRITE THE VALIDATION SCRIPT IN THE HEAD TAG.
+        function isNumber(evt) {
+            var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+            if (iKeyCode != 46 && iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+                return false;
+
+            return true;
+        }
+        function ValidateAlpha(evt) {
+            var keyCode = (evt.which) ? evt.which : evt.keyCode
+            if ((keyCode < 65 || keyCode > 90) && (keyCode < 97 || keyCode > 123) && (keyCode != 32) && (keyCode != 8))
+
+                return false;
+            return true;
+        }
+        function IsIntegerOnly(key) {
+            //getting key code of pressed key
+            var keycode = (key.which) ? key.which : key.keyCode;
+            //comparing pressed keycodes
+
+            if (keycode > 31 && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+            else return true;
+        }
+        function blockSpecialChar(e) {
+            var k;
+            document.all ? k = e.keyCode : k = e.which;
+            return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+        }
+
+    </script><script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_ContentPlaceHolder1_ValidationSummary1"));
+var Page_Validators =  new Array(document.getElementById("ctl00_ContentPlaceHolder1_RegularExpressionValidator1"));
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+var ctl00_ContentPlaceHolder1_RegularExpressionValidator1 = document.all ? document.all["ctl00_ContentPlaceHolder1_RegularExpressionValidator1"] : document.getElementById("ctl00_ContentPlaceHolder1_RegularExpressionValidator1");
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.controltovalidate = "ctl00_ContentPlaceHolder1_txtEmailId";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.focusOnError = "t";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.errormessage = "Invalid Email Id !";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.display = "None";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.validationGroup = "G";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.validationexpression = "\\w+([-+.\']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+var ctl00_ContentPlaceHolder1_ValidationSummary1 = document.all ? document.all["ctl00_ContentPlaceHolder1_ValidationSummary1"] : document.getElementById("ctl00_ContentPlaceHolder1_ValidationSummary1");
+ctl00_ContentPlaceHolder1_ValidationSummary1.showmessagebox = "True";
+ctl00_ContentPlaceHolder1_ValidationSummary1.showsummary = "False";
+ctl00_ContentPlaceHolder1_ValidationSummary1.validationGroup = "G";
+//]]>
+</script><script type="text/javascript">new Sys.WebForms.Menu({ element: 'ctl00_MainMenu', disappearAfter: 500, orientation: 'horizontal', tabIndex: 0, disabled: false });</script><script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        //]]>
+</script><script type="text/javascript">
+    $(document).ready(function () {
+        //Caption Sliding (Partially Hidden to Visible)
+        $('.boxgrid.caption').hover(function () {
+            $(".cover", this).stop().animate({ top: '73px' }, { queue: false, duration: 160 });
+        },
+        function () {
+            $(".cover", this).stop().animate({ top: '83px' }, { queue: false, duration: 160 });
+        });
+    });
+</script><script type="text/javascript">
+        $(document).ready(function () {
+            if ($("table").hasClass("table-grid-view")) {
+                $("table.table-grid-view").wrap("<div class='grid-div'></div>");
+            }
+        });
+    </script><script type="text/javascript">
+        var $ = jQuery.noConflict();
+        $(document).ready(function () {
+            $('.navbar-fostrap').click(function () {
+                $('.nav-fostrap').toggleClass('visible');
+            });
+        });
+</script></head>
+<body>
+    <form name="aspnetForm" method="post" action="https://admissions.hau.ac.in/Preadm/College_Master.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./College Master_files/WebResource.axd" type="text/javascript"></script>
+
+<script type="text/javascript">
+//<![CDATA[
+var Anthem_FormID = "aspnetForm";
+//]]>
+</script>
+<script src="./College Master_files/WebResource(6).axd" type="text/javascript"></script>
+<script src="./College Master_files/WebResource(7).axd" type="text/javascript"></script>
+<script src="./College Master_files/WebResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="8039B2D3">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="GWIsMyeKsdYvWvHfaHKjBurpqVa/q4ifwHBiT7Ujd6gi31f9hZEZxeFDvA+d107pF7N5qvoIH48gJy7Z+NEJPvlz/Zok0YsnkYGQoR6vCNa0hmFL0mr64J3VCOqctDImtG5rg5xCkt5xF1oCY4kW0Nvz/QDzwenXVHVslbr8fDn44Xbv0RaBsAQK2SNYSdeuLSz97V2oedgAZqLcZeiOQ3RRxZl4sKQHbz8yswqJcitV80ASpr4wuBhP1B9i+hzmyIhWQQqwf4maiD2llR2p4a4K5ZfIOcyXvwDdXaiEPOBvzOPvdiAgclZBmWWJzB7EWH2JrGVgnVtuk4nIDn8wZoclDxFS7WVyUaLFUUgaunJZR7hUUQpN59WVYD3pG3fAn0eEBU/lDwfl02nqhSV8UxSv2F/y3+yPnQKZERueBmSqT/0fZ4AUSPkJfcdLg5/aPxAZkYgdlhkZ3yUC/eLYonUO6Kf8MYNkMxKItLEot134EZuhB30C1amy97jUVtYdf5dK1RZR+L0D2NmLgydesFTtm6O5MnNkpTzIjWZ2Nj6fv9tHTVVqq5OH1DPJ3EndWth0lXZ3d0ILWwNlpcRxt+5ZyzCgokDl+US9r1psyuUdcUs+8q+CuN3RGeIZSbrNCsYzhKTKUVLR9tmZEVP31c3/cIU3s+QUy5ZIWpCL/jdoUTlNBRoMzb2JU2g5+B9aPfsnbbJtCT2sUca/+3rl8gujvqp9agBR+81MiSkjS7UwuYBsbqZSS1RmIuXFAOSHHZ9ljYACspiY+0HQ4dGnd4vhQdobNNCg0IUAjDagdBHaFfT+OHVjyDOclo1PBY/YBVxkRpTR+OMh6nM8y+wwqF9A/fjMR1ySLLI29g5GPFUES5bR2nUkjACiOHjWQREiIn98xjtJSxiedyoBQZ0kLAkRNshJXnDBCAE+oVMFpdECEtYtSKLv6NFc+uGR0FoS7lSI1oSYuKWJ3kD4Z3UMwYLTZyT1nrd82HkbI/sQC+k3X4p/XA/rZqpQYGuFaWcX9ix357jII2deuwcPf8hdsBgquPeUlbwFfPu4YSbuVvfHECnaHCpq0/9S+KmFCy5fIERY4meELfYjJGLRmXc1IoxICS8VGtWf9NKm/2J2KK0Tm8aU">
+</div>
+        <div id="wrapper">
+            <div class="header">
+                <div class="logo" style="margin-left: 5px; padding-top: 10px;">
+                    
+                    <img src="./College Master_files/ccshau-logo.png">
+
+                </div>
+                <div class="loginf">
+                    
+                    <strong>
+                        <span id="ctl00_lblCampus">CCSHAU  :: ADMIN</span></strong>
+                    <br>
+                    <a href="https://admissions.hau.ac.in/UMM/Admin_Home.aspx?MID=1">HOME</a> |
+                <a href="https://admissions.hau.ac.in/Modules.aspx">MODULES</a> |
+                <a href="https://admissions.hau.ac.in/UMM/ChangePassword.aspx">CHANGE PASSWORD</a> |
+                <a href="https://admissions.hau.ac.in/Online/Documents/User_Manual_Colleges_CCSU.pdf" title="College Help File" target="_blank">HELP</a> |
+
+                <span class="logout"><a href="https://admissions.hau.ac.in/Logout.aspx?State=Out">LOG OUT
+                <span id="ctl00_lblUserName"></span></a></span>
+                </div>
+            </div>
+           <div id="nav">
+                        <div class="nav-bg-fostrap">
+                                <div class="navbar-fostrap"><span></span><span></span><span></span></div>
+                            </div>
+                            <a href="https://admissions.hau.ac.in/Preadm/College_Master.aspx#ctl00_MainMenu_SkipLink"><img alt="Skip Navigation Links" src="./College Master_files/WebResource(8).axd" width="0" height="0" style="border-width:0px;"></a><div class="nav-fostrap" id="ctl00_MainMenu" style="float: left;">
+	<ul class="level1 static" tabindex="0" role="menubar" style="position: relative; width: auto; float: left;">
+		<li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:2" role="menuitem" style="position: relative; float: left;"><a title="Common Masters" class="level1 static highlighted" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Common Masters</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:2" style="display: block; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Session Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_AcademicSession_Mst.aspx" tabindex="-1">Academic session Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Degree Type Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_Type_Mst.aspx" tabindex="-1">Degree Type Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Degree Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_Details.aspx" tabindex="-1">Degree Master</a></li><li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:6" role="menuitem" style="position: relative;"><a title="Degree/Degree Mapping" class="popout-dynamic level2 dynamic" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Degree/Degree Mapping</a><ul class="level3 dynamic" id="ctl00_MainMenu:submenu:6" style="display: none; position: absolute; top: 0px; left: 100%;">
+				<li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:7" role="menuitem" style="position: relative;"><a title="University Degree/Mapping" class="popout-dynamic level3 dynamic" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">University Degree/Mapping</a><ul class="level4 dynamic" id="ctl00_MainMenu:submenu:7" style="display: none; position: absolute; top: 0px; left: 100%;">
+					<li role="menuitem" class="dynamic" style="position: relative;"><a title="University Specialization Master" class="level4 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Specialization_Mst_Details.aspx" tabindex="-1">University Specialization Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map University Degree &amp; Specialization" class="level4 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_SpecializationMapping_mst.aspx" tabindex="-1">Map University Degree &amp; Specialization</a></li>
+				</ul></li><li class="has-popup dynamic" aria-haspopup="ctl00_MainMenu:submenu:11" role="menuitem" style="position: relative;"><a title="Candidate Degree/Mapping" class="popout-dynamic level3 dynamic" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Candidate Degree/Mapping</a><ul class="level4 dynamic" id="ctl00_MainMenu:submenu:11" style="display: none; position: absolute; top: 0px; left: 100%;">
+					<li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Education Qualification Master" class="level4 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Apply_Degree_Mst.aspx" tabindex="-1">Candidate Education Qualification Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Education Specialization Master" class="level4 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Specialization_Mst.aspx" tabindex="-1">Candidate Education Specialization Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map Candidate Education Qualification &amp; Specialization" class="level4 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Qualification_Education_Mapping.aspx" tabindex="-1">Map Candidate Education Qualification &amp; Specialization</a></li>
+				</ul></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map University Degree Specialization with Eligible Candidate Degree " class="level3 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Required_Degree_Spec_Qual_Spec_Mapping.aspx" tabindex="-1">Map University Degree Specialization with Eligible Candidate Degree </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Map College &amp;&amp; University Specialization (for Option Form) " class="level3 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_College_Spec_Mapping.aspx" tabindex="-1">Map College &amp;&amp; University Specialization (for Option Form) </a></li>
+			</ul></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Board Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Board_Mst.aspx" tabindex="-1">Board Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Discipline master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Dicipline_Mst.aspx" tabindex="-1">Discipline master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Religion Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Religion_Mst.aspx" tabindex="-1">Religion Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Category Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StudentCategory_Mst.aspx" tabindex="-1">Student Category Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Previous Exam Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_PreviousExam_Mst.aspx" tabindex="-1">Previous Exam Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Previous Exam Stream Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_PrevExam_Stream_Mst.aspx" tabindex="-1">Previous Exam Stream Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title=" Manage Page Rights" class="level2 dynamic" href="https://admissions.hau.ac.in/UMM/Admin_UserAuthorization.aspx" tabindex="-1"> Manage Page Rights</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Send SMS" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PreAdm_Student_SendSMS.aspx" tabindex="-1">Send SMS</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Attachment Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Attachment_Mst.aspx" tabindex="-1">Attachment Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/College_Master.aspx" tabindex="-1">College Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Degree Mapping" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/College_Degree_Mapping.aspx" tabindex="-1">College Degree Mapping</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Eligiblity Percentage Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Eligiblity_Percentage_LastQualDegree.aspx" tabindex="-1">Eligiblity Percentage Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="College Name" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_College_Mst.aspx" tabindex="-1">College Name</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Main Page Notifications &amp; Links Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_NotificationLink.aspx" tabindex="-1">Main Page Notifications &amp; Links Master</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:34" role="menuitem" style="position: relative; float: left;"><a title="Configuration Process" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Configuration Process</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:34" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Application Fee Config" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ApplicationFormFee_Config.aspx" tabindex="-1">Application Fee Config</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Admission Process Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_AdmissionProcess_Config.aspx" tabindex="-1">Admission Process Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Counselling Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Counselling_Config.aspx" tabindex="-1">Counselling Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Upward Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Student_Upward_Configuration.aspx" tabindex="-1">Student Upward Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Admit card Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Degree_admitCard_Config.aspx" tabindex="-1">Admit Card Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="UG Seat Matrix Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_UGSeatMatrix.aspx" tabindex="-1">UG Seat Matrix Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Roster Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Roaster_Master.aspx" tabindex="-1">Roster Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Instructions Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Instruction_Mst.aspx" tabindex="-1">Instructions Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Allotment Letter Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Allotment_Letter_Master.aspx" tabindex="-1">Allotment Letter Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Duty Letter Configuration" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Duty_Letter_Config.aspx" tabindex="-1">Duty Letter Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Cat_Remuneration_Configuration.aspx" tabindex="-1">Category Remuneration Configuration</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Additional Fee Config" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StudentAdditional_Fee.aspx" tabindex="-1">Student Additional Fee Config</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:48" role="menuitem" style="position: relative; float: left;"><a title="Transactions" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Transactions</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:48" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Data Modification" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/AdminStudent_Edit.aspx" tabindex="-1">Student Data Modification</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Marks Upload" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Candidate_Marks_Entry.aspx" tabindex="-1">Marks Upload and Rank Generation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Transfer Student" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Transfer_Final_Student_to_Academic.aspx" tabindex="-1">Transfer Student</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Apply For Upward" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CutOff_Upward.aspx" tabindex="-1">Apply For Upward</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Counselling Raw Data" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Merit_List_Data.aspx" tabindex="-1">Counselling Raw Data</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Generate Merit/Seat Allotment" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Merit_List_Generation.aspx" tabindex="-1">Generate Merit/Seat Allotment</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Sports Quota Documents Verification " class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_VerificationDocumentsSports.aspx" tabindex="-1">Sports Quota Documents Verification </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="PH Candidate Verifications" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PH_Candidates_Verification.aspx" tabindex="-1">PH Candidates verification</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Manual Merit Entry" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Manual_Merit_Entry.aspx" tabindex="-1">Manual Merit Entry</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:59" role="menuitem" style="position: relative; float: left;"><a title="Invigilator Master" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Invigilator</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:59" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ET_Master.aspx" tabindex="-1">ET Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Exam_Center_Trn.aspx" tabindex="-1">Exam Center Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Copy" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Exam_Center_Copy.aspx" tabindex="-1">Exam Center Copy</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Type Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffType_Mst.aspx" tabindex="-1">Staff Type Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Category Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffCategory_Mst.aspx" tabindex="-1">Staff Category Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_External_Staff_Mst.aspx" tabindex="-1">External Staff Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exemption ET Duties" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Exemption_ET_Duties.aspx" tabindex="-1">Exemption ET Duties</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Staff Duties Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StaffDuties_Mst.aspx" tabindex="-1">Staff Duties Master</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Swap Duties" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Swap_Duties.aspx" tabindex="-1">Swap Duties</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Invigilator Master" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Excel_Print.aspx" tabindex="-1">Invigilator Reports</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Duty Letters" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Duty_Letter.aspx" tabindex="-1">Duty Letters</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:72" role="menuitem" style="position: relative; float: left;"><a title="Seat Allocation Process" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Seat Allocation Process</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:72" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Seat Allotment Details" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/SeatAllotmentReport.aspx" tabindex="-1">Seat Allotment</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Seating Arrangement" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_SeatAllotment_Chart.aspx" tabindex="-1">Seating Arrangement</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Roll No./Admit Card Generation" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Candidate_AdmitCard_Generate.aspx" tabindex="-1">Roll No./Admit Card Generation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ExamCenter_Report.aspx" tabindex="-1">Exam Center Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Exam Center Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_ExamCenterDetail_Rpt.aspx" tabindex="-1">Exam Center Detail Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Seating Arrangement Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_SeatAllotment_Report.aspx" tabindex="-1">Seating Arrangement Report</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:80" role="menuitem" style="position: relative; float: left;"><a title="Reports" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Reports</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:80" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Condidate Export" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/ACD_Candidates_Report.aspx" tabindex="-1">Candidate Export</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate DashBoard" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/ACD_Pre_Admn_DashBoard.aspx" tabindex="-1">Candidate DashBoard</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Room Availability" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_RoomDetails.aspx" tabindex="-1">Room Availability</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate DashBoard(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CounsRevenue_Report.aspx" tabindex="-1">Candidate DashBoard(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates Payment Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Reports/ACD_Candidates_Payment_Report.aspx" tabindex="-1">Candidates Payment Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates Payment Report(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Reports/ACD_Candidates_Payment_Rpt.aspx" tabindex="-1">Candidates Payment Report(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidates List(Counselling)" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_CandidateList_Format.aspx" tabindex="-1">Candidates List(Counselling)</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Check Payment Status" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/CheckOnlinePayment_Status.aspx" tabindex="-1">Check Payment Status</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Candidate Eligible Specialization Report " class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Required_Degree_Spec_Mapping_Report.aspx" tabindex="-1">Candidate Eligible Specialization Report </a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Ex-Student Reports" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_StudentList.aspx" tabindex="-1">Ex-Student Reports</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Last Cutoff Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_LastCutoff_Report.aspx" tabindex="-1">Last Cutoff Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Additional Fee Status" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_AdditionalFeeDetails.aspx" tabindex="-1">Additional Fee Status</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Personal Info Request" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/Modify_PersonalInfoRequest.aspx" tabindex="-1">Personal Info Request</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:95" role="menuitem" style="position: relative; float: left;"><a title="Merit Reports" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Merit Reports</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:95" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Check Documents Uploaded By Candidates" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_VerifyData.aspx" tabindex="-1">Check Documents Uploaded By Candidates</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Filled/Vacant Seat Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_FilledandVacant_SeatReport.aspx" tabindex="-1">Filled/Vacant Seat Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Student Upward Upgradation" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_UpwardUpgradation_Report.aspx" tabindex="-1">Student Upward Upgradation</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Final Seat Allocation Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_FinalSeatAllocation_Report.aspx" tabindex="-1">Final Seat Allocation Report</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="CollegeWise DepartmentWise Report" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/collegewise_departmentwiseAllotment.aspx" tabindex="-1">CollegeWise DepartmentWise Report</a></li>
+		</ul></li><li class="has-popup static" aria-haspopup="ctl00_MainMenu:submenu:102" role="menuitem" style="position: relative; float: left;"><a title="Answer Key" class="level1 static" href="https://admissions.hau.ac.in/UMM/#" tabindex="-1">Answer Key</a><ul class="level2 dynamic" id="ctl00_MainMenu:submenu:102" style="display: none; position: absolute; top: 100%; left: 0px;">
+			<li role="menuitem" class="dynamic" style="position: relative;"><a title="Answer Key Details" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Paper_Key_Admin.aspx" tabindex="-1">Answer Key Details</a></li><li role="menuitem" class="dynamic" style="position: relative;"><a title="Upload AnsWer Key" class="level2 dynamic" href="https://admissions.hau.ac.in/Preadm/PA_Answerkey_mst.aspx" tabindex="-1">Upload Answer Key</a></li>
+		</ul></li>
+	</ul>
+</div><div style="clear: left;"></div><div style="clear: left;"></div><a id="ctl00_MainMenu_SkipLink"></a>
+                    </div>
+            <div id="content">
+                <div class="wr-left" style="width: 100%; padding-right: 0; border-right: none;">
+                    
+    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: left;" class="table">
+         <script type="text/javascript">
+        // WRITE THE VALIDATION SCRIPT IN THE HEAD TAG.
+        function isNumber(evt) {
+            var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+            if (iKeyCode != 46 && iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+                return false;
+
+            return true;
+        }
+        function ValidateAlpha(evt) {
+            var keyCode = (evt.which) ? evt.which : evt.keyCode
+            if ((keyCode < 65 || keyCode > 90) && (keyCode < 97 || keyCode > 123) && (keyCode != 32) && (keyCode != 8))
+
+                return false;
+            return true;
+        }
+        function IsIntegerOnly(key) {
+            //getting key code of pressed key
+            var keycode = (key.which) ? key.which : key.keyCode;
+            //comparing pressed keycodes
+
+            if (keycode > 31 && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+            else return true;
+        }
+        function blockSpecialChar(e) {
+            var k;
+            document.all ? k = e.keyCode : k = e.which;
+            return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+        }
+
+    </script>
+        <tbody><tr>
+            <td class="tableheading" colspan="7">College Master</td>
+        </tr>
+        <tr>
+              <td class="vtext" id="lblCollegeCatagory">College Category</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlCollegeCategory__"><select name="ctl00$ContentPlaceHolder1$D_ddlCollegeCategory" id="ctl00_ContentPlaceHolder1_D_ddlCollegeCategory" class="dropdownlong">
+	<option value="0">-- Select College Category --</option>
+	<option value="2">College of Agricultural Engineering &amp; Technology</option>
+	<option value="1">College of Agriculture</option>
+	<option selected="selected" value="3">College of Basic Sciences &amp; Humanities</option>
+	<option value="21">College of Biotechnology</option>
+	<option value="18">College of Fisheries Science</option>
+	<option value="4">I.C. College of Community Science</option>
+	<option value="20">IBMA Gurugram and COA Hisar</option>
+
+</select></span>&nbsp;*
+            </td>
+            <td></td>
+            <td class="vtext" id="lblCollege" style="width: 12%">College Name</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_R_txtCollege__"><input name="ctl00$ContentPlaceHolder1$R_txtCollege" type="text" value="Centre of Food Science &amp; Technology" maxlength="100" id="ctl00_ContentPlaceHolder1_R_txtCollege" class="textboxlong"></span>*</td>                     
+        </tr>
+        <tr>
+             <td class="vtext" id="lblCollegeCode" style="width: 12%">College Code</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_R_txtCollegeCode__"><input name="ctl00$ContentPlaceHolder1$R_txtCollegeCode" type="text" value="07" maxlength="5" id="ctl00_ContentPlaceHolder1_R_txtCollegeCode" class="textbox" onkeypress="return blockSpecialChar(event);"></span>*
+            </td>
+              <td></td>
+            <td class="vtext" id="lblCollegeType">College Type</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlCollegeType__"><select name="ctl00$ContentPlaceHolder1$D_ddlCollegeType" id="ctl00_ContentPlaceHolder1_D_ddlCollegeType" class="dropdownlong">
+	<option value="0">-- Select College Type --</option>
+	<option selected="selected" value="1">AFFILIATED </option>
+	<option value="2">CONSTITUENT </option>
+	<option value="3">DISTANCE EDUCATION </option>
+
+</select></span>&nbsp;*</td>
+        </tr>
+        <tr>
+            <td class="vtext">Remarks</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtRemarks__"><input name="ctl00$ContentPlaceHolder1$txtRemarks" type="text" maxlength="250" id="ctl00_ContentPlaceHolder1_txtRemarks" class="textboxlong"></span>
+            </td>
+            <td></td>
+            <td class="vtext" id="lblCity">City</td>
+            <td class="colon"></td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_D_ddlCity__"><select name="ctl00$ContentPlaceHolder1$D_ddlCity" id="ctl00_ContentPlaceHolder1_D_ddlCity" class="dropdownlong">
+	<option value="0">-- Select City --</option>
+	<option selected="selected" value="13">Hisar</option>
+	<option value="12">Kerala</option>
+
+</select></span>&nbsp;*
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" id="lblContactPerson" style="width: 12%">Contact Person</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtContactPerson__"><input name="ctl00$ContentPlaceHolder1$txtContactPerson" type="text" maxlength="50" id="ctl00_ContentPlaceHolder1_txtContactPerson" class="textboxlong" onkeypress="return ValidateAlpha(event);"></span></td>
+            <td></td>
+            <td class="vtext" id="lblContactNumber" style="width: 12%">Contact Number</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtContactNumber__"><input name="ctl00$ContentPlaceHolder1$txtContactNumber" type="text" maxlength="10" id="ctl00_ContentPlaceHolder1_txtContactNumber" class="textbox" onkeypress="return IsIntegerOnly(event);"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" id="lblAddress" style="width: 12%">Address</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtAddress__"><input name="ctl00$ContentPlaceHolder1$txtAddress" type="text" value="hisar" maxlength="150" id="ctl00_ContentPlaceHolder1_txtAddress" class="textboxlong"></span>*</td>
+            <td></td>
+            <td class="vtext" id="lblWebsiteAddress" style="width: 12%">Website Address</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtWebsiteAddress__"><input name="ctl00$ContentPlaceHolder1$txtWebsiteAddress" type="text" maxlength="50" id="ctl00_ContentPlaceHolder1_txtWebsiteAddress" class="textbox"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" id="lblEmailId" style="width: 12%">Email Address</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span id="Anthem_ctl00_ContentPlaceHolder1_txtEmailId__"><input name="ctl00$ContentPlaceHolder1$txtEmailId" type="text" value="grewalrb@hau.ernet.in" maxlength="50" id="ctl00_ContentPlaceHolder1_txtEmailId" class="textboxlong"></span>*
+                <span id="Anthem_ctl00_ContentPlaceHolder1_Label1__"><span id="ctl00_ContentPlaceHolder1_Label1"> It helps in communication</span></span>
+                    <span id="ctl00_ContentPlaceHolder1_RegularExpressionValidator1" style="color:Red;display:none;"></span>
+                    <div id="ctl00_ContentPlaceHolder1_ValidationSummary1" style="color:Red;display:none;">
+
+</div>
+            </td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td class="colon"></td>
+            <td colspan="7">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <tbody><tr>
+                        <td>
+                            <span id="Anthem_ctl00_ContentPlaceHolder1_btnSave__"><input type="submit" name="ctl00$ContentPlaceHolder1$btnSave" value="UPDATE" onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$btnSave&#39;,&#39;&#39;,true,&#39;G&#39;,&#39;&#39;,&#39;SAVING...&#39;,true,btnSave_PreCallBack,null,null,true,true);return false;WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolder1$btnSave&quot;, &quot;&quot;, true, &quot;G&quot;, &quot;&quot;, false, false))" id="ctl00_ContentPlaceHolder1_btnSave"></span>
+                        </td>
+                        <td>
+                            <span id="Anthem_ctl00_ContentPlaceHolder1_btnReset__"><input type="submit" name="ctl00$ContentPlaceHolder1$btnReset" value="RESET" onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$btnReset&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;WAIT...&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_btnReset"></span>
+                        </td>
+                        <td colspan="3">
+                            <span id="Anthem_ctl00_ContentPlaceHolder1_lblMsg__"><span id="ctl00_ContentPlaceHolder1_lblMsg" class="lblmessage"></span></span>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: left;">
+                    <tbody><tr>
+                        <td style="border: 0;" class="tablesubheading">List of College(s)</td>
+                        <td style="border: 0; width: 25%;" class="tablesubheading">
+                            
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div id="Anthem_ctl00_ContentPlaceHolder1_dgDetails__"><div class="grid-div"><table class="table-grid-view" cellspacing="1" cellpadding="1" rules="all" border="1" id="ctl00_ContentPlaceHolder1_dgDetails" style="width:100%;border:1px solid #B0B0B0;border-collapse:collapse; margin:15px 0;">
+	<tbody><tr class="header-style">
+		<td align="center">S. No.</td><td align="center">College Name</td><td align="center">College Code</td><td align="center">College Type</td><td align="center">College Category</td><td align="center">EDIT</td><td align="center">DELETE</td>
+	</tr><tr class="dgitem-style" style="background-color:White;">
+		<td align="center" style="width:10%;">1</td><td>Bawal Campus</td><td>03</td><td>AFFILIATED </td><td>College of Agriculture</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl03_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl03_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl03_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl03_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl03$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="color:Black;background-color:#B7C7D7;font-weight:bold;">
+		<td align="center" style="width:10%;">2</td><td>Centre of Food Science &amp; Technology</td><td>07</td><td>AFFILIATED </td><td>College of Basic Sciences &amp; Humanities</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl04_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl04_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl04_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl04_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl04$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:White;">
+		<td align="center" style="width:10%;">3</td><td>College of Agricultural Engineering And Technology</td><td>01</td><td>AFFILIATED </td><td>College of Agricultural Engineering &amp; Technology</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl05_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl05_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl05_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl05_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl05$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+		<td align="center" style="width:10%;">4</td><td>College of Basic Science And Humanities</td><td>05</td><td>AFFILIATED </td><td>College of Basic Sciences &amp; Humanities</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl06_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl06_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl06_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl06_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl06$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:White;">
+		<td align="center" style="width:10%;">5</td><td>College of Biotechnology</td><td>11</td><td>AFFILIATED </td><td>College of Biotechnology</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl07_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl07_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl07_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl07_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl07$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+		<td align="center" style="width:10%;">6</td><td>College of Fisheries Science</td><td>09</td><td>AFFILIATED </td><td>College of Fisheries Science</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl08_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl08_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl08_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl08_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl08$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:White;">
+		<td align="center" style="width:10%;">7</td><td>CSSRI Campus</td><td>10</td><td>AFFILIATED </td><td>College of Agriculture</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl09_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl09_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl09_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl09_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl09$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+		<td align="center" style="width:10%;">8</td><td>Hisar Campus</td><td>02</td><td>AFFILIATED </td><td>College of Agriculture</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl10_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl10_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl10_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl10_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl10$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:White;">
+		<td align="center" style="width:10%;">9</td><td>I.C. College of Community Science</td><td>06</td><td>AFFILIATED </td><td>I.C. College of Community Science</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl11_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl11_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl11_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl11_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl11$lnkDelete--></span>
+                            </td>
+	</tr><tr class="dgitem-style" style="background-color:#F8F8F8;">
+		<td align="center" style="width:10%;">10</td><td>IIWBR Campus</td><td>08</td><td>AFFILIATED </td><td>College of Agriculture</td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl12_lnkEdit__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkEdit--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkEdit&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl12_lnkEdit" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkEdit&#39;,&#39;&#39;)"><img src="./College Master_files/Edit.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkEdit--></span>
+                            </td><td align="center" style="width:10%;">
+                                <span id="Anthem_ctl00_ContentPlaceHolder1_dgDetails_ctl12_lnkDelete__"><!--START:ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkDelete--><a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkDelete&#39;,&#39;&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,btnDelete_PreCallBack,null,null,true,true);return false;" id="ctl00_ContentPlaceHolder1_dgDetails_ctl12_lnkDelete" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkDelete&#39;,&#39;&#39;)"><img src="./College Master_files/Delete.gif" alt="" border="0"></a><!--END:ctl00$ContentPlaceHolder1$dgDetails$ctl12$lnkDelete--></span>
+                            </td>
+	</tr><tr class="pager-style" align="center" style="color:Black;">
+		<td colspan="7"><span>1</span>&nbsp;<a onclick="javascript:Anthem_FireCallBackEvent(this,event,&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl14$ctl01&#39;,&#39;Page$2&#39;,false,&#39;&#39;,&#39;&#39;,&#39;&#39;,true,null,null,null,true,true);return false;" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$dgDetails$ctl14$ctl01&#39;,&#39;&#39;)" style="color:Black;">2</a></td>
+	</tr>
+</tbody></table></div></div>
+            </td>
+        </tr>
+    </tbody></table>
+
+                </div>
+            </div>
+            <br clear="all">
+
+        </div>
+
+        <div class="footermainadmin">
+
+            
+        </div>
+        <span id="ctl00_lblCheck" class="HeadingRed"></span>
+        
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_ContentPlaceHolder1_ValidationSummary1"));
+var Page_Validators =  new Array(document.getElementById("ctl00_ContentPlaceHolder1_RegularExpressionValidator1"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_ContentPlaceHolder1_RegularExpressionValidator1 = document.all ? document.all["ctl00_ContentPlaceHolder1_RegularExpressionValidator1"] : document.getElementById("ctl00_ContentPlaceHolder1_RegularExpressionValidator1");
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.controltovalidate = "ctl00_ContentPlaceHolder1_txtEmailId";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.focusOnError = "t";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.errormessage = "Invalid Email Id !";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.display = "None";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.validationGroup = "G";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_ContentPlaceHolder1_RegularExpressionValidator1.validationexpression = "\\w+([-+.\']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+var ctl00_ContentPlaceHolder1_ValidationSummary1 = document.all ? document.all["ctl00_ContentPlaceHolder1_ValidationSummary1"] : document.getElementById("ctl00_ContentPlaceHolder1_ValidationSummary1");
+ctl00_ContentPlaceHolder1_ValidationSummary1.showmessagebox = "True";
+ctl00_ContentPlaceHolder1_ValidationSummary1.showsummary = "False";
+ctl00_ContentPlaceHolder1_ValidationSummary1.validationGroup = "G";
+//]]>
+</script>
+
+<script type="text/javascript">new Sys.WebForms.Menu({ element: 'ctl00_MainMenu', disappearAfter: 500, orientation: 'horizontal', tabIndex: 0, disabled: false });</script>
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        //]]>
+</script>
+</form>
+
+<script language="javascript" src="./College Master_files/CommonJS.js.download" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Caption Sliding (Partially Hidden to Visible)
+        $('.boxgrid.caption').hover(function () {
+            $(".cover", this).stop().animate({ top: '73px' }, { queue: false, duration: 160 });
+        },
+        function () {
+            $(".cover", this).stop().animate({ top: '83px' }, { queue: false, duration: 160 });
+        });
+    });
+</script>
+        <script src="./College Master_files/jquery.min.js.download"></script>
+    <script>
+        $(document).ready(function () {
+            if ($("table").hasClass("table-grid-view")) {
+                $("table.table-grid-view").wrap("<div class='grid-div'></div>");
+            }
+        });
+    </script>
+
+    <script>
+        var $ = jQuery.noConflict();
+        $(document).ready(function () {
+            $('.navbar-fostrap').click(function () {
+                $('.nav-fostrap').toggleClass('visible');
+            });
+        });
+</script>
+
+</body></html>

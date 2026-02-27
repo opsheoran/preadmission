@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Attachment Master</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.attachment_master') }}">
+        <input type="hidden" name="att_id" value="{{ edit_attachment.id if edit_attachment else '' }}">
+        <tr>
+            <td class="vtext">College Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="college_id">
+                    <option value="">-- Select College Name --</option>
+                    {% for college in colleges %}
+                    <option value="{{ college.id }}" {{ 'selected' if edit_attachment and edit_attachment.fk_college_id == college.id else '' }}>{{ college.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">Degree Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="degree_id">
+                    <option value="">-- Select Degree Name --</option>
+                    {% for degree in degrees %}
+                    <option value="{{ degree.id }}" {{ 'selected' if edit_attachment and edit_attachment.fk_degree_id == degree.id else '' }}>{{ degree.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Attachment Name</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="attachment_name" maxlength="255" required value="{{ edit_attachment.attachment_name if edit_attachment else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td></td>
+            <td class="vtext">Order By</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="number" name="order_by" required value="{{ edit_attachment.order_by if edit_attachment else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Max Size In Mb</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="number" step="0.01" name="max_size_mb" required value="{{ edit_attachment.max_size_mb if edit_attachment else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+            <td></td>
+            <td class="vtext">Is Active?</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_active" {{ 'checked' if not edit_attachment or edit_attachment.is_active else '' }} style="width: auto;">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Mandatory</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_mandatory" {{ 'checked' if edit_attachment and edit_attachment.is_mandatory else '' }} style="width: auto;">
+            </td>
+            <td></td>
+            <td class="vtext">Multiple</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_multiple" {{ 'checked' if edit_attachment and edit_attachment.is_multiple else '' }} style="width: auto;">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_attachment else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.attachment_master') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Awards</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:5%">S.No.</th>
+            <th>Degree Name</th>
+            <th>Attachment Name</th>
+            <th style="width:8%">Size (MB)</th>
+            <th style="width:8%">Mandatory</th>
+            <th style="width:8%">Multiple</th>
+            <th style="width:8%">Active</th>
+            <th style="width:8%">EDIT</th>
+            <th style="width:8%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attachment in attachments %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ attachment.degree.name if attachment.degree else '' }}</td>
+            <td>{{ attachment.attachment_name }}</td>
+            <td style="text-align: center;">{{ attachment.max_size_mb }}</td>
+            <td style="text-align: center;">{{ 'YES' if attachment.is_mandatory else 'NO' }}</td>
+            <td style="text-align: center;">{{ 'YES' if attachment.is_multiple else 'NO' }}</td>
+            <td style="text-align: center;">{{ 'YES' if attachment.is_active else 'NO' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.attachment_master', edit_id=attachment.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.delete_attachment', id=attachment.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" style="text-align: center;">No attachments found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.attachment_master' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

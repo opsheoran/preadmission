@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">University Specialization Master</td>
+        </tr>
+        <form method="POST" action="{{ url_for('main.university_specialization_master') }}">
+        <input type="hidden" name="spec_id" value="{{ edit_spec.id if edit_spec else '' }}">
+        <tr>
+            <td class="vtext">College</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="college_id">
+                    <option value="">-- Select College --</option>
+                    {% for college in colleges %}
+                    <option value="{{ college.id }}" {{ 'selected' if edit_spec and edit_spec.fk_college_id == college.id else '' }}>{{ college.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width:5%"></td>
+            <td class="vtext">Specialization</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="description" maxlength="100" required value="{{ edit_spec.description if edit_spec else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Code</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="code" maxlength="10" value="{{ edit_spec.code if edit_spec else '' }}">
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 10px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_spec else 'SAVE' }}</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.university_specialization_master') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Specialization(s)</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:10%">S.No.</th>
+            <th>Specialization</th>
+            <th>College</th>
+            <th>Code</th>
+            <th style="width:15%">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for spec in specs %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ spec.description }}</td>
+            <td>{{ spec.college.name if spec.college else '' }}</td>
+            <td style="text-align: center;">{{ spec.code if spec.code else '' }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('main.university_specialization_master', edit_id=spec.id) }}" class="action-icon icon-edit" title="Edit"></a>
+                <a href="{{ url_for('main.delete_specialization', id=spec.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Delete?');"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="text-align: center;">No specializations found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'main.university_specialization_master' %}
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

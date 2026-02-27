@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .mod-tp {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f0f0f0;
+        padding: 8px 15px;
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+    }
+    .mod-tp h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+        color: #333;
+    }
+    .moduleblockmain {
+        border: 1px solid #ccc;
+        width: 220px;
+        padding: 20px;
+        text-align: center;
+        background-color: #fff;
+        transition: box-shadow 0.3s;
+        text-decoration: none;
+        display: block;
+        color: #333;
+    }
+    .moduleblockmain:hover {
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+    .moduleblockmain img {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 15px;
+    }
+    .bto {
+        font-weight: bold;
+        font-size: 14px;
+        color: var(--primary-color);
+    }
+</style>
+
+<div class="mod-tp">
+    <h3>MODULES ASSIGNED</h3>
+    <div>
+        <select style="width: 200px;">
+            <option value="CEOO-1" selected>CCSHAU, Hisar</option>
+        </select>
+    </div>
+</div>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <a href="{{ url_for('main.academic_session') }}" class="moduleblockmain">
+        <div>
+            <img src="{{ url_for('static', filename='img/preadmission-module.svg') }}" alt="PreAdmission">
+        </div>
+        <div class="bto">PreAdmission</div>
+    </a>
+</div>
+{% endblock %}
