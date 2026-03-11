@@ -7,12 +7,25 @@
             <td class="tableheading" colspan="7">Board Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.board_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="board_id" value="{{ edit_board.id if edit_board else '' }}">
         <tr>
             <td class="vtext">Description</td>
             <td class="colon">:</td>
             <td class="required-cell">
                 <input type="text" name="description" maxlength="200" required style="width: 100%;" value="{{ edit_board.description if edit_board else '' }}">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Board Category</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <select name="board_cat_id" required>
+                    <option value="1" {{ 'selected' if edit_board and edit_board.fk_board_cat_id == 1 else '' }}>10th</option>
+                    <option value="2" {{ 'selected' if edit_board and edit_board.fk_board_cat_id == 2 else '' }}>12th</option>
+                    <option value="3" {{ 'selected' if edit_board and edit_board.fk_board_cat_id == 3 else '' }}>Both</option>
+                </select>
                 <span class="required-mark">*</span>
             </td>
         </tr>

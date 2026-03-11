@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .registration-steps { display: flex; justify-content: space-between; background: #e0e0e0; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; }
+    .step { padding: 5px 15px; color: #555; }
+    .step.active { background: var(--primary-color); color: white; border-radius: 4px; }
+    .mobile-code { width: 40px; margin-right: 5px; }
+</style>
+
+
+<div class="registration-steps">
+    <div class="step active">Step 1: Personal Details</div>
+    <div class="step">Step 2: Address Details</div>
+    <div class="step">Step 3: Qualification Details</div>
+    <div class="step">Step 4: Upload Document</div>
+    <div class="step">Step 5: Final Submit</div>
+</div>
+
+<form method="POST" action="{{ url_for('transactions.student_edit_part1', id=student_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tr>
+            <td colspan="4" class="tableheading">Personal Information</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 30%;">Academic Session</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="session_id" class="dropdownlong" disabled>
+                    <option value=""> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if student and student.fk_sessionid|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+ *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Candidate's Name</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="name" value="{{ student.s_name if student else '' }}" maxlength="50" class="textboxmedium" required> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Date of Birth</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="dob" value="{{ student.dob if student else '' }}" class="textboxmedium datepicker-input" required> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Father's Name</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="father_name" value="{{ student.f_name if student else '' }}" maxlength="50" class="textboxmedium" required> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Mother's Name</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="mother_name" value="{{ student.m_name if student else '' }}" maxlength="50" class="textboxmedium" required> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Gender</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="gender" class="dropdownlong">
+                    <option value=""> -- Select Gender -- </option>
+                    <option value="M" {% if student and student.gender == 'M' %}selected{% endif %}>MALE</option>
+                    <option value="F" {% if student and student.gender == 'F' %}selected{% endif %}>FEMALE</option>
+                    <option value="T" {% if student and student.gender == 'T' %}selected{% endif %}>TRANSGENDER</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Aadhar Card No.</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="aadhar" value="{{ student.AdharNo if student else '' }}" maxlength="12" class="textboxmedium"> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Religion</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="religion" class="dropdownlong">
+                    <option value=""> -- Select Religion -- </option>
+                    {% for r in religions %}
+                    <option value="{{ r.id }}" {% if student and student.fk_religionid|string == r.id|string %}selected{% endif %}>{{ r.name }}</option>
+                    {% endfor %}
+                </select>
+ *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Candidate Mobile Number</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="text" name="mob_code" value="91" class="textboxmedium mobile-code" disabled>
+                <input type="text" name="mobile" value="{{ student.mobileno if student else '' }}" maxlength="10" class="textboxmedium" required> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Parents Mobile Number</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="text" name="p_mob_code" value="91" class="textboxmedium mobile-code" disabled>
+                <input type="text" name="parents_mobile" value="{{ student.Parents_Mobileno if student else '' }}" maxlength="10" class="textboxmedium" required> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Marital Status</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="marital_status" value="1" id="ms_m" {% if student and student.Marital_Status == 1 %}checked{% endif %}>
+                    <label for="ms_m">Married</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="marital_status" value="0" id="ms_u" {% if not student or student.Marital_Status == 0 %}checked{% endif %}>
+                    <label for="ms_u">Unmarried</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Candidate is a Only Girl Child</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="girl_child" value="1" id="gc_y" {% if student and student.ChildStatus == True %}checked{% endif %}>
+                    <label for="gc_y">Yes</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="girl_child" value="0" id="gc_n" {% if not student or student.ChildStatus == False %}checked{% endif %}>
+                    <label for="gc_n">No</label>
+                </span> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Blood Group</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="blood_group" class="dropdownlong">
+                    <option value="">-- select --</option>
+                    <option value="AP" {% if student and student.Blood_Group == 'AP' %}selected{% endif %}>A +</option>
+                    <option value="AN" {% if student and student.Blood_Group == 'AN' %}selected{% endif %}>A -</option>
+                    <option value="BP" {% if student and student.Blood_Group == 'BP' %}selected{% endif %}>B +</option>
+                    <option value="BN" {% if student and student.Blood_Group == 'BN' %}selected{% endif %}>B -</option>
+                    <option value="OP" {% if student and student.Blood_Group == 'OP' %}selected{% endif %}>O +</option>
+                    <option value="ON" {% if student and student.Blood_Group == 'ON' %}selected{% endif %}>O -</option>
+                    <option value="ABP" {% if student and student.Blood_Group == 'ABP' %}selected{% endif %}>AB +</option>
+                    <option value="ABN" {% if student and student.Blood_Group == 'ABN' %}selected{% endif %}>AB -</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Nationality</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="nationality" value="I" id="nat_i" {% if not student or student.nationality == 'I' %}checked{% endif %}>
+                    <label for="nat_i">Indian</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="nationality" value="O" id="nat_o" {% if student and student.nationality == 'O' %}checked{% endif %}>
+                    <label for="nat_o">Others</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Email Id</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="email" name="email" value="{{ student.email if student else '' }}" maxlength="50" class="textboxmedium" required> *
+                <span style="font-size: 11px; color: #666; margin-left: 10px;">It helps in communication</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Category</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="category" class="dropdownlong">
+                    <option value=""> -- Select Caste Category -- </option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if student and student.fk_stucatid_cast|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+ *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you applying from land Donated Village(LDV)</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ldv" value="1" id="ldv_y" {% if student and student.LDV == True %}checked{% endif %}>
+                    <label for="ldv_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ldv" value="0" id="ldv_n" {% if not student or student.LDV == False %}checked{% endif %}>
+                    <label for="ldv_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Father's/Mother's Guardian</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="guardian" class="dropdownlong">
+                    <option value=""> -- Select -- </option>
+                    <option value="Y" {% if not student or student.FatherGuargian == 'Y' %}selected{% endif %}>Father/Mother</option>
+                    <option value="N" {% if student and student.FatherGuargian == 'N' %}selected{% endif %}>Guardian</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Father's Occupation</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="occupation" value="{{ student.FatherOccupation if student else '' }}" maxlength="100" class="textboxmedium"> *</td>
+        </tr>
+        <tr>
+            <td class="vtext">Annual Income</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="annual_income" class="dropdownlong">
+                    <option value=""> -- Select -- </option>
+                    <option value="1" {% if student and student.AnnualIncome == '1' %}selected{% endif %}> &lt; 1 Lakh</option>
+                    <option value="2" {% if student and student.AnnualIncome == '2' %}selected{% endif %}>1 Lakh- 3 Lakh</option>
+                    <option value="4" {% if student and student.AnnualIncome == '4' %}selected{% endif %}>3 Lakh-6 Lakh</option>
+                    <option value="5" {% if student and student.AnnualIncome == '5' %}selected{% endif %}>6 Lakh-8 Lakh</option>
+                    <option value="6" {% if student and student.AnnualIncome == '6' %}selected{% endif %}>Above 8 Lakh</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Do you fall under Freedom Fighter(FF) Category?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ff_category" value="1" id="ff_y" {% if student and student.FF == True %}checked{% endif %}>
+                    <label for="ff_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ff_category" value="0" id="ff_n" {% if not student or student.FF == False %}checked{% endif %}>
+                    <label for="ff_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Do you fall under Ex-serviceman(ESM) Category?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="esm_category" value="1" id="esm_y" {% if student and student.ESM == True %}checked{% endif %}>
+                    <label for="esm_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="esm_category" value="0" id="esm_n" {% if not student or student.ESM == False %}checked{% endif %}>
+                    <label for="esm_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you the person with Disability?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="disability" value="1" id="ph_y" {% if student and student.PH == True %}checked{% endif %}>
+                    <label for="ph_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="disability" value="0" id="ph_n" {% if not student or student.PH == False %}checked{% endif %}>
+                    <label for="ph_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you from Sports quota?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="sports_quota" value="1" id="sq_y" {% if student and student.SportsQuota == True %}checked{% endif %}>
+                    <label for="sq_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="sports_quota" value="0" id="sq_n" {% if not student or student.SportsQuota == False %}checked{% endif %}>
+                    <label for="sq_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you a ward of University Employee?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ward_emp" value="1" id="ward_y" {% if student and student.IsWard == True %}checked{% endif %}>
+                    <label for="ward_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ward_emp" value="0" id="ward_n" {% if not student or student.IsWard == False %}checked{% endif %}>
+                    <label for="ward_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Resident (Domicile)</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="resident" class="dropdownlong">
+                    <option value="Haryana" {% if not student or student.Resident == 1 %}selected{% endif %}>Haryana</option>
+                    <option value="Other" {% if student and student.Resident != 1 %}selected{% endif %}>Other</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: center; padding-top: 20px;">
+                <button type="submit" class="btn btn-save">SAVE & NEXT >></button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Previous Exam Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.previous_exam_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="exam_id" value="{{ edit_exam.id if edit_exam else '' }}">
         <tr>
             <td class="vtext">Description</td>

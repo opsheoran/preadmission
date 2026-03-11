@@ -1,0 +1,75 @@
+<div style="margin-top: 20px; border: 1px solid #ccc; padding: 15px; background-color: #fff;">
+    <h3 style="color: var(--primary-color); margin-top: 0; font-size: 14px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px;">Uploaded Documents</h3>
+    
+    {% if docs_section1 %}
+    <table class="grid-table" style="margin-bottom: 15px;">
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Attachment Name</th>
+                <th>Max Size (In MB)</th>
+                <th>Attachment File Name</th>
+                <th>Old File Name</th>
+                <th>Description</th>
+                <th>RejectForResubmit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in docs_section1 %}
+            <tr>
+                <td style="text-align: center;">{{ loop.index }}</td>
+                <td>{{ doc.type }} {% if '*' in doc.type|string %}{% else %}<span style="color:red">*</span>{% endif %}</td>
+                <td style="text-align: center;">{{ doc.MaxSizeInMB if doc.MaxSizeInMB else '2.00' }}</td>
+                <td>{% if doc.file_name %}<a href="{{ url_for('merit_reports.download_document', pkid=doc.PkId) }}" target="_blank" style="color: var(--primary-color);">{{ doc.file_name }}</a>{% else %}No file chosen{% endif %}</td>
+                <td>{{ doc.old_name if doc.old_name else '' }}</td>
+                <td>{{ doc.Description }}</td>
+                <td style="text-align: center;"><input type="checkbox" {% if doc.IsReject %}checked{% endif %}></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if docs_section2 %}
+    <table class="grid-table">
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Attachment Name</th>
+                <th>Max Size (In MB)</th>
+                <th>Attachment File Name</th>
+                <th>Old File Name</th>
+                <th>Description</th>
+                <th>RejectForResubmit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in docs_section2 %}
+            <tr>
+                <td style="text-align: center;">{{ loop.index }}</td>
+                <td>{{ doc.InputBasedAlias }} <span style="color:red">*</span></td>
+                <td style="text-align: center;">2.00</td>
+                <td>{% if doc.file_name %}<a href="{{ url_for('merit_reports.download_document', pkid=doc.PkId) }}" target="_blank" style="color: var(--primary-color);">{{ doc.file_name }}</a>{% else %}No file chosen{% endif %}</td>
+                <td>{{ doc.old_name if doc.old_name else '' }}</td>
+                <td>{{ doc.Description }}</td>
+                <td style="text-align: center;"><input type="checkbox" {% if doc.IsReject %}checked{% endif %}></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <div style="margin-top: 15px; background: #f9f9f9; padding: 10px; border: 1px solid #eee;">
+        <div style="margin-bottom: 10px;">
+            <label style="font-weight: bold; font-size: 12px;">Is Reject:</label>
+            <input type="checkbox" style="vertical-align: middle; margin-left: 5px;">
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <label style="font-weight: bold; font-size: 12px; white-space: nowrap;">Reject Reason:</label>
+            <textarea style="width: 400px; height: 60px;"></textarea>
+        </div>
+        <div style="margin-top: 10px;">
+            <button type="button" class="btn btn-save">UPDATE</button>
+        </div>
+    </div>
+</div>

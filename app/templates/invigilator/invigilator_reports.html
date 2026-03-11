@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Invigilator Reports</td>
+        </tr>
+        
+        <form method="POST" action="{{ url_for('invigilator.invigilator_reports') }}" target="_blank">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Select Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="width: 30%; vertical-align: middle;">
+                <select name="session_id" id="session_id" class="dropdownlong" required onchange="filterET()">
+                    <option value="">-- Select Session --</option>
+                    {% for session in sessions %}
+                    <option value="{{ session.id }}" {{ 'selected' if selected_session == session.id else '' }}>{{ session.session_name }}</option>
+                    {% endfor %}
+                </select> <span class="req-star">*</span>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Select ET</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="vertical-align: middle;">
+                <select name="et_id" id="et_id" class="dropdownlong" required>
+                    <option value="">--Select ET--</option>
+                    {% for et in ets %}
+                    <option value="{{ et.id }}" data-session="{{ et.fk_session_id }}" {{ 'selected' if selected_et == et.id else '' }}>{{ et.description }}</option>
+                    {% endfor %}
+                </select> <span class="req-star">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Report Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="width: 30%; vertical-align: middle;">
+                <select name="report_type" id="report_type" class="dropdownlong" required>
+                    <option value="">--Select Report Type--</option>
+                    <option value="1">Main Duty</option>
+                    <option value="2">I-Card(Excel)</option>
+                    <option value="3">Department Wise Report</option>
+                    <option value="4">Category Wise Report</option>
+                    <option value="5">Center Wise Report</option>
+                    <option value="6">Date Wise Attendance</option>
+                    <option value="7">Remuneration Wise Report</option>
+                    <option value="8">Contact List</option>
+                    <option value="9">Control Room Staff List</option>
+                    <option value="10">Duty Assigned Report</option>
+                </select> <span class="req-star">*</span>
+            </td>
+            <td colspan="4"></td>
+        </tr>
+
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="4" style="padding-top: 15px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save" style="padding: 2px 15px;">PRINT REPORT</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<script>
+    function filterET() {
+        var sessionId = document.getElementById('session_id').value;
+        var etSelect = document.getElementById('et_id');
+        var options = etSelect.options;
+        
+        for (var i = 1; i < options.length; i++) {
+            var opt = options[i];
+            if (!sessionId || opt.getAttribute('data-session') === sessionId) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+            }
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        if (document.getElementById('session_id').value) {
+            filterET();
+        }
+    });
+</script>
+
+{% endblock %}

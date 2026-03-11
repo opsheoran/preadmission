@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Student Category Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.student_category_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="cat_id" value="{{ edit_cat.id if edit_cat else '' }}">
         <tr>
             <td class="vtext">Description</td>

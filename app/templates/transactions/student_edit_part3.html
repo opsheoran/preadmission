@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .registration-steps { display: flex; justify-content: space-between; background: #e0e0e0; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; }
+    .step { padding: 5px 15px; color: #555; }
+    .step.active { background: var(--primary-color); color: white; border-radius: 4px; }
+</style>
+
+<script>
+    function calculatePercentage(obj) {
+        var tr = obj.closest('tr');
+        var maxMarks = tr.querySelector('.max-marks').value;
+        var obtMarks = tr.querySelector('.obt-marks').value;
+        var percField = tr.querySelector('.percentage');
+        
+        maxMarks = maxMarks === "" ? 0 : parseFloat(maxMarks);
+        obtMarks = obtMarks === "" ? 0 : parseFloat(obtMarks);
+        
+        if (maxMarks > 0) {
+            var perc = (obtMarks / maxMarks) * 100;
+            percField.value = perc.toFixed(2);
+        } else {
+            percField.value = "0.00";
+        }
+    }
+</script>
+
+<div class="registration-steps">
+    <div class="step">Step 1: Personal Details</div>
+    <div class="step">Step 2: Address Details</div>
+    <div class="step active">Step 3: Qualification Details</div>
+    <div class="step">Step 4: Additional Information</div>
+    <div class="step">Step 5: Marks & Rank / Submit</div>
+</div>
+
+<form method="POST" action="{{ url_for('transactions.student_edit_part3', id=student_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="tableheading" style="margin-left: 0;">Educational Qualification</div>
+
+    <div class="grid-div">
+        <table class="table-grid-view" cellspacing="1" cellpadding="1" rules="all" border="1" style="width:100%; border:1px solid #B0B0B0; border-collapse:collapse; margin:15px 0;">
+            <tbody>
+                <tr class="header-style">
+                    <th scope="col">Sr.No.</th>
+                    <th scope="col">Education</th>
+                    <th scope="col">Year of Passing</th>
+                    <th align="center" scope="col" style="font-family:Calibri;font-size:Small;font-weight:bold;width:15%;">Board / University</th>
+                    <th scope="col">Admission No/Roll No.</th>
+                    <th scope="col">Marks Type</th>
+                    <th scope="col">Max. Marks</th>
+                    <th scope="col">Marks obtained/OGPA</th>
+                    <th scope="col">Percentage</th>
+                    <th scope="col">Subjects</th>
+                </tr>
+                <tr class="dgitem-style" style="background-color:White;">
+                    <td align="center">1</td>
+                    <td align="left">
+                        <span style="font-weight: bold;">Matric</span>
+                    </td>
+                    <td align="center">
+                        <select name="q10_year" style="width:102px;" class="dropdownlong">
+                            <option value=""> -- Select Year -- </option>
+                            {% for y in range(2025, 1969, -1) %}
+                            <option value="{{ y }}" {% if q10 and q10.Year|string == y|string %}selected{% endif %}>{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td align="left">
+                        <select name="q10_board" style="width:200px;" class="dropdownlong">
+                            <option value=""> -- Select Board -- </option>
+                            {% for b in boards %}
+                            <option value="{{ b.id }}" {% if q10 and q10.fk_BoardId|string == b.id|string %}selected{% endif %}>{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td align="left"><input type="text" name="q10_rollno" value="{{ q10.RollNo if q10 else '' }}" class="textboxmedium" style="width: 100%;"></td>
+                    <td align="center">
+                        <select name="q10_marks_type" style="width: 100px;" class="dropdownlong">
+                            <option value="Marks" {% if not q10 or q10.MarksType == 'Marks' %}selected{% endif %}>Marks</option>
+                            <option value="CGPA" {% if q10 and q10.MarksType == 'CGPA' %}selected{% endif %}>CGPA</option>
+                        </select>
+                    </td>
+                    <td align="center"><input type="number" name="q10_max" value="{{ q10.MaxMark if q10 else '' }}" class="textboxmedium max-marks" onkeyup="calculatePercentage(this)" style="width: 80px;"></td>
+                    <td align="center"><input type="number" name="q10_obt" value="{{ q10.ObtOrOGPA if q10 else '' }}" class="textboxmedium obt-marks" onkeyup="calculatePercentage(this)" style="width: 80px;"></td>
+                    <td align="center"><input type="text" name="q10_perc" value="{{ q10.Percentage if q10 else '' }}" class="textboxmedium percentage" style="width: 80px;" readonly></td>
+                    <td align="center"><input type="text" name="q10_subject" value="{{ q10.Subject if q10 else '' }}" class="textboxmedium" style="width: 150px;"></td>
+                </tr>
+                <tr class="dgitem-style" style="background-color:White;">
+                    <td align="center">2</td>
+                    <td align="left">
+                        <span style="font-weight: bold;">10+2/Inter/HSC</span><br>
+                        <select name="q12_spec" style="width:100%; margin-bottom: 5px; margin-top: 5px;" class="dropdownlong">
+                            <option value="">-- Select Specialization --</option>
+                            {% for s in specializations %}
+                            <option value="{{ s.id }}" {% if q12 and q12.fk_SID|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                            {% endfor %}
+                        </select><br>
+                        <select name="q12_result" style="width:100%;" class="dropdownlong">
+                            <option value="Y" {% if q12 and q12.Result_Awaited == False %}selected{% endif %}>Result Declared</option>
+                            <option value="N" {% if not q12 or q12.Result_Awaited == True %}selected{% endif %}>Result Awaited</option>
+                        </select>
+                    </td>
+                    <td align="center">
+                        <select name="q12_year" style="width:102px;" class="dropdownlong">
+                            <option value=""> -- Select Year -- </option>
+                            {% for y in range(2025, 1969, -1) %}
+                            <option value="{{ y }}" {% if q12 and q12.Year|string == y|string %}selected{% endif %}>{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td align="left">
+                        <select name="q12_board" style="width:200px;" class="dropdownlong">
+                            <option value=""> -- Select Board -- </option>
+                            {% for b in boards %}
+                            <option value="{{ b.id }}" {% if q12 and q12.fk_BoardId|string == b.id|string %}selected{% endif %}>{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td align="left"><input type="text" name="q12_rollno" value="{{ q12.RollNo if q12 else '' }}" class="textboxmedium" style="width: 100%;"></td>
+                    <td align="center">
+                        <select name="q12_marks_type" style="width: 100px;" class="dropdownlong">
+                            <option value="Marks" {% if not q12 or q12.MarksType == 'Marks' %}selected{% endif %}>Marks</option>
+                            <option value="CGPA" {% if q12 and q12.MarksType == 'CGPA' %}selected{% endif %}>CGPA</option>
+                        </select>
+                    </td>
+                    <td align="center"><input type="number" name="q12_max" value="{{ q12.MaxMark if q12 else '' }}" class="textboxmedium max-marks" onkeyup="calculatePercentage(this)" style="width: 80px;"></td>
+                    <td align="center"><input type="number" name="q12_obt" value="{{ q12.ObtOrOGPA if q12 else '' }}" class="textboxmedium obt-marks" onkeyup="calculatePercentage(this)" style="width: 80px;"></td>
+                    <td align="center"><input type="text" name="q12_perc" value="{{ q12.Percentage if q12 else '' }}" class="textboxmedium percentage" style="width: 80px;" readonly></td>
+                    <td align="center"><input type="text" name="q12_subject" value="{{ q12.Subject if q12 else '' }}" class="textboxmedium" style="width: 150px;"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <table class="table-form" style="margin-top: 20px;">
+        <tr>
+            <td colspan="4" style="text-align: right; padding-top: 10px; color: #3333FF; font-size: 11px;">*Save this page before moving on the next page.</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: center; padding-top: 20px;">
+                <a href="{{ url_for('transactions.student_edit_part2', id=student_id) }}" class="btn btn-reset" style="text-decoration: none;"><< PREVIOUS</a>
+                <button type="submit" class="btn btn-save" style="margin-left: 10px;">UPDATE</button>
+                <button type="submit" name="action" value="next" class="btn btn-save" style="margin-left: 10px;">NEXT >></button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

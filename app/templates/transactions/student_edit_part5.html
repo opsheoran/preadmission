@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .registration-steps { display: flex; justify-content: space-between; background: #e0e0e0; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; }
+    .step { padding: 5px 15px; color: #555; }
+    .step.active { background: var(--primary-color); color: white; border-radius: 4px; }
+    
+    .id-card-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+    }
+    .id-card {
+        background: #ffffff;
+        width: 400px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .id-card-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a237e 100%);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .id-card-body {
+        padding: 20px;
+        background: #fdfdfd;
+    }
+    .id-card-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    .id-card-row:last-child {
+        border-bottom: none;
+    }
+    .id-card-label {
+        color: #7f8c8d;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        width: 45%;
+    }
+    .id-card-value {
+        color: #2c3e50;
+        font-size: 15px;
+        font-weight: bold;
+        width: 55%;
+        text-align: right;
+    }
+    .id-card-value.highlight {
+        color: #e74c3c;
+        font-size: 18px;
+    }
+    .id-card-footer {
+        background: #f1f2f6;
+        padding: 12px 20px;
+        text-align: center;
+        border-top: 1px solid #e0e0e0;
+    }
+    .special-ranks {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+    }
+    .special-rank-item {
+        text-align: center;
+    }
+    .special-rank-item span {
+        display: block;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-bottom: 3px;
+    }
+    .special-rank-item strong {
+        color: #d35400;
+        font-size: 14px;
+    }
+</style>
+
+<div class="registration-steps">
+    <div class="step">Step 1: Personal Details</div>
+    <div class="step">Step 2: Address Details</div>
+    <div class="step">Step 3: Qualification Details</div>
+    <div class="step">Step 4: Additional Information</div>
+    <div class="step active">Step 5: Marks & Rank / Submit</div>
+</div>
+
+<div class="id-card-wrapper">
+    <div class="id-card">
+        <div class="id-card-header">
+            Candidate Rank Card
+        </div>
+        <div class="id-card-body">
+            <div class="id-card-row">
+                <div class="id-card-label">Roll No.</div>
+                <div class="id-card-value">{{ student.rollno if student and student.rollno else '--' }}</div>
+            </div>
+            <div class="id-card-row">
+                <div class="id-card-label">Entrance Marks</div>
+                <div class="id-card-value highlight" style="color: #2980b9;">{{ student.entrance_marks if student and student.entrance_marks else '--' }}</div>
+            </div>
+            <div class="id-card-row">
+                <div class="id-card-label">Overall Rank</div>
+                <div class="id-card-value highlight">
+                    {{ student.overall_rank if student and student.overall_rank else '--' }}
+                    {% if student and student.overall_rank_count %}<span style="font-size: 12px; color: #95a5a6; font-weight: normal;">({{ student.overall_rank_count }})</span>{% endif %}
+                </div>
+            </div>
+            <div class="id-card-row">
+                <div class="id-card-label">Category</div>
+                <div class="id-card-value" style="color: #27ae60;">{{ student.CategoryName if student and student.CategoryName else '--' }}</div>
+            </div>
+            <div class="id-card-row">
+                <div class="id-card-label">Category Rank</div>
+                <div class="id-card-value">{{ student.cat_rank if student and student.cat_rank else '--' }}</div>
+            </div>
+        </div>
+        <div class="id-card-footer">
+            <div class="special-ranks">
+                <div class="special-rank-item">
+                    <span>ESM Rank</span>
+                    <strong>{{ student.esm_rank if student and student.esm_rank else '-' }}</strong>
+                </div>
+                <div class="special-rank-item">
+                    <span>FF Rank</span>
+                    <strong>{{ student.ff_rank if student and student.ff_rank else '-' }}</strong>
+                </div>
+                <div class="special-rank-item">
+                    <span>PH Rank</span>
+                    <strong>{{ student.ph_rank if student and student.ph_rank else '-' }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('transactions.student_edit_part5', id=student_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+    {% if preferences %}
+    <table class="grid-table" style="margin-top: 20px;">
+        <tr>
+            <td colspan="3" class="tableheading" style="text-align: left; background: #e0e0e0; color: #000;">College Preference</td>
+        </tr>
+        <tr>
+            <th style="width: 80px; text-align: center;">Sr.No.</th>
+            <th style="text-align: left;">College Name</th>
+            <th style="width: 150px; text-align: center;">Preference</th>
+        </tr>
+        {% for pref in preferences %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ pref.CollegeName }}</td>
+            <td style="text-align: center;">{{ pref.Preference }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <table class="table-form" style="margin-top: 20px;">
+        <tr>
+            <td colspan="4" class="tableheading">Personal Information Updation</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 25%;">Are you applying from land Donated Village(LDV)</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ldv" value="1" id="ldv_y" {% if student and student.LDV == True %}checked{% endif %}>
+                    <label for="ldv_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ldv" value="0" id="ldv_n" {% if not student or student.LDV == False %}checked{% endif %}>
+                    <label for="ldv_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Do you fall under Freedom Fighter(FF) Category?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ff_category" value="1" id="ff_y" {% if student and student.FF == True %}checked{% endif %}>
+                    <label for="ff_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ff_category" value="0" id="ff_n" {% if not student or student.FF == False %}checked{% endif %}>
+                    <label for="ff_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Do you fall under Ex-serviceman(ESM) Category?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="esm_category" value="1" id="esm_y" {% if student and student.ESM == True %}checked{% endif %}>
+                    <label for="esm_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="esm_category" value="0" id="esm_n" {% if not student or student.ESM == False %}checked{% endif %}>
+                    <label for="esm_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you the person with Disability?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="disability" value="1" id="ph_y" {% if student and student.PH == True %}checked{% endif %}>
+                    <label for="ph_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="disability" value="0" id="ph_n" {% if not student or student.PH == False %}checked{% endif %}>
+                    <label for="ph_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you a ward of University Employee?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <span class="chkbox">
+                    <input type="radio" name="ward_emp" value="1" id="ward_y" {% if student and student.IsWard == True %}checked{% endif %}>
+                    <label for="ward_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="ward_emp" value="0" id="ward_n" {% if not student or student.IsWard == False %}checked{% endif %}>
+                    <label for="ward_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="padding-top: 15px;">Have you passed your qualifying examination alongwith Matric and 10+2 examinations from the Universities/Board/Institutes located in Haryana?</td>
+            <td class="colon" style="padding-top: 15px;">:</td>
+            <td class="required" style="padding-top: 15px;">
+                <span class="chkbox">
+                    <input type="radio" name="is_haryana_pass" value="1" id="hp_y" {% if student and student.IsHaryanaPass == True %}checked{% endif %}>
+                    <label for="hp_y">Yes</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="is_haryana_pass" value="0" id="hp_n" {% if not student or student.IsHaryanaPass == False %}checked{% endif %}>
+                    <label for="hp_n">No</label>
+                </span>
+                <br><a href="#" style="font-size: 11px; color: #2980b9; text-decoration: none;">Download Annexure V</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="padding-top: 15px;">Are you from Sports quota?<br><span style="font-size: 10px; font-weight: normal; color: #666;">(Upload all of your games participation details and corresponding grading certificates)</span></td>
+            <td class="colon" style="padding-top: 15px;">:</td>
+            <td class="required" style="padding-top: 15px;">
+                <span class="chkbox">
+                    <input type="radio" name="sports_quota" value="1" id="sq_y" {% if student and student.SportsQuota == True %}checked{% endif %}>
+                    <label for="sq_y">YES</label>
+                </span>
+                <span class="chkbox" style="margin-left: 10px;">
+                    <input type="radio" name="sports_quota" value="0" id="sq_n" {% if not student or student.SportsQuota == False %}checked{% endif %}>
+                    <label for="sq_n">NO</label>
+                </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="4" style="text-align: center; padding-top: 20px;">
+                <a href="{{ url_for('transactions.student_edit_part4', id=student_id) }}" class="btn btn-reset" style="text-decoration: none;"><< PREVIOUS</a>
+                <button type="submit" class="btn btn-save" style="margin-left: 10px;">UPDATE</button>
+                <button type="submit" name="action" value="next" class="btn btn-save" style="margin-left: 10px; background-color: #2e7d32; border-color: #1b5e20;">FINAL SUBMIT</button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

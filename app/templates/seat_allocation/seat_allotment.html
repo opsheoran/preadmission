@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* ── compact form controls ── */
+.sa-dd    { width: 170px; }
+.sa-dd-lg { width: 230px; }
+.sa-dd-md { width: 140px; }
+.sa-tb    { width: 75px;  }
+/* ── checkbox scroll box ── */
+.chk-box {
+    border: 1px solid #bbb; border-radius: 3px;
+    height: 85px; width: 240px; overflow-y: auto;
+    padding: 4px 6px; background: #fff; font-size: 11.5px;
+    box-sizing: border-box;
+}
+.chk-box.readonly { background: #f0f4f8; }
+.chk-box label { display: block; margin-bottom: 3px; cursor: pointer; white-space: nowrap; }
+.chk-box label input { margin-right: 4px; }
+.chk-box .empty-msg { color: #999; font-style: italic; font-size: 11px; }
+/* ── section panel ── */
+.sa-panel {
+    background: #f7f9fc; border: 1px solid #dde3ee;
+    border-radius: 4px; padding: 10px 12px; margin-top: 10px;
+}
+/* ── stats bar ── */
+.stats-bar {
+    text-align: center; font-weight: bold; font-size: 12px;
+    color: #c62828; margin: 5px 0 0;
+}
+/* ── spacer row ── */
+.row-gap td { height: 9px; }
+/* ── inline label style ── */
+.vl { text-align: right; font-weight: bold; font-size: 12.5px;
+      color: #333; padding-right: 4px; white-space: nowrap; vertical-align: middle; }
+.cl { text-align: center; font-weight: bold; vertical-align: middle; padding: 0 2px; }
+.fc { vertical-align: middle; }
+/* ── scrollable grid wrapper ── */
+.grid-scroll {
+    max-height: 240px; overflow-y: auto;
+    border: 1px solid #ccc; border-radius: 2px;
+    margin-top: 4px;
+}
+.grid-scroll table.grid-table { margin-top: 0; }
+.grid-scroll thead th { position: sticky; top: 0; z-index: 2; }
+/* ── alloc status grid wrapper ── */
+.alloc-scroll {
+    max-height: 200px; overflow-y: auto;
+    border: 1px solid #ccc; border-radius: 2px;
+    margin-top: 4px;
+}
+.alloc-scroll table.grid-table { margin-top: 0; }
+.alloc-scroll thead th { position: sticky; top: 0; z-index: 2; }
+/* ── total label ── */
+.lbl-total-na { font-weight:bold; color:#c62828; margin:4px 0 0; font-size:12px; }
+.lbl-total-ad { font-weight:bold; color:#2e7d32; margin:4px 0 0; font-size:12px; }
+</style>
+
+<!-- ── Auto-dismiss toast notification ── -->
+<div id="flashToast" style="display:none;position:fixed;top:22px;left:50%;transform:translateX(-50%);
+     z-index:9999;padding:11px 30px;border-radius:5px;font-weight:bold;font-size:13px;
+     color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.28);letter-spacing:0.01em;"></div>
+
+<div class="tableheading">Seat Allotment Generation</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.seat_allotment') }}" id="frmSeatAllot">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 1 – MAIN FILTERS
+════════════════════════════════════════════════════ -->
+<div class="sa-panel">
+<table style="border-collapse:collapse;width:100%;border:none;">
+  <!-- Row 1: Session | Degree Type -->
+  <tr>
+    <td class="vl" style="width:14%;">Session</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc" style="width:35%;">
+      <select id="session_id" name="session_id" class="sa-dd" onchange="fetchBySession()">
+        {% for s in sessions %}
+        <option value="{{ s.id }}" {% if loop.first %}selected{% endif %}>{{ s.session_name }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="width:14%;">Degree Type</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc">
+      <select id="degree_id" name="degree_id" class="sa-dd" onchange="fetchColleges()">
+        <option value="">-- Select Degree --</option>
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="6"></td></tr>
+
+  <!-- Row 2: College Name | Specialization -->
+  <tr>
+    <td class="vl">College Name</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <div class="chk-box" id="college_container">
+        <span class="empty-msg">Select Degree first…</span>
+      </div>
+    </td>
+    <td class="vl">Specialization</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <div class="chk-box" id="spec_container">
+        <span class="empty-msg">Select College first…</span>
+      </div>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="6"></td></tr>
+
+  <!-- Row 3: Exam Type | Subject -->
+  <tr>
+    <td class="vl">Exam Type</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <div class="chk-box" id="et_type_container"></div>
+    </td>
+    <td class="vl">Subject</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <div class="chk-box readonly" id="subject_container">
+        <span class="empty-msg">Select Exam Type…</span>
+      </div>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="6"></td></tr>
+
+  <!-- Row 4: S.No range + View/Reset -->
+  <tr>
+    <td class="vl">From S.No.</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <input type="number" id="from_sno" name="from_sno" class="sa-tb" min="1" placeholder="From">
+    </td>
+    <td class="vl">To S.No.</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <input type="number" id="to_sno" name="to_sno" class="sa-tb" min="1" placeholder="To">
+      &nbsp;
+      <button type="button" class="btn btn-save" id="btnViewNotAllotted" style="margin-left:6px;">View</button>
+      <button type="button" class="btn btn-reset" onclick="location.reload();" style="margin-left:4px;">Reset</button>
+    </td>
+  </tr>
+</table>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     GRID 1 – CANDIDATES NOT ALLOTTED
+════════════════════════════════════════════════════ -->
+<div style="margin-top:10px;">
+  <div class="tableheading" style="font-size:13px;">List of Candidates [Seat Not Alloted]</div>
+  <div class="grid-scroll">
+    <table class="grid-table" id="tblNotAllotted">
+      <thead>
+        <tr>
+          <th style="width:4%;text-align:center;"><input type="checkbox" id="chkAllNA" title="Select All"></th>
+          <th style="width:5%;text-align:center;">S.No.</th>
+          <th style="width:14%;text-align:center;">Registration No.</th>
+          <th style="width:22%;">Candidate Name</th>
+          <th style="width:22%;">Father Name</th>
+          <th>Subject / Specialization</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyNA">
+        <tr><td colspan="6" style="text-align:center;color:#888;padding:14px;">
+          Select filters and click <b>View</b> to load candidates.
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="lbl-total-na" id="lblTotalNA">Total 0 Candidate(s) Found!</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 2 – SEAT ALLOCATION STATUS
+════════════════════════════════════════════════════ -->
+<div class="sa-panel" style="margin-top:12px;">
+<table style="border-collapse:collapse;width:100%;border:none;">
+  <tr>
+    <td class="vl" style="width:10%;">ET Type</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc" style="width:24%;">
+      <select id="et_id" name="et_id" class="sa-dd" onchange="fetchCenters()">
+        <option value="">-- Select ET Type --</option>
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="width:13%;padding-left:10px;">Exam Centre</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc">
+      <select id="exam_center_id" name="exam_center_id" class="sa-dd-lg" onchange="fetchAllocationStatus()">
+        <option value="">-- Select Exam Centre --</option>
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+  </tr>
+</table>
+<div class="stats-bar" id="capacityStats">—</div>
+</div>
+
+<div class="tableheading" style="font-size:13px;margin-top:6px;">SEATS ALLOCATION STATUS :</div>
+<div class="alloc-scroll">
+  <table class="grid-table" id="tblAllocStatus">
+    <thead>
+      <tr>
+        <th style="width:5%;text-align:center;">S.No.</th>
+        <th style="width:34%;">Exam Center</th>
+        <th style="width:10%;text-align:center;">Room No.</th>
+        <th style="width:13%;text-align:center;">Total Capacity</th>
+        <th style="width:13%;text-align:center;">Total Allotted</th>
+        <th style="width:13%;text-align:center;">Available Seats</th>
+        <th style="width:7%;text-align:center;"><input type="checkbox" id="chkAllAS" title="Select All"></th>
+      </tr>
+    </thead>
+    <tbody id="tbodyAS">
+      <tr><td colspan="7" style="text-align:center;color:#888;padding:12px;">
+        Select ET Type &amp; Exam Centre to load data.
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div style="text-align:center;margin:10px 0 4px;">
+  <button type="submit" name="action" value="process_allotment" class="btn btn-save"
+          style="background:#2e7d32;border-color:#1b5e20;">
+    PROCESS SEAT ALLOTMENT
+  </button>
+  <button type="submit" name="action" value="unprocess_allotment" class="btn btn-reset"
+          onclick="return confirm('Are you sure you want to UNPROCESS the selected candidates?');"
+          style="margin-left:15px;background:#c62828;">
+    UNPROCESS
+  </button>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  {% for category, message in messages %}showToast({{ message|tojson }}, {{ 'true' if category=='success' else 'false' }});{% endfor %}
+});
+</script>{% endif %}{% endwith %}
+
+<hr style="border:0;border-top:2px solid #ccc;margin:14px 0;">
+
+<!-- ════════════════════════════════════════════════════
+     SECTION 3 – SEATS ALLOTTED (single-row filter)
+════════════════════════════════════════════════════ -->
+<div class="sa-panel">
+<table style="border-collapse:collapse;width:100%;border:none;">
+  <tr>
+    <td class="vl" style="width:8%;">ET Type</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc" style="width:18%;">
+      <select id="allotted_et_id" name="allotted_et_id" class="sa-dd" onchange="fetchAllottedCenters()">
+        <option value="">-- Select ET Type --</option>
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="width:10%;padding-left:8px;">Exam Centre</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc" style="width:20%;">
+      <select id="allotted_center_id" name="allotted_exam_center_id" class="sa-dd-lg" onchange="fetchAllottedRooms()">
+        <option value="">-- Select Exam Centre --</option>
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="width:10%;padding-left:8px;">Room No.</td>
+    <td class="cl" style="width:1%;">:</td>
+    <td class="fc">
+      <select id="allotted_room_id" name="allotted_room_id" class="sa-dd-md">
+        <option value="">-- All Rooms --</option>
+      </select>
+      &nbsp;
+      <button type="button" class="btn btn-save" id="btnViewAllotted" style="margin-left:6px;">View</button>
+      <button type="button" class="btn btn-reset" onclick="resetAllottedSection();" style="margin-left:4px;">Reset</button>
+    </td>
+  </tr>
+</table>
+</div>
+
+<div class="tableheading" style="font-size:13px;margin-top:6px;">List of Candidates [Seats Alloted]</div>
+<div class="grid-scroll" style="max-height:360px;">
+  <table class="grid-table" id="tblAllotted">
+    <thead>
+      <tr>
+        <th style="width:3%;text-align:center;"><input type="checkbox" id="chkAllAD" title="Select All"></th>
+        <th style="width:4%;text-align:center;">S.No.</th>
+        <th style="width:11%;text-align:center;">Reg. No.</th>
+        <th style="width:17%;">Candidate Name</th>
+        <th style="width:15%;">Father Name</th>
+        <th style="width:13%;">Subject</th>
+        <th style="width:17%;">Exam Centre</th>
+        <th style="width:6%;text-align:center;">Room</th>
+        <th style="width:6%;text-align:center;">Seat No.</th>
+        <th style="width:6%;text-align:center;">Roll No.</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyAD">
+      <tr><td colspan="10" style="text-align:center;color:#888;padding:14px;">
+        Select ET Type and click <b>View</b>.
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="lbl-total-ad" id="lblTotal">Total 0 Candidate(s) Found!</div>
+
+<div style="text-align:center;margin:12px 0 6px;">
+  <button type="submit" name="action" value="generate_allotment_pdf"
+          class="btn btn-save" style="background:#1565c0;border-color:#0d47a1;">
+    PRINT SEAT ALLOTMENT DETAILS (PDF)
+  </button>
+</div>
+</form>
+
+<script>
+/* ── Toast notification ── */
+function showToast(msg, isSuccess) {
+  const t = document.getElementById('flashToast');
+  t.textContent = msg;
+  t.style.background = isSuccess ? '#2e7d32' : '#c62828';
+  t.style.opacity = '1';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() {
+    t.style.transition = 'opacity 0.6s ease';
+    t.style.opacity = '0';
+    setTimeout(function() { t.style.display = 'none'; t.style.transition = ''; }, 650);
+  }, 5000);
+}
+
+(function(){
+"use strict";
+/* ── DOM refs ── */
+const sessionSel     = document.getElementById('session_id');
+const degreeSel      = document.getElementById('degree_id');
+const collegBox      = document.getElementById('college_container');
+const specBox        = document.getElementById('spec_container');
+const etTypeBox      = document.getElementById('et_type_container');
+const subjectBox     = document.getElementById('subject_container');
+const btnViewNA      = document.getElementById('btnViewNotAllotted');
+const tbodyNA        = document.getElementById('tbodyNA');
+const etSel          = document.getElementById('et_id');
+const centerSel      = document.getElementById('exam_center_id');
+const tbodyAS        = document.getElementById('tbodyAS');
+const capacityStats  = document.getElementById('capacityStats');
+const allottedEtSel  = document.getElementById('allotted_et_id');
+const allottedCenSel = document.getElementById('allotted_center_id');
+const allottedRoomSel= document.getElementById('allotted_room_id');
+const btnViewAD      = document.getElementById('btnViewAllotted');
+const tbodyAD        = document.getElementById('tbodyAD');
+const lblTotal       = document.getElementById('lblTotal');
+const lblTotalNA     = document.getElementById('lblTotalNA');
+
+function apiUrl(path){ return '{{ url_for("seat_allocation.seat_allotment") }}'.replace('/seat-allotment','') + path; }
+
+/* ── Cascading Data Loading ── */
+window.fetchBySession = function(){
+  const sid = sessionSel.value;
+  if(!sid) return;
+  fetch(apiUrl(`/api/get_degrees_by_session?session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      degreeSel.innerHTML = '<option value="">-- Select Degree --</option>' +
+        data.map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+    });
+  fetch(apiUrl(`/api/get_et_by_session?session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      const opts = '<option value="">-- Select ET Type --</option>' +
+        data.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+      etSel.innerHTML = opts;
+      allottedEtSel.innerHTML = opts;
+    });
+};
+
+window.fetchColleges = function(){
+  const did = degreeSel.value;
+  collegBox.innerHTML = specBox.innerHTML = '';
+  if(!did) return;
+  fetch(apiUrl(`/api/get_colleges?degree_id=${did}`))
+    .then(r=>r.json()).then(data=>{
+      collegBox.innerHTML = data.map(c=>`<label><input type="checkbox" name="college_id" value="${c.id}" onchange="fetchSpecs()"> ${c.name}</label>`).join('');
+    });
+};
+
+window.fetchSpecs = function(){
+  const did = degreeSel.value;
+  const cids = [...collegBox.querySelectorAll('input:checked')].map(i=>i.value);
+  specBox.innerHTML = '';
+  if(!cids.length) return;
+  let url = apiUrl(`/api/get_specializations?degree_id=${did}`);
+  cids.forEach(id => url += `&college_ids[]=${id}`);
+  fetch(url).then(r=>r.json()).then(data=>{
+    specBox.innerHTML = data.map(s=>`<label><input type="checkbox" name="specialization_id" value="${s.id}"> ${s.name}</label>`).join('');
+  });
+};
+
+window.loadExamTypes = function(){
+  fetch(apiUrl('/api/get_exam_types')).then(r=>r.json()).then(data=>{
+    etTypeBox.innerHTML = data.map(e=>`<label><input type="checkbox" name="exam_type_id" value="${e.id}" onchange="fetchSubjects()"> ${e.name}</label>`).join('');
+  });
+};
+
+window.fetchSubjects = function(){
+  const etids = [...etTypeBox.querySelectorAll('input:checked')].map(i=>i.value);
+  subjectBox.innerHTML = '';
+  if(!etids.length) return;
+  let url = apiUrl(`/api/get_subjects?`);
+  etids.forEach(id => url += `&exam_type_ids[]=${id}`);
+  fetch(url).then(r=>r.json()).then(data=>{
+    subjectBox.innerHTML = data.map(s=>`<label><input type="checkbox" name="subject_id" value="${s.id}" checked disabled> ${s.name}</label>`).join('');
+  });
+};
+
+window.fetchCenters = function(){
+  const etid = etSel.value;
+  centerSel.innerHTML = '<option value="">-- Select Exam Centre --</option>';
+  if(!etid) return;
+  fetch(apiUrl(`/api/get_exam_centers_by_et?et_id=${etid}`))
+    .then(r=>r.json()).then(data=>{
+      centerSel.innerHTML += data.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    });
+};
+
+window.fetchAllottedCenters = function(){
+  const etid = allottedEtSel.value;
+  allottedCenSel.innerHTML = '<option value="">-- Select Exam Centre --</option>';
+  allottedRoomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+  if(!etid) return;
+  fetch(apiUrl(`/api/get_exam_centers_by_et?et_id=${etid}`))
+    .then(r=>r.json()).then(data=>{
+      allottedCenSel.innerHTML += data.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+    });
+};
+
+window.fetchAllottedRooms = function(){
+  const cid = allottedCenSel.value;
+  allottedRoomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+  if(!cid) return;
+  fetch(apiUrl(`/api/get_rooms_by_center?center_id=${cid}`))
+    .then(r=>r.json()).then(data=>{
+      allottedRoomSel.innerHTML += data.map(r=>`<option value="${r.id}">${r.room_no}</option>`).join('');
+    });
+};
+
+/* ── Grid Rendering ── */
+btnViewNA.onclick = () => {
+  const sid = sessionSel.value, did = degreeSel.value;
+  if(!sid || !did) return alert("Select Session and Degree.");
+  const cids = [...collegBox.querySelectorAll('input:checked')].map(i=>i.value);
+  const sids = [...specBox.querySelectorAll('input:checked')].map(i=>i.value);
+  let url = apiUrl(`/api/get_unallotted_candidates?session_id=${sid}&degree_id=${did}`);
+  cids.forEach(id => url += `&college_ids[]=${id}`);
+  sids.forEach(id => url += `&specialization_ids[]=${id}`);
+
+  tbodyNA.innerHTML = '<tr><td colspan="6" align="center" style="padding:14px;color:#555;">Loading…</td></tr>';
+  fetch(url).then(r=>r.json()).then(data=>{
+    document.getElementById('chkAllNA').checked = false;
+    lblTotalNA.textContent = `Total ${data.length} Candidate(s) Found!`;
+    tbodyNA.innerHTML = data.length
+      ? data.map((r,i)=>`<tr>
+          <td align="center"><input type="checkbox" name="cand_na" value="${r.pk_regid}"></td>
+          <td align="center">${i+1}</td>
+          <td align="center">${r.regno}</td>
+          <td>${r.name.trim()}</td>
+          <td>${r.father_name||'-'}</td>
+          <td>${r.subject||'-'}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="6" align="center" style="padding:14px;color:#888;">No candidates found.</td></tr>';
+  });
+};
+
+btnViewAD.onclick = () => {
+  const etid = allottedEtSel.value, cid = allottedCenSel.value, rid = allottedRoomSel.value;
+  if(!etid) return alert("Select ET Type.");
+  tbodyAD.innerHTML = '<tr><td colspan="10" align="center" style="padding:14px;color:#555;">Loading…</td></tr>';
+  fetch(apiUrl(`/api/get_candidates?et_id=${etid}&exam_center_id=${cid}&room_id=${rid}&session_id=${sessionSel.value}`))
+    .then(r=>r.json()).then(data=>{
+      document.getElementById('chkAllAD').checked = false;
+      lblTotal.textContent = `Total ${data.length} Candidate(s) Found!`;
+      tbodyAD.innerHTML = data.length
+        ? data.map((r,i)=>`<tr>
+            <td align="center"><input type="checkbox" name="cand_sel" value="${r.reg_no}"></td>
+            <td align="center">${i+1}</td>
+            <td align="center">${r.reg_no}</td>
+            <td>${r.name.trim()}</td>
+            <td>${r.father_name||'-'}</td>
+            <td>${r.subject||'-'}</td>
+            <td>${r.center}</td>
+            <td align="center">${r.room}</td>
+            <td align="center">${r.seat}</td>
+            <td align="center">${r.roll_no||'-'}</td>
+          </tr>`).join('')
+        : '<tr><td colspan="10" align="center" style="padding:14px;color:#888;">No records found.</td></tr>';
+    });
+};
+
+window.fetchAllocationStatus = function(){
+  const etid = etSel.value, cid = centerSel.value, sid = sessionSel.value;
+  if(!etid || !cid) return;
+  fetch(apiUrl(`/api/get_allocation_status?et_id=${etid}&exam_center_id=${cid}&session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      let totCap=0, totAllot=0, totAvail=0;
+      document.getElementById('chkAllAS').checked = false;
+      tbodyAS.innerHTML = data.map((r,i)=>{
+        totCap+=r.capacity; totAllot+=r.allotted; totAvail+=r.available;
+        return `<tr>
+          <td align="center">${i+1}</td>
+          <td>${r.center}</td>
+          <td align="center">${r.room}</td>
+          <td align="center">${r.capacity}</td>
+          <td align="center">${r.allotted}</td>
+          <td align="center" style="font-weight:bold;color:${r.available>0?'#1565c0':'#c62828'};">${r.available}</td>
+          <td align="center"><input type="checkbox" name="room_sel" value="${r.room_id}"></td>
+        </tr>`;
+      }).join('');
+      capacityStats.textContent = `Total Capacity: ${totCap} | Allotted: ${totAllot} | Available: ${totAvail}`;
+    });
+};
+
+window.resetAllottedSection = function(){
+  allottedEtSel.value = '';
+  allottedCenSel.innerHTML = '<option value="">-- Select Exam Centre --</option>';
+  allottedRoomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+  tbodyAD.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;padding:14px;">Select ET Type and click <b>View</b>.</td></tr>';
+  lblTotal.textContent = 'Total 0 Candidate(s) Found!';
+  document.getElementById('chkAllAD').checked = false;
+};
+
+document.getElementById('chkAllNA').onclick = function(){ document.querySelectorAll('input[name="cand_na"]').forEach(c => c.checked = this.checked); };
+document.getElementById('chkAllAS').onclick = function(){ document.querySelectorAll('input[name="room_sel"]').forEach(c => c.checked = this.checked); };
+document.getElementById('chkAllAD').onclick = function(){ document.querySelectorAll('input[name="cand_sel"]').forEach(c => c.checked = this.checked); };
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadExamTypes();
+  if(sessionSel.value) fetchBySession();
+});
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Check Payment Status</td>
+        </tr>
+        <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Search By</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="search_type" id="search_type">
+                    <option value="1" {% if form_data.search_type == '1' %}selected{% endif %}>By Registration No</option>
+                    <option value="2" {% if form_data.search_type == '2' %}selected{% endif %}>By Payment ID</option>
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;" id="search_label">
+                {% if form_data.search_type == '2' %}Payment / Transaction ID{% else %}Registration No{% endif %}
+            </td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" name="search_value" value="{{ form_data.search_value }}" class="form-control" style="width: 200px;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.check_payment_status') }}'">RESET</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if pay_records %}
+<div class="tablesubheading">Student Pay Details</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Reg No</th>
+            <th>Candidate Name</th>
+            <th>Transaction ID</th>
+            <th>Payment ID</th>
+            <th>Amount (&#8377;)</th>
+            <th>Status</th>
+            <th>Response</th>
+            <th>Payment Date</th>
+            <th>Mode</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in pay_records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center;">{{ row.RegistrationNo }}</td>
+            <td>{{ row.CandidateName }}</td>
+            <td>{{ row.TransactionId }}</td>
+            <td>{{ row.PaymentId }}</td>
+            <td style="text-align: right;">{{ row.Amount }}</td>
+            <td style="text-align: center; font-weight: bold; color: {% if row.PaymentStatus == 'Success' %}green{% else %}red{% endif %};">{{ row.PaymentStatus }}</td>
+            <td>{{ row.ResponseMessage }}</td>
+            <td style="text-align: center;">{{ row.PaymentDate }}</td>
+            <td style="text-align: center;">{{ row.Mode }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if grievance_records %}
+<div class="tablesubheading" style="margin-top: 20px;">Student Grievance Pay Details</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Reg No</th>
+            <th>Candidate Name</th>
+            <th>Transaction ID</th>
+            <th>Payment ID</th>
+            <th>Amount (&#8377;)</th>
+            <th>Status</th>
+            <th>Response</th>
+            <th>Payment Date</th>
+            <th>Mode</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in grievance_records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center;">{{ row.RegistrationNo }}</td>
+            <td>{{ row.CandidateName }}</td>
+            <td>{{ row.TransactionId }}</td>
+            <td>{{ row.PaymentId }}</td>
+            <td style="text-align: right;">{{ row.Amount }}</td>
+            <td style="text-align: center; font-weight: bold; color: {% if row.PaymentStatus == 'Success' %}green{% else %}red{% endif %};">{{ row.PaymentStatus }}</td>
+            <td>{{ row.ResponseMessage }}</td>
+            <td style="text-align: center;">{{ row.PaymentDate }}</td>
+            <td style="text-align: center;">{{ row.Mode }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if request.method == 'POST' and not pay_records and not grievance_records and form_data.search_value %}
+<div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">No Records Found !</div>
+{% endif %}
+
+<script>
+document.getElementById('search_type').addEventListener('change', function() {
+    document.getElementById('search_label').textContent = this.value === '2' ? 'Payment / Transaction ID' : 'Registration No';
+});
+</script>
+{% endblock %}

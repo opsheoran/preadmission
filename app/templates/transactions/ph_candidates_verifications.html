@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block content %}
+<form id="mainForm" method="GET" action="{{ url_for('transactions.ph_candidates_verifications') }}">
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">PH Candidates Verifications</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right;">Academic Session</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 30%;">
+                <select name="session_id" id="session_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0"> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if f_session == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+            <td></td>
+            <td class="vtext" style="width: 15%; text-align: right;">Degree Type</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required">
+                <select name="degree_id" id="degree_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0"> -- Select Degree Type --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Type</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="ph_status" id="ph_status" class="dropdownlong">
+                    <option value="1" selected="selected">PH Candidates</option>
+                </select> *
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">College</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="college_id" id="college_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0">-- ALL --</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if f_college == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="5">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <a href="{{ url_for('transactions.ph_candidates_verifications') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block; text-align: center; line-height: 23px;">RESET</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if records and records|length > 0 %}
+<div class="grid-div" style="max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid #B0B0B0;">
+    <table class="grid-table" style="margin-top: 0; border: none;">
+        <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+            <th style="width: 50px; text-align: center;">S.No.</th>
+            <th style="text-align: left;">Regno</th>
+            <th style="text-align: left;">Candidate Name</th>
+            <th style="text-align: left;">Degree</th>
+            <th style="text-align: left;">College</th>
+            <th style="text-align: left;">Specialization</th>
+            <th style="text-align: left;">PH Students</th>
+            <th style="width: 80px; text-align: center;">EDIT</th>
+        </tr>
+        {% for r in records %}
+        <tr style="background-color: {% if edit_id == r.id|string %}#B7C7D7; font-weight: bold; color: Black;{% elif loop.index is divisibleby 2 %}#F8F8F8{% else %}White{% endif %};">
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page if pagination else loop.index }}</td>
+            <td>{{ r.regno }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.degree }}</td>
+            <td>{{ r.college or '' }}</td>
+            <td>{{ r.specialization or '' }}</td>
+            <td>{{ r.ph_status }}</td>
+            <td style="text-align: center;">
+                <a href="?session_id={{ f_session }}&degree_id={{ f_degree }}&college_id={{ f_college }}&page={{ pagination.page if pagination else 1 }}&edit_id={{ r.id }}" class="action-icon icon-edit" title="Edit">
+                    <img src="{{ url_for('static', filename='img/edit.svg') }}" width="16" height="16" alt="Edit" style="border-width:0px;">
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% if pagination and pagination.pages > 1 %}
+<div class="pagination-container" style="margin-top: 10px; text-align: right;">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('transactions.ph_candidates_verifications', page=pagination.prev_num, session_id=f_session, degree_id=f_degree, college_id=f_college, edit_id=edit_id) }}">Prev</a>
+    {% else %}
+        <span class="disabled">Prev</span>
+    {% endif %}
+    
+    {% for page_num in pagination.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == pagination.page %}
+                <span class="active" style="font-weight: bold; margin: 0 5px;">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('transactions.ph_candidates_verifications', page=page_num, session_id=f_session, degree_id=f_degree, college_id=f_college, edit_id=edit_id) }}" style="margin: 0 5px;">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span class="disabled">...</span>
+        {% endif %}
+    {% endfor %}
+    
+    {% if pagination.has_next %}
+        <a href="{{ url_for('transactions.ph_candidates_verifications', page=pagination.next_num, session_id=f_session, degree_id=f_degree, college_id=f_college, edit_id=edit_id) }}">Next</a>
+    {% else %}
+        <span class="disabled">Next</span>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+
+{% if edit_record %}
+<div class="tablesubheading" style="margin-top: 25px;">Verify PH Candidate - {{ edit_record.regno }}</div>
+<div class="grid-div">
+    <table class="grid-table" style="margin-top: 15px;">
+        <tr style="background-color: #4a534a; color: white;">
+            <th style="width: 40px; text-align: center;">No.</th>
+            <th>Regno</th>
+            <th>Candidate Name</th>
+            <th>Person with Disability in Percentage</th>
+            <th>Person with Disability in Percentage(By SMO)</th>
+            <th>Document Upload</th>
+            <th>File Name</th>
+            <th>Verify/Not Verify</th>
+            <th>Remarks</th>
+            <th style="text-align:center;">Edit</th>
+        </tr>
+        <tr style="background-color: White;">
+            <form method="POST" action="{{ url_for('transactions.ph_candidates_verifications') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="action" value="verify_ph_inline">
+                <input type="hidden" name="reg_id" value="{{ edit_record.id }}">
+                <input type="hidden" name="session_id" value="{{ f_session }}">
+                <input type="hidden" name="degree_id" value="{{ f_degree }}">
+                <input type="hidden" name="college_id" value="{{ f_college }}">
+                <input type="hidden" name="page" value="{{ pagination.page if pagination else 1 }}">
+                
+                <td style="text-align: center; vertical-align: top; padding-top: 5px;">1.</td>
+                <td style="vertical-align: top; padding-top: 5px;">{{ edit_record.regno }}</td>
+                <td style="vertical-align: top; padding-top: 5px;">{{ edit_record.name }}</td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    {% if edit_record.ph_percentage == '1' %}Greater than 40% and Less than 50%
+                    {% elif edit_record.ph_percentage == '2' %}Greater than 50% and Less than 60%
+                    {% elif edit_record.ph_percentage == '3' %}Greater than 60% and Less than 70%
+                    {% elif edit_record.ph_percentage == '4' %}Greater than 70%
+                    {% else %}{{ edit_record.ph_percentage or 'N/A' }}
+                    {% endif %}
+                </td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    <select name="smo_percentage" class="dropdownmedium" style="width: 100%;">
+                        <option value="">--Select --</option>
+                        <option value="1" {% if edit_record.disability == 1 %}selected{% endif %}>Greater than 40% and Less than 50%</option>
+                        <option value="2" {% if edit_record.disability == 2 %}selected{% endif %}>Greater than 50% and Less than 60%</option>
+                        <option value="3" {% if edit_record.disability == 3 %}selected{% endif %}>Greater than 60% and Less than 70%</option>
+                        <option value="4" {% if edit_record.disability == 4 %}selected{% endif %}>Greater than 70%</option>
+                    </select>
+                </td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    <input type="file" name="smo_document" style="width: 150px;">
+                </td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    {% if edit_record.attachment_name %}
+                        <a href="#" target="_blank" style="color: blue; text-decoration: underline; font-size: 11px;">{{ edit_record.attachment_name }}</a>
+                    {% else %}
+                        <span style="color: gray; font-size: 11px;">No File</span>
+                    {% endif %}
+                </td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    <select name="verify_status" class="dropdownmedium" style="width: 100px;">
+                        <option value="2" {% if edit_record.verification_done == '2' or not edit_record.verification_done %}selected{% endif %}>Pending</option>
+                        <option value="1" {% if edit_record.verification_done == '1' %}selected{% endif %}>Verified</option>
+                        <option value="0" {% if edit_record.verification_done == '0' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </td>
+                <td style="vertical-align: top; padding-top: 5px;">
+                    <input type="text" name="verify_remarks" class="textbox" value="{{ edit_record.verification_reason or '' }}" style="width: 100px;">
+                </td>
+                <td style="text-align: center; vertical-align: top; padding-top: 5px;">
+                    <button type="submit" class="btn btn-save" style="width: 60px; height: 20px; font-size: 10px;">UPDATE</button>
+                </td>
+            </form>
+        </tr>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

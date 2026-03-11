@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Duty Letters</td>
+        </tr>
+        
+        <form method="GET" action="{{ url_for('invigilator.duty_letters') }}" id="filterForm">
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Select Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="width: 30%; vertical-align: middle;">
+                <select name="session_id" id="session_id" class="dropdownlong" required onchange="filterET()">
+                    <option value="">-- Select Session --</option>
+                    {% for session in sessions %}
+                    <option value="{{ session.id }}" {{ 'selected' if selected_session == session.id else '' }}>{{ session.session_name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Select ET</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="vertical-align: middle;">
+                <select name="et_id" id="et_id" class="dropdownlong" required>
+                    <option value="">-- Select Entrance Test --</option>
+                    {% for et in ets %}
+                    <option value="{{ et.id }}" data-session="{{ et.fk_session_id }}" {{ 'selected' if selected_et == et.id else '' }}>{{ et.description }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Staff Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="width: 30%; vertical-align: middle;">
+                <select name="staff_type_id" class="dropdownlong">
+                    <option value="">-- Select Staff Type --</option>
+                    {% for type in staff_types %}
+                    <option value="{{ type.id }}" {{ 'selected' if selected_staff_type == type.id else '' }}>{{ type.description }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Staff Category</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required" style="vertical-align: middle;">
+                <select name="category_id" class="dropdownlong">
+                    <option value="">-- Select Staff Category --</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {{ 'selected' if selected_category == cat.id else '' }}>{{ cat.description }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="4" style="padding-top: 15px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">VIEW LETTERS</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('invigilator.duty_letters') }}'" style="margin-left: 10px;">RESET</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if letter_data %}
+<form method="POST" action="{{ url_for('invigilator.download_selected_duty_letters') }}" id="printForm" target="_blank">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="et_id" value="{{ selected_et }}">
+    
+    <div style="margin-top: 15px; text-align: right; padding-right: 10px;">
+        <button type="submit" class="btn btn-save" id="btnPrintSelected">PRINT SELECTED (PDF)</button>
+        <button type="button" class="btn btn-save" onclick="window.open('{{ url_for('invigilator.download_duty_letters_pdf', et_id=selected_et, staff_type_id=selected_staff_type, category_id=selected_category) }}', '_blank')" style="margin-left: 10px;">PRINT ALL (PDF)</button>
+    </div>
+
+    <div id="list-grid" class="tablesubheading" style="margin-top: 10px;">Duty Assignments for Letters</div>
+
+    <table class="grid-table">
+        <thead>
+            <tr style="position: sticky; top: 0; z-index: 1;">
+                <th style="width:5%; text-align: center;">
+                    <input type="checkbox" id="chkAll" onclick="toggleAll(this)">
+                </th>
+                <th style="text-align: left; padding-left: 5px;">Employee Code</th>
+                <th style="text-align: left; padding-left: 5px;">Employee Name</th>
+                <th style="text-align: left; padding-left: 5px;">Department</th>
+                <th style="text-align: left; padding-left: 5px;">Designation</th>
+                <th style="text-align: left; padding-left: 5px;">Staff Category</th>
+                <th style="text-align: left; padding-left: 5px;">Contact No</th>
+                <th style="width:5%; text-align: center;">PRINT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for duty in letter_data %}
+            <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+                <td style="text-align: center;">
+                    <input type="checkbox" name="selected_duties" value="{{ duty.id }}" class="chk-duty">
+                </td>
+                <td style="padding-left: 5px;">{{ duty.emp_id or 'EXT' }}</td>
+                <td style="padding-left: 5px;">{{ duty.staff_name }}</td>
+                <td style="padding-left: 5px;">{{ duty.department }}</td>
+                <td style="padding-left: 5px;">{{ duty.designation }}</td>
+                <td style="padding-left: 5px;">{{ duty.category.description if duty.category else '' }}</td>
+                <td style="padding-left: 5px;">{{ duty.contact_no }}</td>
+                <td style="text-align: center;">
+                    <a href="{{ url_for('invigilator.download_selected_duty_letters') }}?et_id={{ selected_et }}&selected_duties={{ duty.id }}" class="action-icon icon-print" title="Print Letter" target="_blank"></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endif %}
+
+<script>
+    function filterET() {
+        var sessionId = document.getElementById('session_id').value;
+        var etSelect = document.getElementById('et_id');
+        var options = etSelect.options;
+        
+        for (var i = 1; i < options.length; i++) {
+            var opt = options[i];
+            if (!sessionId || opt.getAttribute('data-session') === sessionId) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+            }
+        }
+    }
+    
+    function toggleAll(source) {
+        var checkboxes = document.querySelectorAll('.chk-duty');
+        for(var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        if (document.getElementById('session_id').value) {
+            filterET();
+            var selectedEt = "{{ selected_et or '' }}";
+            if (selectedEt) {
+                document.getElementById('et_id').value = selectedEt;
+            }
+        }
+        
+        // Ensure "Print Selected" does nothing if no checkboxes are checked
+        var printForm = document.getElementById('printForm');
+        if (printForm) {
+            printForm.addEventListener('submit', function(e) {
+                var checked = document.querySelectorAll('.chk-duty:checked');
+                if (checked.length === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one employee to print.');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Attachment Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.attachment_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="att_id" value="{{ edit_attachment.id if edit_attachment else '' }}">
         <tr>
             <td class="vtext">College Name</td>

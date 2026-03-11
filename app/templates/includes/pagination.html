@@ -1,8 +1,18 @@
 {% if pagination and pagination.pages > 1 %}
+{% set merged_args = request.args.to_dict() %}
+{% if extra_kwargs %}
+  {% for k, v in extra_kwargs.items() %}
+    {% if v is not none and v != '' %}
+      {% set _ = merged_args.update({k: v}) %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 <div class="pagination-container">
     {% if pagination.has_prev %}
-        <a href="{{ url_for(endpoint, page=1) }}#list-grid">First</a>
-        <a href="{{ url_for(endpoint, page=pagination.prev_num) }}#list-grid">Prev</a>
+        {% set _ = merged_args.update({'page': 1}) %}
+        <a href="{{ url_for(endpoint, **merged_args) }}#list-grid">First</a>
+        {% set _ = merged_args.update({'page': pagination.prev_num}) %}
+        <a href="{{ url_for(endpoint, **merged_args) }}#list-grid">Prev</a>
     {% else %}
         <span class="disabled">First</span>
         <span class="disabled">Prev</span>
@@ -13,7 +23,8 @@
             {% if pagination.page == page_num %}
                 <span class="active">{{ page_num }}</span>
             {% else %}
-                <a href="{{ url_for(endpoint, page=page_num) }}#list-grid">{{ page_num }}</a>
+                {% set _ = merged_args.update({'page': page_num}) %}
+                <a href="{{ url_for(endpoint, **merged_args) }}#list-grid">{{ page_num }}</a>
             {% endif %}
         {% else %}
             <span class="disabled">...</span>
@@ -21,8 +32,10 @@
     {% endfor %}
 
     {% if pagination.has_next %}
-        <a href="{{ url_for(endpoint, page=pagination.next_num) }}#list-grid">Next</a>
-        <a href="{{ url_for(endpoint, page=pagination.pages) }}#list-grid">Last</a>
+        {% set _ = merged_args.update({'page': pagination.next_num}) %}
+        <a href="{{ url_for(endpoint, **merged_args) }}#list-grid">Next</a>
+        {% set _ = merged_args.update({'page': pagination.pages}) %}
+        <a href="{{ url_for(endpoint, **merged_args) }}#list-grid">Last</a>
     {% else %}
         <span class="disabled">Next</span>
         <span class="disabled">Last</span>

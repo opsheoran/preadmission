@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block content %}
+<form id="mainForm" method="GET" action="{{ url_for('transactions.manual_merit_entry') }}">
+    <table class="table-form">
+        <tr>
+            <td colspan="6" class="tableheading">Manual Merit Entry</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right;">Session</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="session_id" id="session_id" class="dropdownmedium" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0"> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if f_session == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+            <td class="vtext" style="width: 15%; text-align: right;">Degree</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="degree_id" id="degree_id" class="dropdownmedium" onchange="document.getElementById('mainForm').submit();">
+                    <option value="">-- Select Degree --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="4">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <a href="{{ url_for('transactions.manual_merit_entry') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+            </td>
+        </tr>
+        <tr><td colspan="6" class="tdgap"></td></tr>
+        
+        {% if records %}
+        <tr>
+            <td colspan="6">
+                <table class="grid-table" style="margin-top: 15px;">
+                    <tr style="background-color: #4a534a; color: white;">
+                        <th style="width: 50px; text-align: center;">S.No.</th>
+                        <th>Degree</th>
+                        <th>Session</th>
+                        <th>College</th>
+                        <th>Cutoff</th>
+                        <th style="width: 80px; text-align: center;">SELECT</th>
+                    </tr>
+                    {% for r in records %}
+                    <tr style="background-color: {% if context_id == r.id|string %}#B7C7D7; font-weight: bold; color: Black;{% elif loop.index is divisibleby 2 %}#F8F8F8{% else %}White{% endif %};">
+                        <td style="text-align: center;">{{ loop.index }}</td>
+                        <td>{{ r.degree }}</td>
+                        <td>{{ r.session }}</td>
+                        <td>{{ r.college }}</td>
+                        <td>{{ r.cutoff }}</td>
+                        <td style="text-align: center;">
+                            <a href="?session_id={{ f_session }}&degree_id={{ f_degree }}&context_id={{ r.id }}" class="action-icon icon-edit" title="Select">
+                                <img src="{{ url_for('static', filename='img/edit.svg') }}" width="16" height="16" alt="Select" style="border-width:0px;">
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</form>
+
+{% if context_id and merit_context %}
+<form method="POST" action="{{ url_for('transactions.manual_merit_entry') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="session_id" value="{{ f_session }}">
+    <input type="hidden" name="degree_id" value="{{ f_degree }}">
+    <input type="hidden" name="context_id" value="{{ context_id }}">
+    
+    <table border="0" cellpadding="0" cellspacing="0" class="table" width="100%">
+        <tr><td colspan="6" class="tdgap"></td></tr>
+        <tr>
+            <td colspan="6" class="tableheading">Student Details</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Degree</td>
+            <td class="colon">:</td>
+            <td><span>{{ merit_context.degree_name }}</span></td>
+            <td class="vtext" style="width: 15%">Session</td>
+            <td class="colon">:</td>
+            <td><span>{{ merit_context.session_name }}</span></td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">College</td>
+            <td class="colon">:</td>
+            <td><span>{{ merit_context.college_name or '' }}</span></td>
+            <td class="vtext" style="width: 15%">Cutoff</td>
+            <td class="colon">:</td>
+            <td><span>{{ merit_context.cutoff }}</span></td>
+        </tr>
+        <tr>
+            <td class="vtext">Registration No</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input name="reg_no" type="text" class="textbox" value="{{ reg_no or '' }}" style="width:150px;"> *
+            </td>
+            <td colspan="3">
+                <button type="submit" name="action" value="show_student" class="btn btn-save">SHOW</button>
+                <a href="?session_id={{ f_session }}&degree_id={{ f_degree }}&context_id={{ context_id }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endif %}
+
+{% if student_details %}
+<form method="POST" action="{{ url_for('transactions.manual_merit_entry') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="session_id" value="{{ f_session }}">
+    <input type="hidden" name="degree_id" value="{{ f_degree }}">
+    <input type="hidden" name="context_id" value="{{ context_id }}">
+    <input type="hidden" name="reg_no" value="{{ reg_no }}">
+    <input type="hidden" name="reg_id" value="{{ student_details.id }}">
+    <input type="hidden" name="rollno" value="{{ student_details.rollno or '' }}">
+    
+    <table border="0" cellpadding="0" cellspacing="0" class="table" width="100%">
+        <tr><td colspan="6" class="tdgap"></td></tr>
+        <tr>
+            <td colspan="6" class="tableheading">Fill Student Details</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Registration No</td>
+            <td class="colon">:</td>
+            <td><span>{{ student_details.regno }}</span></td>
+            <td class="vtext" style="width: 15%">Candidate Name</td>
+            <td class="colon">:</td>
+            <td><span>{{ student_details.name }}</span></td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Gender</td>
+            <td class="colon">:</td>
+            <td><span>{{ student_details.gender }}</span></td>
+            <td class="vtext" style="width: 15%">Caste Category</td>
+            <td class="colon">:</td>
+            <td><span>{{ student_details.category_name }}</span></td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Rollno</td>
+            <td class="colon">:</td>
+            <td><span>{{ student_details.rollno }}</span></td>
+            <td class="vtext" style="width: 15%">College</td>
+            <td class="colon">:</td>
+            <td><span>{{ merit_context.college_name or '' }}</span></td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Allotted Specialization</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="allotted_spec" class="dropdownmedium">
+                    <option value="">-- Select Specialization --</option>
+                    {% for sp in specializations %}
+                        <option value="{{ sp.id }}">{{ sp.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext" style="width: 15%">Roaster ID</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="roaster_id" class="dropdownmedium">
+                    <option value="">-- Select Roaster --</option>
+                    {% for r in roasters %}
+                        <option value="{{ r }}">{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Allotted Preference</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input name="allotted_pref" type="text" value="1" class="textbox" style="width:200px;">
+            </td>
+            <td class="vtext" style="width: 15%">Allotted Category</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="allotted_cat" class="dropdownmedium">
+                    <option value="">-- Select Category --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%">Remarks</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input name="remarks" type="text" class="textbox" style="width:200px;">
+            </td>
+            <td class="vtext" style="width: 15%">Allotted College</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="allotted_clg" class="dropdownmedium">
+                    <option value="">-- Select College --</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" colspan="6" style="text-align: center; padding-top: 15px;">
+                <button type="submit" name="action" value="save_student" class="btn btn-save">UPDATE</button>
+                <button type="reset" class="btn btn-reset">RESET</button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endif %}
+
+{% if manual_allotted and manual_allotted|length > 0 %}
+<div class="tablesubheading" style="margin-top: 25px;">Manual Allotted Students</div>
+<table class="grid-table">
+    <tr style="background-color: #4a534a; color: white;">
+        <th style="width: 50px; text-align: center;">S.No.</th>
+        <th>Reg. No.</th>
+        <th>Name</th>
+        <th>Rollno</th>
+        <th>Allotted Specialization</th>
+        <th>Allotted Prefrence</th>
+        <th>Allotted Category</th>
+        <th>Allotted College</th>
+        <th style="width: 80px; text-align: center;">DELETE</th>
+    </tr>
+    {% for row in manual_allotted %}
+    <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+        <td style="text-align: center;">{{ loop.index }}</td>
+        <td>{{ row.regno }}</td>
+        <td>{{ row.name }}</td>
+        <td>{{ row.rollno }}</td>
+        <td>{{ row.spec or '--' }}</td>
+        <td>{{ row.pref or '--' }}</td>
+        <td>{{ row.category or '--' }}</td>
+        <td>{{ row.college or '--' }}</td>
+        <td style="text-align: center;">
+            <form method="POST" action="{{ url_for('transactions.manual_merit_entry') }}" style="display:inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="session_id" value="{{ f_session }}">
+                <input type="hidden" name="degree_id" value="{{ f_degree }}">
+                <input type="hidden" name="context_id" value="{{ context_id }}">
+                <button type="submit" name="action" value="delete_{{ row.id }}" onclick="return confirm('Are you sure you want to delete this record?');" style="background:none;border:none;cursor:pointer;" class="action-icon icon-delete" title="Delete">
+                    <img src="{{ url_for('static', filename='img/delete.svg') }}" width="16" height="16" alt="Delete" style="border-width:0px;">
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

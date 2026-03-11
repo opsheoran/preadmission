@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="GET" action="{{ url_for('transactions.apply_for_upward') }}">
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">Apply For Upward</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Session</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="session_id" class="dropdownlong">
+                    <option value="">--Select--</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if (f_session and f_session == s.id|string) or (not f_session and loop.first) %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">College Stream Name</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="stream_id" id="stream_id" class="dropdownlong" onchange="fetchCampuses(this.value)">
+                    <option value="">--Select--</option>
+                    {% for st in streams %}
+                        <option value="{{ st.id }}" {% if f_stream == st.id|string %}selected{% endif %}>{{ st.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">College Name</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="college_id" id="college_id" class="dropdownlong" onchange="fetchDegrees(this.value)">
+                    <option value="">--Select--</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if f_college == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">Degree Type</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="degree_id" id="degree_id" class="dropdownlong">
+                    <option value="">--Select--</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Registration No.</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input name="reg_no" type="text" maxlength="15" value="{{ f_reg or '' }}" class="textboxmedium">
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">CutOff</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="cutoff" class="dropdownlong">
+                    <option value="">--Select--</option>
+                    {% for i in cutoffs %}
+                    <option value="{{ i }}" {% if f_cutoff == i|string %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Preference Above 1</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="checkbox" name="pref_above_1" value="1" {% if f_pref == '1' %}checked{% endif %}>
+            </td>
+            <td colspan="4"></td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" name="action" value="view" class="btn btn-save">VIEW</button>
+                <a href="{{ url_for('transactions.apply_for_upward') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+                <button type="submit" name="action" value="apply" class="btn btn-save" style="margin-left: 10px;">Apply For Upward</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if show_grids %}
+    <div class="tablesubheading">Student Eligible For Upward</div>
+    <table class="grid-table" style="margin-bottom: 20px;">
+        <tr>
+            <th style="width: 50px; text-align: center;">S.No.</th>
+            <th>Registration No</th>
+            <th>Roll No</th>
+            <th>Student Name</th>
+            <th>Father Name</th>
+            <th>Mobile No</th>
+            <th>Degree</th>
+            <th>Allotted Specialisation</th>
+            <th>Sports Quota</th>
+            <th>Is Sports Verified</th>
+            <th>Allotted Preference</th>
+            <th>Process Status</th>
+            <th>Remarks</th>
+            <th>Withdrawal Cutoff</th>
+        </tr>
+        {% for r in eligible_records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ r.regno }}</td>
+            <td>{{ r.rollno }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.father_name }}</td>
+            <td>{{ r.mobile }}</td>
+            <td>{{ r.degree }}</td>
+            <td>{{ r.specialization }}</td>
+            <td>{{ 'Yes' if r.sports_quota else ' ' }}</td>
+            <td>{{ 'Yes' if r.sports_verified else ' ' }}</td>
+            <td>{{ r.allotted_preference }}</td>
+            <td>
+                <select name="process_status_{{ r.id }}" class="dropdownsmall">
+                    <option value="0">-- Select Status--</option>
+                    <option value="1">Upward</option>
+                    <option value="2">Withdrawl</option>
+                    <option value="3">Rejected</option>
+                    <option value="4">Not Reported</option>
+                </select>
+            </td>
+            <td><input type="text" name="remarks_{{ r.id }}" class="textboxsmall" style="width: 100px;"></td>
+            <td>
+                <select name="withdrawal_cutoff_{{ r.id }}" class="dropdownsmall">
+                    <option value="">-- Select Cutoff--</option>
+                    {% for i in cutoffs %}
+                    <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="14" style="text-align: center;">No records found.</td></tr>
+        {% endfor %}
+    </table>
+
+    <div class="tablesubheading">Student Applied For Upward</div>
+    <table class="grid-table">
+        <tr>
+            <th style="width: 50px; text-align: center;">S.No.</th>
+            <th>Registration No</th>
+            <th>Roll No</th>
+            <th>Student Name</th>
+            <th>Father Name</th>
+            <th>Mobile No</th>
+            <th>Degree</th>
+            <th>Allotted Specialisation</th>
+            <th>Sports Quota</th>
+            <th>Is Sports Verified</th>
+            <th>Process Status</th>
+            <th>Process Remarks</th>
+            <th style="width: 50px; text-align: center;">PRINT</th>
+            <th style="width: 50px; text-align: center;">DELETE</th>
+        </tr>
+        {% for r in applied_records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ r.regno }}</td>
+            <td>{{ r.rollno }}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.father_name }}</td>
+            <td>{{ r.mobile }}</td>
+            <td>{{ r.degree }}</td>
+            <td>{{ r.specialization }}</td>
+            <td>{{ 'Yes' if r.sports_quota else ' ' }}</td>
+            <td>{{ 'Yes' if r.sports_verified else ' ' }}</td>
+            <td>{{ r.status }}</td>
+            <td>{{ r.remarks }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('transactions.print_admission_letter', reg_id=r.id) }}" target="_blank" class="action-icon icon-edit" title="Print Admission Letter" style="text-decoration: none; font-size: 16px;">🖨️</a>
+            </td>
+            <td style="text-align: center;">
+                <a href="#" class="action-icon icon-delete" title="Delete"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="14" style="text-align: center;">No records found.</td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+<script>
+    function fetchCampuses(stream_id) {
+        var campusSelect = document.getElementById('college_id');
+        campusSelect.innerHTML = '<option value="">--Select--</option>';
+        document.getElementById('degree_id').innerHTML = '<option value="">--Select--</option>';
+        if (stream_id) {
+            fetch('/transactions/api/get-campuses-by-stream/' + stream_id)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(function(campus) {
+                        var option = document.createElement('option');
+                        option.value = campus.id;
+                        option.textContent = campus.name;
+                        campusSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching campuses:', error));
+        }
+    }
+
+    function fetchDegrees(college_id) {
+        var degreeSelect = document.getElementById('degree_id');
+        degreeSelect.innerHTML = '<option value="">--Select--</option>';
+        if (college_id) {
+            fetch('/transactions/api/get-degrees-by-college/' + college_id)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(function(degree) {
+                        var option = document.createElement('option');
+                        option.value = degree.id;
+                        option.textContent = degree.name;
+                        degreeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching degrees:', error));
+        }
+    }
+</script>
+{% endblock %}

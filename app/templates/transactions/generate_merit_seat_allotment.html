@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block content %}
+<form id="meritForm" method="POST" action="{{ url_for('transactions.generate_merit_seat_allotment') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">Generate Merit/Seat Allotment</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right;">Session</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="session_id" class="dropdownmedium" required onchange="document.getElementById('meritForm').submit();">
+                    <option value="0"> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if (f_session and f_session == s.id|string) or loop.first %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                *
+            </td>
+            <td class="vtext" style="width: 15%; text-align: right;">Degree</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="degree_id" id="degree_id" class="dropdownmedium" required onchange="document.getElementById('meritForm').submit();">
+                    <option value="">-- Select Degree --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+                *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">College</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="college_id" id="college_id" class="dropdownmedium" onchange="document.getElementById('meritForm').submit();">
+                    <option value="0"> -- Select College -- </option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if f_college == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext" style="text-align: right;">Cutoff</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="cutoff" class="dropdownmedium" onchange="document.getElementById('meritForm').submit();">
+                    <option value="0">--Select CutOff--</option>
+                    {% for i in cutoffs %}
+                    <option value="{{ i }}" {% if f_cutoff == i|string %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">Merit Type</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <table border="0" style="color:Black;">
+                    <tr>
+                        <td>
+                            <span>
+                                <input type="radio" name="merit_type" value="S" id="merit_s" {% if f_merit_type == 'S' or not f_merit_type %}checked="checked"{% endif %}>
+                                <label for="merit_s">System Generated</label>
+                            </span>
+                        </td>
+                        <td>
+                            <span>
+                                <input type="radio" name="merit_type" value="M" id="merit_m" {% if f_merit_type == 'M' %}checked="checked"{% endif %}>
+                                <label for="merit_m">Manual</label>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="4">
+                <button type="submit" name="action" value="process" class="btn btn-save">PROCESS MERIT</button>
+                <a href="{{ url_for('transactions.generate_merit_seat_allotment') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" class="tdgap"></td>
+        </tr>
+    </table>
+</form>
+
+{% if records %}
+    <table class="grid-table" style="margin-top: 15px;">
+        <tr style="background-color: #4a534a; color: white;">
+            <th style="width: 50px; text-align: center;">S.No.</th>
+            <th>Session</th>
+            <th>College</th>
+            <th>Degree</th>
+            <th>Cutoff</th>
+            <th>Merit Type</th>
+            <th style="width: 50px; text-align: center;">DELETE</th>
+            <th style="width: 50px; text-align: center;">EXPORT</th>
+            <th style="width: 50px; text-align: center;">PRINT</th>
+            <th style="width: 150px; text-align: center;">Import For Manual Merit</th>
+        </tr>
+        {% for r in records %}
+        <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ r.session }}</td>
+            <td>{{ r.college or '' }}</td>
+            <td>{{ r.degree }}</td>
+            <td>{{ r.cutoff }}</td>
+            <td>{{ r.merit_type }}</td>
+            <td style="text-align: center;">
+                <a href="#" class="action-icon icon-delete" title="Delete"><img src="{{ url_for('static', filename='img/delete.svg') }}" width="16" height="16" alt="Delete" style="border-width:0px;"></a>
+            </td>
+            <td style="text-align: center;">
+                <button type="submit" form="meritForm" name="action" value="export_record_{{ r.id }}" style="background:none; border:none; cursor:pointer;" title="EXPORT SEAT ALLOTMENT">
+                    <span style="font-size: 16px;">⬇️</span>
+                </button>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" style="background:none; border:none; cursor:pointer;" title="PRINTDATA">
+                    <span style="font-size: 16px;">🖨️</span>
+                </button>
+            </td>
+            <td style="text-align: center;">
+                <button type="button" style="background:none; border:none; cursor:pointer;" title="Import For Manual Merit">
+                    <span style="font-size: 16px;">⬇️</span>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+<script>
+    function fetchColleges(degree_id) {
+        var collegeSelect = document.getElementById('college_id');
+        collegeSelect.innerHTML = '<option value="0"> -- Select College -- </option>';
+        if (degree_id) {
+            fetch('/transactions/api/get-colleges-by-degree/' + degree_id)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(function(college) {
+                        var option = document.createElement('option');
+                        option.value = college.id;
+                        option.textContent = college.name;
+                        collegeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching colleges:', error));
+        }
+    }
+</script>
+{% endblock %}

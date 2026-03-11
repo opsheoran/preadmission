@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Candidates List (Counselling)</td>
+        </tr>
+        <form method="POST" id="candidateListForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="session_id" class="form-control">
+                    <option value="0">-- Select --</option>  
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="degree_id" class="form-control">
+                    <option value="0">-- Select --</option>  
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_id|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <input type="hidden" name="action" id="form_action" value="search">
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='search';">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_list_counselling') }}'">RESET</button>
+                <button type="submit" class="btn btn-save" style="background-color: #17a2b8; border-color: #17a2b8;" onclick="document.getElementById('form_action').value='export';">EXPORT TO EXCEL</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Counselling Candidates List</div>
+<div style="text-align: right; font-weight: bold; margin-bottom: 5px; font-size: 11px; color: #1e293b;">
+    Total {{ records|length }} Candidate Found!
+</div>
+<div style="overflow-x: auto;">
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No.</th>
+            <th>Registration No</th>
+            <th>Roll No</th>
+            <th>Candidate Name</th>
+            <th>Father Name</th>
+            <th>Category</th>
+            <th>Obtain Marks</th>
+            <th>Overall Rank</th>
+            <th>Allotted College</th>
+            <th>Allotted Specialization</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--theme-primary);">{{ row.regno }}</td>
+            <td style="text-align: center;">{{ row.rollno }}</td>
+            <td>{{ row.CandidateName }}</td>
+            <td>{{ row.FatherName }}</td>
+            <td style="text-align: center;">{{ row.Category }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ row.ObtainMarks }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ row.overallR }}</td>
+            <td>{{ row.AllottedCollegeName }}</td>
+            <td>{{ row.AllottedSpecialisation }}</td>        
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+    {% if request.method == 'POST' %}
+    <div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">No Records Found !</div>
+    {% endif %}
+{% endif %}
+{% endblock %}

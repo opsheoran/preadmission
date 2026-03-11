@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1.5cm 1.5cm 1.5cm 1.5cm; /* Reduced from 2cm/2.5cm to fit content on single page */
+        }
+        body {
+            font-family: Verdana, sans-serif;
+            font-size: 9pt;
+            line-height: 1.35;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        p { margin-top: 5px; margin-bottom: 5px; }
+        .bold { font-weight: bold; }
+        .justified { text-align: justify; }
+        .indented { padding-left: 35px; }
+        
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table.info-table td {
+            vertical-align: top;
+            padding: 2px 0;
+        }
+        
+        ol {
+            padding-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: justify;
+        }
+        li {
+            margin-bottom: 3px;
+        }
+        
+        .custom-list {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: justify;
+        }
+        .custom-list div {
+            margin-bottom: 3px;
+        }
+        
+    </style>
+</head>
+<body>
+    {% for duty in letter_data %}
+        <div>
+            <p>From</p>
+            <p style="padding-left: 35px;">Registrar-cum-Coordinator, {{ et.description if et else 'ET-I (2025-26)' }}<br>CCS HAU, Hisar</p>
+
+            <p style="margin-top: 25px;">To</p>
+            <p style="padding-left: 35px;" class="bold">{{ duty.staff_name }}<br>{{ duty.designation }}</p>
+
+            <p style="margin-top: 30px;" class="bold">
+                No. COE/ET-1/2025/475-1475<br>
+                Dated: {{ now.strftime('%d.%m.%Y') }}
+            </p>
+
+            <p style="margin-top: 20px;"><span class="bold">Subject: Duty Letter, {{ et.description if et else 'ET-I (2025-26)' }}</span></p>
+
+            <p style="margin-top: 15px;">Dear Colleague,</p>
+
+            <p class="justified indented">
+                I have been authorized by the Vice Chancellor, CCS HAU, Hisar to coordinate the conduct 
+                and evaluation work of {{ et.description if et else 'ET-I (2025-26)' }} scheduled to be held on <span class="bold">{{ et.dated.strftime('%d.%m.%Y') if et and et.dated else '28.06.2025' }}</span>. In this connection, 
+                you have been detailed for duty as <span class="bold">{{ duty.category.description if duty.category else 'Invigilator' }}</span> in <span class="bold">{{ duty.exam_center.name if duty.exam_center else 'NEW LAHORIA VIDYA MANDIR SENIOR SECONDARY SCHOOL, HISAR' }}</span> on <span class="bold">{{ et.dated.strftime('%d.%m.%Y') if et and et.dated else '28.06.2025' }}</span> at 
+                <span class="bold">8:00 a.m.</span> onwards till the completion of this test.
+            </p>
+
+            <p class="justified indented" style="margin-top:10px;">
+                For this assignment you will be paid honorarium as per approved rates of the 
+                University.
+            </p>
+
+            <p class="justified indented bold" style="margin-top:10px;">
+                Please intimate personally to the office of the undersigned if your ward/blood 
+                relative is appearing in the test.
+            </p>
+
+            <p class="justified indented bold" style="margin-top:10px;">
+                You are also requested not to carry mobile phone etc. in the examination centre on 
+                the day of entrance test.
+            </p>
+
+            <p class="justified indented" style="margin-top:10px;">
+                You may contact <span class="bold">Dr. Somveer, Supdt. (Control Room)</span> in person for any clarification or 
+                additional information. The telephone numbers are:-
+            </p>
+
+            <table style="width:100%; border:none; margin-left:35px; margin-top: 10px;">
+                <tr>
+                    <td style="width:20%; border:none; padding:1px;">COE</td>
+                    <td style="width:3%; border:none; padding:1px;">-</td>
+                    <td style="width:77%; border:none; padding:1px;">01662 - 289515, 255310, or 255501, 94660 07435</td>
+                </tr>
+                <tr>
+                    <td style="border:none; padding:1px;">Supdt. - (Control Room)</td>
+                    <td style="border:none; padding:1px;"></td>
+                    <td style="border:none; padding:1px;">9992911570</td>
+                </tr>
+            </table>
+
+            <p class="justified indented bold" style="margin-top: 15px;">
+                As per the orders of the Vice Chancellor, absence from duty without valid reason 
+                and prior permission from the undersigned shall be considered as an act of indiscipline.
+            </p>
+
+            <!-- Need to push the signature to bottom right somewhat -->
+            <table style="width: 100%; margin-top: 50px;">
+                <tr>
+                    <td style="width: 60%;"></td>
+                    <td style="width: 40%; text-align: center;" class="bold">
+                        {% if sign_base64 %}
+                        <img src="data:image/png;base64,{{ sign_base64 }}" width="120" style="display:block; margin: 0 auto; margin-bottom: -15px;" alt="Signature">
+                        {% endif %}
+                        (Dr. Pawan Kumar)
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="page-break"></div>
+
+        <div>
+            <p class="bold" style="text-decoration: underline;">GENERAL INSTRUCTIONS</p>
+            
+            <div class="custom-list">
+                <div>1. Reach your allotted centre on <span class="bold">{{ et.dated.strftime('%d.%m.%Y') if et and et.dated else '28.06.2025' }} by 8:00 am.</span></div>
+                <div>2. Mark your attendance and collect duty cards from staff at the gate. Your duty room will be mentioned on duty cards/attendance sheets.</div>
+                <div>3. Please report to your Centre Supdt. immediately for instructions in one of the rooms/ hall (<span class="bold">between 8:30-8:45 am</span>).</div>
+                <div>4. Display seating arrangement on the entrance door of your room. Check roll number slips on the seats. It should match with seating plan. It may either be line pattern or as zig zag pattern. If any problem, pl. contact your Dy. Supdt.</div>
+                <div>5. The examination work will start at <span class="bold">10:00 am</span>. The candidates will fill up the OMR sheets Side-I and complete other formalities (attendance, thumb impression, Q.B. no., Q.B series etc.) between <span class="bold">10:00 am to 10:30 am.</span></div>
+                <div>6. The program wise timings of test will be :</div>
+            </div>
+
+            <table style="width:100%; border: 1px solid black; border-collapse: collapse; margin-top:20px; margin-bottom: 20px; font-family: Arial, sans-serif; font-size: 8.9pt;">
+                <tr>
+                    <td style="border: 1px solid black; padding: 15px 10px; text-align:center; width: 33%;">Ph.D.</td>
+                    <td style="border: 1px solid black; padding: 15px 10px; text-align:center; width: 33%;">10:30 am to 12:30 pm</td>
+                    <td style="border: 1px solid black; padding: 15px 10px; text-align:center; width: 34%; font-family: Calibri, sans-serif; font-size: 8.2pt;">30 minutes are for completing pre exam activities<br>and 2 hours exam</td>
+                </tr>
+            </table>
+
+            <p class="bold justified">Kindly follow the timing schedule strictly as per respective programme in your centre.</p>
+            
+            <div class="custom-list">
+                <div>7. <span class="bold">Allow the entry of the candidates at 9:00 am.</span></div>
+                <div>8. Only those candidates possessing <span class="bold">VALID ADMIT CARDS</span> of your room and whose roll numbers figure in the list of a particular room will be allowed. Do not allow the candidates to enter in the room without colour photo duly self attested on the admit card.</div>
+                <div>9. Kindly check while candidates entering in your room that he/she does not possess any mobile or objectionable items (as listed at Sr. No. 11) in the room.</div>
+                <div>10. No candidate will be allowed to enter the centre 30 minutes after the start of examination.</div>
+                <div>11. Following items are not allowed to carry inside the examination centre/examination room under any circumstances; all ornaments/jewellery, religious symbol etc., any metallic item personal belongings like bag etc., wrist watch, camera, calculator, mobile phone, pager, blue tooth, earphones, purse, log tables, health band, electronic gadgets with or without built-in-calculators, geometry/plastic pouch, blank or printed papers, written chits etc.<br><span class="bold">Candidates found possessing any of the these items will CONSTITUTE AS USE OF UNFAIR MEANS AND WILL BE DISQUALIFIED FOR HIS/HER RIGHT TO ADMISSION.</span></div>
+                <div>12. <span class="bold">No arrangement will be made at the centre for keeping any articles/ items belonging to the candidates.</span></div>
+                <div>13. <span class="bold">Please ensure that candidates should not have goggles/sunglasses and caps during examination. Please ensure that candidate should not have face covered with cloth/mask during photography.</span></div>
+                <div>14. In case of any discrepancy/enquiry regarding the roll number/Centre/Admit Card etc. contact the Centre Superintendent.</div>
+                <div>15. <span class="bold">Invigilator will sign on the Admit Card of the candidate after duly verification of his/her identity.</span></div>
+                <div>16. The candidate will hand over OMR Sheet & Admit Card (University copy) to the Invigilator(s) before leaving the examination hall.</div>
+                <div>17. <span class="bold">Candidates appearing for UG Entrance Test may be allowed to carry away the question booklet after the examination is over, Candidates are not allowed to carry away the question booklet in case of PG. So collect the used Question Booklets from candidates.</span></div>
+                <div>18. Photography of the candidates will be taken with their photography roll number sheet.</div>
+                <div>19. No candidate should be allowed to leave the room before the end of the examination. A candidate may, however, be allowed to leave the room under very exceptional circumstances such as serious illness with the prior permission of the Centre Supdt.</div>
+                <div>20. <span class="bold">Please ensure that candidates 'absent' be marked with RED pen on the attendance sheet by encircling the same.</span></div>
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <div>
+            <p class="bold" style="text-decoration: underline; text-align: center; margin-bottom: 15px;">BEFORE AND DURING THE TEST</p>
+            
+            <div class="custom-list">
+                <div>1. Ensure that the candidates are seated according to seating plan on his/her allotted seat.</div>
+                <div>2. <span class="bold">Distribute the OMR sheets at 10:00 am as per seating plan and instruct the candidates for its proper filling.</span></div>
+                <div>3. Take the attendance, thumb impression (left for male and right for female), QB no., QB series etc. on prescribed <span class="bold">proforma between 10:00 am to 10:30 am.</span></div>
+                <div>4. Sealed packets of the question booklets will be opened by the Invigilators 5 minutes (<span class="bold">10:25 am</span>) before the start of the examination. <span class="bold">Please ensure that the order in which the OMR/Question booklets are arranged is not disturbed.</span></div>
+                <div>5. Distribute Question booklets and OMR sheets strictly as per the prescribed procedure (explained during the instructions) and as per list. <span class="bold">It will be in ascending order.</span></div>
+                <div>6. <span class="bold">If any candidate is absent, leave question booklet and OMR sheet on his/her seat. Collect those 30 minutes after the start of the test.</span></div>
+                <div>7. Direct the candidates to fill up his/her particulars on the OMR sheet with black/blue pens only. No pencil or other colour is allowed.</div>
+                <div>8. Direct the candidates to check the question booklet thoroughly before writing their roll numbers on them. <span class="bold">If it is defective, the same should be replaced by the one having the same series e.g. A be replaced by A only.</span></div>
+                <div>9. Make announcement in your room that If, by chance, a question is unanswerable or having multiple answers, such questions shall be judged by experts for any errors (post exam moderation) and due advantage would be given to all the candidates.</div>
+                <div>10. Direct the candidates to fill up the roll numbers <span class="bold">in words and figures</span> on the question booklets also.</div>
+                <div>11. <span class="bold">Both the invigilator(s) must check thoroughly the roll numbers of the candidate both on question booklets and OMR sheets, and thereafter should put their signatures. Any OMR found signed by invigilator (s) without checking or not having roll numbers or without dark circles or proper roll numbers are liable for strict action by the authority.</span></div>
+                <div>12. The candidates should be informed that questions are to be attempted on OMR sheets by filling/darkening the circle as described in the instructions on admit card.</div>
+                <div>13. Collect <span class="bold">UNUSED</span> question booklets and <span class="bold">OMR</span> sheets of absentees <span class="bold">30 minutes</span> after the start of examination and hand over these to the Dy. Supdt.</div>
+                <div>14. <span class="bold">No candidate should be allowed to leave the room before the end of the examination. A candidate may, however, be allowed to leave the room under very exceptional circumstances such as serious illness with the prior permission of the Centre Supdt.</span></div>
+                <div>15. The members of the photography team carrying appropriate Duty Cards are allowed entry in the room for photography.</div>
+            </div>
+
+            <p class="bold" style="text-decoration: underline; margin-top: 15px; margin-bottom: 10px;">AFTER THE TEST</p>
+            
+            <div class="custom-list">
+                <div>1. The Invigilators will collect the <span class="bold">USED OMR</span> sheets and <span class="bold">ADMIT CARDS</span> at the end of examination.</div>
+                <div>2. Please arrange OMR sheets roll number-wise and hand over these to the Dy. Supdt. The invigilator(s) must ensure that <span class="bold">the number of Used/ Unused Question Booklets, Used/ Unused OMR sheets must tally with the number of candidates listed as present in the attendance sheet.</span></div>
+                <div>3. Hand over the following materials to Dy. Supdt.</div>
+                <div style="padding-left: 20px;">
+                    i. Attendance sheets<br>
+                    ii. Envelopes of Used and Unused OMR sheets<br>
+                    iii. Envelopes of Used/Unused Question booklets<br>
+                    iv. Envelope of photography roll numbers<br>
+                    v. Envelope of Admit Cards<br>
+                    vi. Check list duly signed<br>
+                    vii. All other materials related to exam.
+                </div>
+            </div>
+        </div>
+        
+        {% if not loop.last %}
+            <div class="page-break"></div>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>

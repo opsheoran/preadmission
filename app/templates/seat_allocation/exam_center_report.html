@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.sa-dd { width: 220px; padding: 4px; }
+.btn-row { text-align: center; padding-top: 20px; padding-bottom: 10px; }
+.btn-action { margin: 0 5px; padding: 8px 14px; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; border: 1px solid transparent; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.btn-action:hover { opacity: 0.9; }
+.btn-view { background: #2e7d32; border-color: #1b5e20; }
+.btn-pdf { background: #c62828; border-color: #b71c1c; }
+.btn-excel { background: #1565c0; border-color: #0d47a1; }
+.btn-room-pdf { background: #0277bd; border-color: #004d40; }
+.btn-room-excel { background: #00695c; border-color: #004d40; }
+</style>
+
+<div class="tableheading">Exam Center Report</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.exam_center_report') }}" id="frmECR">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<div style="background:#f7f9fc; border:1px solid #dde3ee; border-radius:4px; padding:20px 12px; margin-top:10px; display:flex; justify-content:center;">
+  <table style="border: none; border-collapse: separate; border-spacing: 0;">
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Academic Session</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="padding-right: 30px; vertical-align: middle;">
+        <select id="session_id" name="session_id" class="sa-dd" required onchange="fetchETs(this.value)">
+          <option value="">-- Select Academic Session --</option>
+          {% for s in sessions %}
+          <option value="{{ s.id }}" {% if s.id == session_id %}selected{% endif %}>{{ s.session_name }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">ET Type</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="vertical-align: middle;">
+        <select id="et_id" name="et_id" class="sa-dd" required>
+          <option value="">-- Select ET Type --</option>
+          {% for e in ets %}
+          <option value="{{ e.id }}" {% if e.id == et_id %}selected{% endif %}>{{ e.description }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="6" class="btn-row">
+        <button type="submit" name="action" value="view" onclick="this.form.method='GET';" class="btn-action btn-view">VIEW</button>
+        <button type="submit" name="action" value="generate_pdf" class="btn-action btn-pdf">View PDF Report</button>
+        <button type="submit" name="action" value="export_excel" class="btn-action btn-excel">Export Excel</button>
+        <button type="submit" name="action" value="room_wise_pdf" class="btn-action btn-room-pdf">Room Wise PDF Report</button>
+        <button type="submit" name="action" value="room_wise_excel" class="btn-action btn-room-excel">Room Wise Excel</button>
+      </td>
+    </tr>
+  </table>
+</div>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="flash-inline flash-{{ cat }}-inline" style="margin-top:10px; text-align:center;">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+{% if show_grid %}
+<div style="margin-top:20px;">
+  <div class="tableheading" style="font-size:14px; background:#f0f0f0; color:#333; padding:8px 12px; border:1px solid #ccc; border-bottom:none;">
+    List of Centers ({{ selected_et.description if selected_et else 'N/A' }}) {{ selected_sess.session_name if selected_sess else '' }}
+  </div>
+  <table class="grid-table" style="margin-top:0;">
+    <thead>
+      <tr>
+        <th style="width:8%;text-align:center;">Sr. No.</th>
+        <th>Name of the Centre</th>
+        <th style="width:20%;text-align:center;">Total No. of candidates</th>
+        <th style="width:15%;text-align:center;">Total No. of Rooms</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in centers %}
+      <tr>
+        <td style="text-align:center;">{{ loop.index }}</td>
+        <td>{{ c.name }}</td>
+        <td style="text-align:center;">{{ c.cand_count }}</td>
+        <td style="text-align:center;">{{ c.room_count }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" style="text-align:center;color:#888;padding:15px;">No exam centers found for the selected ET and session.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<script>
+function fetchETs(sessionId) {
+  const etSel = document.getElementById('et_id');
+  etSel.innerHTML = '<option value="">-- Select ET Type --</option>';
+  if(!sessionId) return;
+
+  fetch(`{{ url_for('seat_allocation.get_et_by_session') }}?session_id=${sessionId}`)
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.name;
+        etSel.appendChild(opt);
+      });
+    })
+    .catch(err => console.error("Error fetching ETs:", err));
+}
+</script>
+{% endblock %}

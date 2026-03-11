@@ -1,0 +1,66 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    .instruction-container { padding: 30px; max-width: 900px; margin: 0 auto; }
+    .instruction-card {
+        background: #fff; border: 1px solid var(--border-color);
+        border-top: 4px solid var(--primary-color); border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px;
+    }
+    .inst-header {
+        font-size: 20px; color: var(--primary-color); font-weight: bold;
+        border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;
+        text-align: center;
+    }
+    .inst-body {
+        font-size: 13px; line-height: 1.6; color: #444; margin-bottom: 30px;
+    }
+    .inst-body ul { padding-left: 20px; }
+    .inst-body li { margin-bottom: 10px; }
+    
+    .confirm-section {
+        background: #f8f9fa; padding: 20px; border: 1px solid #ddd; border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .confirm-section label { font-weight: bold; font-size: 14px; cursor: pointer; display: flex; gap: 10px; align-items: flex-start;}
+    .confirm-section input[type="checkbox"] { margin-top: 3px; transform: scale(1.2); }
+
+    .btn-toolbar { text-align: center; }
+</style>
+
+<div class="instruction-container">
+    <div class="instruction-card">
+        <div class="inst-header">INSTRUCTIONS</div>
+        
+        <div class="inst-body">
+            <p><strong>Please read the following instructions carefully before proceeding:</strong></p>
+            <ul>
+                <li>Keep your Parivar Pehchan Patra (PPP ID) ready, as it is mandatory for Haryana residents.</li>
+                <li>Ensure you have scanned copies of your Passport Size Photo, Signature, and Thumb Impression ready for upload (Max size: 100 KB, Format: JPG/JPEG/PNG).</li>
+                <li>Ensure you have a scanned copy of your Aadhar Card or other Category Proof documents (Max size: 500 KB, Format: PDF/JPG).</li>
+                <li>A valid Mobile Number and Email ID are mandatory for registration. All future communications will be sent to the registered mobile number and email.</li>
+                <li>Check your eligibility criteria carefully from the Information Bulletin/Prospectus before filling out the application form.</li>
+                <li>Fee once paid will not be refunded under any circumstances.</li>
+            </ul>
+        </div>
+
+        <form method="GET" action="{{ url_for('main.candidate_domicile_ppp') }}">
+            <input type="hidden" name="dtype_id" value="{{ request.args.get('dtype_id', '') }}">
+            <input type="hidden" name="degree_id" value="{{ request.args.get('degree_id', '') }}">
+            
+            <div class="confirm-section">
+                <label>
+                    <input type="checkbox" id="cbConfirmation" required>
+                    <span>I have downloaded Information Bulletin/Prospectus, read and understood all the instructions carefully. I have also checked all the information in my Parivar Pehchan Patra (PPP ID).</span>
+                </label>
+            </div>
+
+            <div class="btn-toolbar">
+                <a href="{{ url_for('main.candidate_landing') }}" class="btn" style="background-color: #6c757d; color: white; text-decoration: none;">Cancel</a>
+                <button type="submit" class="btn btn-save" style="margin-left: 10px;">Continue</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

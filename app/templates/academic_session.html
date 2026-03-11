@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Academic Session Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.academic_session') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="session_id" value="{{ edit_session.id if edit_session else '' }}">
         <tr>
             <td class="vtext">Session</td>
@@ -82,7 +83,7 @@
             <th>To Date</th>
             <th>Session Order</th>
             <th style="width:10%">Active</th>
-            <th style="width:10%">Action</th>
+            <th style="width:10%" style="text-align:center;">Edit</th>
         </tr>
     </thead>
     <tbody>

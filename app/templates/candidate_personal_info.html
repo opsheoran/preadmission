@@ -1,0 +1,681 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    /* =========================================================
+       ULTRA-PREMIUM FORM STYLING
+       ========================================================= */
+    :root {
+        --theme-primary: #1e3a8a;
+        --theme-secondary: #2563eb;
+        --theme-accent: #f59e0b;
+        --theme-bg: #f8fafc;
+        --theme-surface: #ffffff;
+        --theme-text-main: #1e293b;
+        --theme-text-muted: #64748b;
+        --theme-border: #e2e8f0;
+        --theme-error: #ef4444;
+        --theme-success: #10b981;
+    }
+
+    body { background-color: var(--theme-bg); }
+
+    .premium-container { 
+        padding: 40px 20px; 
+        max-width: 1280px; 
+        margin: 0 auto; 
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    .premium-card {
+        background: var(--theme-surface); 
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05); 
+        padding: 45px 50px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative top accent line */
+    .premium-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary), var(--theme-accent));
+    }
+    
+    .page-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--theme-border);
+    }
+
+    .step-badge {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--theme-secondary);
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .page-title {
+        font-size: 28px; 
+        color: var(--theme-text-main); 
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* Section Styling */
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin: 45px 0 25px;
+    }
+
+    .section-header h3 {
+        font-size: 16px; 
+        font-weight: 700; 
+        color: var(--theme-primary);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-header::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--theme-border);
+        margin-left: 20px;
+    }
+
+    /* Responsive Grid */
+    .smart-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+        gap: 24px 32px; 
+    }
+
+    /* Input Groups */
+    .input-group { 
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .input-label { 
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px; 
+        font-weight: 600; 
+        color: var(--theme-text-main); 
+        font-size: 13px; 
+    }
+
+    .required-star { 
+        color: var(--theme-error); 
+        margin-left: 4px; 
+        font-weight: bold;
+    }
+
+    /* Controls */
+    .premium-input {
+        width: 100%; 
+        height: 48px; 
+        padding: 0 16px; 
+        border: 2px solid var(--theme-border);
+        border-radius: 8px; 
+        background-color: var(--theme-surface); 
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--theme-text-main);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .premium-input::placeholder { color: #a1a1aa; font-weight: 400; }
+
+    .premium-input:hover:not(:disabled) {
+        border-color: #cbd5e1;
+    }
+
+    .premium-input:focus {
+        border-color: var(--theme-secondary); 
+        outline: none; 
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        background-color: #fff;
+    }
+
+    .premium-input:disabled, .premium-input[readonly] { 
+        background-color: #f1f5f9; 
+        color: var(--theme-text-muted); 
+        cursor: not-allowed; 
+        border-color: var(--theme-border);
+    }
+
+        /* Standard Custom Radio Buttons (Checkbox style) */
+    .radio-group {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        height: 48px;
+        padding: 0 16px;
+        border: 2px solid var(--theme-border);
+        border-radius: 8px;
+        background: var(--theme-surface);
+        transition: border-color 0.25s;
+    }
+    
+    .radio-group:hover { border-color: #cbd5e1; }
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--theme-text-main);
+    }
+
+    .radio-group input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px; /* Square checkbox style */
+        margin: 0;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .radio-group input[type="radio"]::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        transform: scale(0);
+        background-color: var(--theme-secondary);
+        transition: 0.2s transform ease-in-out;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        border-color: var(--theme-secondary);
+    }
+
+    .radio-group input[type="radio"]:checked::before {
+        transform: scale(1);
+    }
+
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .file-upload-wrapper:hover {
+        border-color: var(--theme-secondary);
+        background: #eff6ff;
+    }
+    .file-upload-wrapper input[type="file"] {
+        display: none;
+    }
+    .file-upload-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--theme-secondary);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    .file-upload-label svg { width: 24px; height: 24px; }
+
+    /* Action Bar */
+    .action-bar {
+        margin-top: 50px; 
+        padding-top: 30px; 
+        border-top: 1px solid var(--theme-border);
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+    }
+
+    .btn-epic { 
+        padding: 14px 32px; 
+        font-size: 14px; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        border-radius: 8px; 
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-epic-primary {
+        background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+        color: white; 
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+    }
+    .btn-epic-primary:hover { 
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-epic-secondary {
+        background: var(--theme-surface);
+        color: var(--theme-text-main);
+        border: 2px solid var(--theme-border);
+        text-decoration: none;
+    }
+    .btn-epic-secondary:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    
+    /* Dynamic field animation */
+    .dynamic-field {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.4s ease;
+    }
+    .dynamic-field.show {
+        max-height: 200px;
+        opacity: 1;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="premium-container">
+    <div class="premium-card">
+        
+        <div class="page-title-wrapper">
+            <span class="step-badge">Step 1</span>
+            <h2 class="page-title">Personal Information</h2>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.candidate_personal_info') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div class="section-header"><h3>Account & Academic Details</h3></div>
+            <div class="smart-grid">
+                <div class="input-group">
+                    <label class="input-label">Academic Session <span class="required-star">*</span></label>
+                    <select class="premium-input" name="session_id" required>
+                        <option value="71" selected>2025-2026</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Registration No.</label>
+                    <input type="text" class="premium-input" value="{{ user.regno }}" disabled>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Candidate's Name</label>
+                    <input type="text" class="premium-input" value="{{ user.s_name }}" disabled>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Password <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="password" placeholder="System Generated ID" readonly value="WILL BE AUTO GENERATED">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Confirm Password <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="confirm_password" placeholder="System Generated ID" readonly value="WILL BE AUTO GENERATED">
+                </div>
+            </div>
+
+            <div class="section-header"><h3>Identity & Parents Details</h3></div>
+            <div class="smart-grid">
+                <div class="input-group">
+                    <label class="input-label">Date of Birth <span class="required-star">*</span></label>
+                    <input type="date" class="premium-input" name="dob" value="{{ user.dob.strftime('%Y-%m-%d') if user.dob and user.dob.year > 1900 else '' }}" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Father's Name <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="f_name" value="{{ user.f_name if user.f_name and user.f_name != 'N/A' else '' }}" required style="text-transform: uppercase;">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Mother's Name <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="m_name" value="{{ user.m_name if user.m_name and user.m_name != 'N/A' else '' }}" required style="text-transform: uppercase;">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Gender <span class="required-star">*</span></label>
+                    <select class="premium-input" name="gender" required>
+                        <option value="">-- Select --</option>
+                        <option value="M" {% if user.gender == 'M' %}selected{% endif %}>MALE</option>
+                        <option value="F" {% if user.gender == 'F' %}selected{% endif %}>FEMALE</option>
+                        <option value="O" {% if user.gender == 'O' %}selected{% endif %}>OTHERS</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Aadhar Card No. <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="AdharNo" value="{{ user.AdharNo if user.AdharNo else '' }}" maxlength="12" pattern="[0-9]{12}" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Religion <span class="required-star">*</span></label>
+                    <select class="premium-input" name="religion_id" required>
+                        <option value="">-- Select Religion --</option>
+                        {% for rel in religions %}
+                            <option value="{{ rel.id }}" {% if user.fk_religionid == rel.id %}selected{% endif %}>{{ rel.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Nationality <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="nat_ind" name="nationality" value="I" {% if user.nationality == 'I' or not user.nationality %}checked{% endif %} required>
+                        <label for="nat_ind">Indian</label>
+                        <input type="radio" id="nat_oth" name="nationality" value="O" {% if user.nationality == 'O' %}checked{% endif %} required>
+                        <label for="nat_oth">Others</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header"><h3>Contact & Demographic Details</h3></div>
+            <div class="smart-grid">
+                <div class="input-group">
+                    <label class="input-label">Candidate Mobile Number</label>
+                    <input type="text" class="premium-input" value="{{ user.mobileno }}" disabled>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Parents Mobile Number <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="Parents_Mobileno" value="{{ user.Parents_Mobileno if user.Parents_Mobileno else '' }}" maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Email Id</label>
+                    <input type="text" class="premium-input" value="{{ user.email }}" disabled>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Marital Status <span class="required-star">*</span></label>
+                    <select class="premium-input" name="Marital_Status" required>
+                        <option value="">-- Select --</option>
+                        <option value="0" {% if user.Marital_Status == '0' %}selected{% endif %}>Unmarried</option>
+                        <option value="1" {% if user.Marital_Status == '1' %}selected{% endif %}>Married</option>
+                        <option value="2" {% if user.Marital_Status == '2' %}selected{% endif %}>Widow</option>
+                        <option value="3" {% if user.Marital_Status == '3' %}selected{% endif %}>Divorce</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Candidate is a Only Girl Child <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="girl_yes" name="ChildStatus" value="1" {% if user.ChildStatus == '1' %}checked{% endif %} required>
+                        <label for="girl_yes">Yes</label>
+                        <input type="radio" id="girl_no" name="ChildStatus" value="0" {% if user.ChildStatus == '0' or not user.ChildStatus %}checked{% endif %} required>
+                        <label for="girl_no">No</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Blood Group <span class="required-star">*</span></label>
+                    <select class="premium-input" name="Blood_Group" required>
+                        <option value="">-- Select --</option>
+                        <option value="AP" {% if user.Blood_Group == 'AP' %}selected{% endif %}>A +</option>
+                        <option value="AN" {% if user.Blood_Group == 'AN' %}selected{% endif %}>A -</option>
+                        <option value="BP" {% if user.Blood_Group == 'BP' %}selected{% endif %}>B +</option>
+                        <option value="BN" {% if user.Blood_Group == 'BN' %}selected{% endif %}>B -</option>
+                        <option value="OP" {% if user.Blood_Group == 'OP' %}selected{% endif %}>O +</option>
+                        <option value="ON" {% if user.Blood_Group == 'ON' %}selected{% endif %}>O -</option>
+                        <option value="ABP" {% if user.Blood_Group == 'ABP' %}selected{% endif %}>AB +</option>
+                        <option value="ABN" {% if user.Blood_Group == 'ABN' %}selected{% endif %}>AB -</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-header"><h3>Category & Domicile Information</h3></div>
+            <div class="smart-grid">
+                <div class="input-group">
+                    <label class="input-label">EWS (Economically Weaker Sections) <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ews_yes" name="ews_status" value="1" onchange="toggleCategory()">
+                        <label for="ews_yes">YES</label>
+                        <input type="radio" id="ews_no" name="ews_status" value="0" checked onchange="toggleCategory()">
+                        <label for="ews_no">NO</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Category <span class="required-star">*</span></label>
+                    <select class="premium-input" name="category_id" id="category_id" required onchange="toggleCategory()">
+                        <option value="">-- Select Caste Category --</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if user.fk_stucatid_cast == cat.id %}selected{% endif %}>{{ cat.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="input-group dynamic-field" id="layer_creamy_div">
+                    <label class="input-label">Are you in Non-Creamy Layer? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ncl_yes" name="non_creamy_layer" value="1">
+                        <label for="ncl_yes">YES</label>
+                        <input type="radio" id="ncl_no" name="non_creamy_layer" value="0">
+                        <label for="ncl_no">NO</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Upload Category Document <span class="required-star">*</span></label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('cat_doc').click()">
+                        <label class="file-upload-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span id="cat_doc_name">Click to browse file</span>
+                        </label>
+                        <input type="file" id="cat_doc" name="category_document" accept="application/pdf, image/jpeg, image/png" onchange="document.getElementById('cat_doc_name').innerText = this.files[0].name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header"><h3>Other Specific Details</h3></div>
+            <div class="smart-grid">
+                <div class="input-group">
+                    <label class="input-label">Applying from Land Donated Village (LDV)? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ldv_yes" name="LDV" value="1" {% if user.LDV == '1' %}checked{% endif %} required onchange="toggleLDV()">
+                        <label for="ldv_yes">YES</label>
+                        <input type="radio" id="ldv_no" name="LDV" value="0" {% if user.LDV == '0' or not user.LDV %}checked{% endif %} required onchange="toggleLDV()">
+                        <label for="ldv_no">NO</label>
+                    </div>
+                </div>
+
+                <div class="input-group dynamic-field" id="ldv_village_div">
+                    <label class="input-label">Select Village <span class="required-star">*</span></label>
+                    <select class="premium-input" name="ldv_village">
+                        <option value="">-- Select Village --</option>
+                        <option value="Hisar">Hisar</option>
+                        <option value="Kaul">Kaul</option>
+                        <option value="Bawal">Bawal</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Father's/Mother's Guardian <span class="required-star">*</span></label>
+                    <select class="premium-input" name="FatherGuargian" required>
+                        <option value="">-- Select --</option>
+                        <option value="Y" {% if user.FatherGuargian == 'Y' %}selected{% endif %}>Father/Mother</option>
+                        <option value="N" {% if user.FatherGuargian == 'N' %}selected{% endif %}>Guardian</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Father's/Mother's Occupation <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="FatherOccupation" value="{{ user.FatherOccupation if user.FatherOccupation else '' }}" required placeholder="e.g. Farmer, Service">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Annual Income <span class="required-star">*</span></label>
+                    <select class="premium-input" name="AnnualIncome" required>
+                        <option value="">-- Select --</option>
+                        <option value="1" {% if user.AnnualIncome == '1' %}selected{% endif %}>&lt; 1 Lakh</option>
+                        <option value="2" {% if user.AnnualIncome == '2' %}selected{% endif %}>1 Lakh - 3 Lakh</option>
+                        <option value="4" {% if user.AnnualIncome == '4' %}selected{% endif %}>3 Lakh - 6 Lakh</option>
+                        <option value="5" {% if user.AnnualIncome == '5' %}selected{% endif %}>6 Lakh - 8 Lakh</option>
+                        <option value="6" {% if user.AnnualIncome == '6' %}selected{% endif %}>Above 8 Lakh</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Freedom Fighter (FF) Category? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ff_yes" name="FF" value="1" {% if user.FF == '1' %}checked{% endif %} required>
+                        <label for="ff_yes">YES</label>
+                        <input type="radio" id="ff_no" name="FF" value="0" {% if user.FF == '0' or not user.FF %}checked{% endif %} required>
+                        <label for="ff_no">NO</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Ex-serviceman (ESM) Category? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="esm_yes" name="ESM" value="1" {% if user.ESM == '1' %}checked{% endif %} required>
+                        <label for="esm_yes">YES</label>
+                        <input type="radio" id="esm_no" name="ESM" value="0" {% if user.ESM == '0' or not user.ESM %}checked{% endif %} required>
+                        <label for="esm_no">NO</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Person with Disability? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ph_yes" name="PH" value="1" {% if user.PH == '1' %}checked{% endif %} required onchange="togglePH()">
+                        <label for="ph_yes">YES</label>
+                        <input type="radio" id="ph_no" name="PH" value="0" {% if user.PH == '0' or not user.PH %}checked{% endif %} required onchange="togglePH()">
+                        <label for="ph_no">NO</label>
+                    </div>
+                </div>
+
+                <div class="input-group dynamic-field" id="ph_percentage_div">
+                    <label class="input-label">Disability Percentage <span class="required-star">*</span></label>
+                    <input type="number" class="premium-input" name="ph_percentage" placeholder="e.g. 40" min="1" max="100">
+                </div>
+
+                <div class="input-group dynamic-field" id="ph_writer_div">
+                    <label class="input-label">Writer Needed? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="writer_yes" name="writer_needed" value="1">
+                        <label for="writer_yes">YES</label>
+                        <input type="radio" id="writer_no" name="writer_needed" value="0">
+                        <label for="writer_no">NO</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Family Id (PPP) <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="familyId" value="{{ user.familyId if user.familyId else '' }}" maxlength="15" required style="text-transform: uppercase;" placeholder="Parivar Pehchan Patra ID">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Are you from Sports quota? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="sports_yes" name="SportsQuota" value="1" {% if user.SportsQuota == '1' %}checked{% endif %} required>
+                        <label for="sports_yes">YES</label>
+                        <input type="radio" id="sports_no" name="SportsQuota" value="0" {% if user.SportsQuota == '0' or not user.SportsQuota %}checked{% endif %} required>
+                        <label for="sports_no">NO</label>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Ward of University Employee? <span class="required-star">*</span></label>
+                    <div class="radio-group">
+                        <input type="radio" id="ward_yes" name="IsWard" value="1" {% if user.IsWard == '1' %}checked{% endif %} required onchange="toggleWard()">
+                        <label for="ward_yes">YES</label>
+                        <input type="radio" id="ward_no" name="IsWard" value="0" {% if user.IsWard == '0' or not user.IsWard %}checked{% endif %} required onchange="toggleWard()">
+                        <label for="ward_no">NO</label>
+                    </div>
+                </div>
+
+                <div class="input-group dynamic-field" id="ward_name_div">
+                    <label class="input-label">Employee Name <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="employee_name" placeholder="Enter Employee Name">
+                </div>
+
+                <div class="input-group dynamic-field" id="ward_dept_div">
+                    <label class="input-label">Employee Department <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" name="employee_department" placeholder="Enter Department">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Resident (Domicile) <span class="required-star">*</span></label>
+                    <select class="premium-input" name="Resident" required>
+                        <option value="1" {% if user.Resident == '1' %}selected{% endif %}>Haryana</option>
+                        <option value="2" {% if user.Resident == '2' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <a href="{{ url_for('main.candidate_dashboard') }}" class="btn-epic btn-epic-secondary">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Dashboard
+                </a>
+                <button type="submit" class="btn-epic btn-epic-primary">
+                    Save & Continue
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Logic for displaying dynamic sub-fields exactly like live template
+    function toggleCategory() {
+        const catId = document.getElementById('category_id').value;
+        const div = document.getElementById('layer_creamy_div');
+        // Example logic: if BCA (36) or BCB (35) is selected, show Creamy Layer option
+        if (catId === '35' || catId === '36') {
+            div.classList.add('show');
+        } else {
+            div.classList.remove('show');
+        }
+    }
+
+    function toggleLDV() {
+        const isYes = document.getElementById('ldv_yes').checked;
+        const div = document.getElementById('ldv_village_div');
+        if (isYes) div.classList.add('show'); else div.classList.remove('show');
+    }
+
+    function togglePH() {
+        const isYes = document.getElementById('ph_yes').checked;
+        const div1 = document.getElementById('ph_percentage_div');
+        const div2 = document.getElementById('ph_writer_div');
+        if (isYes) {
+            div1.classList.add('show'); div2.classList.add('show');
+        } else {
+            div1.classList.remove('show'); div2.classList.remove('show');
+        }
+    }
+
+    function toggleWard() {
+        const isYes = document.getElementById('ward_yes').checked;
+        const div1 = document.getElementById('ward_name_div');
+        const div2 = document.getElementById('ward_dept_div');
+        if (isYes) {
+            div1.classList.add('show'); div2.classList.add('show');
+        } else {
+            div1.classList.remove('show'); div2.classList.remove('show');
+        }
+    }
+
+    // Run on load to set initial state
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleCategory();
+        toggleLDV();
+        togglePH();
+        toggleWard();
+    });
+</script>
+{% endblock %}

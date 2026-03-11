@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.sa-dd    { width:170px; }
+.sa-dd-lg { width:230px; }
+.row-gap td { height:9px; }
+.vl { text-align:right; font-weight:bold; font-size:12.5px; color:#333;
+      padding-right:4px; white-space:nowrap; vertical-align:middle; }
+.cl { text-align:center; font-weight:bold; vertical-align:middle; padding:0 2px; }
+.fc { vertical-align:middle; }
+/* Seating grid */
+.seat-room-hdr {
+    font-weight: bold; font-size: 13px; color: var(--primary-color);
+    background: #eef3fb; border: 1px solid #c5d5ee;
+    padding: 6px 10px; border-radius: 3px; margin: 10px 0 6px;
+}
+.seat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.seat-card {
+    border: 1px solid #b0bec5; border-radius: 4px; padding: 8px;
+    width: 200px; background: #fff; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.seat-card .seat-no {
+    font-size: 14px; font-weight: bold; color: #c62828;
+    border-bottom: 1px dashed #ddd; margin-bottom: 5px; padding-bottom: 3px;
+}
+.seat-card .seat-info { line-height: 1.7; }
+.seat-card .seat-info b { color: #333; }
+.seat-empty { color:#999; font-style:italic; font-size:11px; }
+</style>
+
+<div class="tableheading">Seating Arrangement</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.seating_arrangement') }}" id="frmSeating">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<div style="background:#f7f9fc;border:1px solid #dde3ee;border-radius:4px;padding:10px 12px;margin-top:10px;">
+<table style="border-collapse:collapse;width:auto;border:none;">
+  <!-- Row 1: Session | ET Type -->
+  <tr>
+    <td class="vl" style="width:140px;">Academic Session</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="session_id" name="session_id" class="sa-dd">
+        {% for s in sessions %}
+        <option value="{{ s.id }}" {% if loop.first %}selected{% endif %}>{{ s.session_name }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="padding-left:20px;">ET Type</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="et_id" name="et_id" class="sa-dd">
+        <option value="">-- Select ET Type --</option>
+        {% for e in ets %}
+        <option value="{{ e.id }}" {% if loop.first %}selected{% endif %}>{{ e.description }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="6"></td></tr>
+
+  <!-- Row 2: Exam Center | Room(s) -->
+  <tr>
+    <td class="vl">Exam Center</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="exam_center_id" name="exam_center_id" class="sa-dd-lg">
+        <option value="">-- Select Exam Center --</option>
+        {% for c in centers %}
+        <option value="{{ c.id }}">{{ c.name }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="padding-left:20px;">Room(s)</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="room_id" name="room_id" class="sa-dd">
+        <option value="">-- All Rooms --</option>
+      </select>
+      &nbsp;
+      <button type="button" class="btn btn-save" id="btnView" style="margin-left:8px;">View</button>
+      <button type="button" class="btn btn-reset" id="btnReset" style="margin-left:4px;">Reset</button>
+    </td>
+  </tr>
+</table>
+</div>
+</form>
+
+<div style="margin-top:12px; margin-bottom:12px;">
+    <label style="margin-right:10px;"><input type="checkbox" value="registrationNo" class="chkFilterGroup" checked> Registration No</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="rollNo" class="chkFilterGroup" checked> Roll No</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="studentName" class="chkFilterGroup" checked> Student Name</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="specialization" class="chkFilterGroup" checked> Specialization</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="mobileNo" class="chkFilterGroup" checked> Mobile No</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="fatherName" class="chkFilterGroup" checked> Father Name</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="DegreeType" class="chkFilterGroup" checked> Degree</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="CollegeName" class="chkFilterGroup" checked> College</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="ExamType" class="chkFilterGroup" checked> Exam Type</label>
+    <label style="margin-right:10px;"><input type="checkbox" value="Subject" class="chkFilterGroup" checked> Subject</label>
+</div>
+
+<!-- Seating arrangement display area -->
+<div id="seatingDisplay" style="margin-top:12px; width:100%; overflow-x:auto;"></div>
+
+<script>
+(function(){
+"use strict";
+const sessionSel = document.getElementById('session_id');
+const etSel      = document.getElementById('et_id');
+const centerSel  = document.getElementById('exam_center_id');
+const roomSel    = document.getElementById('room_id');
+const btnView    = document.getElementById('btnView');
+const btnReset   = document.getElementById('btnReset');
+const display    = document.getElementById('seatingDisplay');
+
+function apiBase(){ return '{{ url_for("seat_allocation.seat_allotment") }}'.replace('/seat-allotment',''); }
+
+function fetchBySession() {
+    const sesId = sessionSel.value;
+    if(!sesId) return;
+    fetch(apiBase()+`/api/get_et_by_session?session_id=${sesId}`)
+    .then(r=>r.json()).then(data=>{
+      etSel.innerHTML = '<option value="">-- Select ET Type --</option>' + 
+        data.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+      centerSel.innerHTML = '<option value="">-- Select Exam Center --</option>';
+      roomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+    });
+}
+
+/* ET → centers */
+function fetchCenters(){
+  const etId = etSel.value;
+  centerSel.innerHTML = '<option value="">-- Select Exam Center --</option>';
+  roomSel.innerHTML   = '<option value="">-- All Rooms --</option>';
+  if(!etId) return;
+  fetch(apiBase()+`/api/get_exam_centers_by_et?et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c=>{
+        const o=document.createElement('option'); o.value=c.id; o.textContent=c.name;
+        centerSel.appendChild(o);
+      });
+    });
+}
+
+/* Center → rooms */
+function fetchRooms(){
+  const cId = centerSel.value;
+  const etId = etSel.value;
+  roomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+  if(!cId) return;
+  fetch(apiBase()+`/api/get_rooms_by_center?center_id=${cId}&et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(r=>{
+        const o=document.createElement('option'); o.value=r.id; o.textContent=r.room_no;
+        roomSel.appendChild(o);
+      });
+    });
+}
+
+function resetSeating() {
+    display.innerHTML = '';
+}
+
+/* Render seating arrangement */
+function renderSeating(){
+  const sesId = sessionSel.value;
+  const cId   = centerSel.value;
+  const rId   = roomSel.value;
+  const etId  = etSel.value;
+  
+  if(!cId || !etId){ display.innerHTML='<p style="color:#888;font-style:italic;">Select Exam Center and ET Type to view seating arrangement.</p>'; return; }
+  
+  display.innerHTML='<p style="color:#888;">Loading seating arrangement…</p>';
+  
+  fetch(apiBase()+`/api/get_candidates?et_id=${etId}&exam_center_id=${cId}&room_id=${rId}&session_id=${sesId}`)
+    .then(r=>r.json()).then(candidates=>{
+      if(!candidates.length){
+        display.innerHTML='<p style="color:#888;font-style:italic;">No allotted candidates found for the selected criteria.</p>';
+        return;
+      }
+      
+      const rooms={};
+      const roomKeys=[];
+      candidates.forEach(c=>{
+        const key=c.room||'N/A';
+        if(!rooms[key]) {
+            rooms[key]={dist:c.paper_dist||'', capacity:c.capacity||0, noRow:c.no_row||0, noColumn:c.no_column||0, seatMap:{}};
+            roomKeys.push(key);
+        }
+        rooms[key].seatMap[c.seat] = c;
+      });
+
+      let html='';
+
+      // "Save Changes" floating button could go at the top right of the container
+      html += `<div style="text-align: right; margin-bottom: 10px;">
+                  <button type="button" class="btn btn-save" style="background:#28a745; color:#fff; border:none; padding:6px 16px; border-radius:4px; font-size:13px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.1);">Save Changes</button>
+               </div>`;
+
+      roomKeys.forEach(rNo=>{
+        const {dist, capacity, noRow, noColumn, seatMap}=rooms[rNo];
+        html+=`<div style="font-weight:bold; font-size:14px; color:#2e5090; margin-bottom:8px; border-bottom:1px solid #ccc; padding-bottom:4px;">Room No:-${rNo}, Distribution Pattern:${dist} | Total Capacity: ${capacity}</div>`;
+
+        // Fixed width for cards, auto width for table to keep it centered
+        html+=`<table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 20px auto; width:auto;"><tbody>`;
+
+        const isSequential = dist && dist.toLowerCase().includes('sequential');
+        
+        let colsPerRow = parseInt(noColumn, 10);
+        if (isNaN(colsPerRow) || colsPerRow <= 0) colsPerRow = 4;
+        
+        let totalRows = parseInt(noRow, 10);
+        if (isNaN(totalRows) || totalRows <= 0) totalRows = Math.ceil(capacity / colsPerRow);
+
+        const actualSeatNo = totalRows * colsPerRow;
+        let seatNo = 0;
+
+        for (let rowIdx = 0; rowIdx < totalRows; rowIdx++) {
+            html += `<tr>`;
+
+            if (isSequential) {
+                for (let col = 0; col < colsPerRow; col++) {
+                    if (col === 0) {
+                        seatNo = rowIdx + 1;
+                    } else {
+                        // The ASP.NET logic: seatNo = (parseInt(seatNo) + parseInt(rows));
+                        seatNo = (rowIdx + 1) + (col * totalRows); 
+                    }
+                    
+                    let seatIdx = actualSeatNo - (seatNo - 1);
+
+                    if (seatIdx <= capacity && seatIdx > 0) {
+                        const c = seatMap[seatIdx];
+
+                        if (c) {
+                            html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                              <div style="border:1px solid #c5d5ee; padding:10px; border-radius:6px; background:#f4f8ff; font-size:12.5px; line-height:1.6; box-shadow: 0 3px 6px rgba(0,0,0,.06); position:relative; overflow:hidden;">
+                                <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#2e5090;"></div>
+                                <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #b0bec5; padding-bottom: 4px; color: #c62828;">Seat No:- ${seatIdx}</div>
+                                <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span>${c.reg_no||''}</div>
+                                <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span><span style="font-size:16px; font-weight:900; color:#000;">${c.roll_no||''}</span></div>
+                                <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span>${c.degree_type||''}</div>
+                                <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span>${c.subject||''}</div>
+                                <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span>${c.center||''}</div>
+                                <div class="row-Subject"><span style="font-weight:bold">Subject:- </span>${c.subject||''}</div>
+                                <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span>${c.exam_type||''}</div>
+                                <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span><span style="color:#0056b3; font-weight:bold;">${c.name||''}</span></div>
+                                <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span>${c.mobile||''}</div>
+                                <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span>${c.father_name||''}</div>
+                                <div style="text-align:center; margin-top:10px;">
+                                    <button type="button" style="background:#17a2b8; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:12px; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.1);" onmouseover="this.style.background='#138496'" onmouseout="this.style.background='#17a2b8'">View Detail</button>
+                                </div>
+                              </div>
+                            </td>`;
+                        } else {
+                            html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                              <div style="border:1px dashed #ccc; padding:10px; border-radius:6px; background:#fafafa; font-size:12.5px; line-height:1.6; box-shadow: 0 1px 2px rgba(0,0,0,.03); opacity:0.65; position:relative;">
+                                <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#ddd;"></div>
+                                <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #ddd; padding-bottom: 4px; color: #888;">Seat No:- ${seatIdx}</div>
+                                <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span></div>   
+                                <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span></div>
+                                <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span></div>  
+                                <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span></div>
+                                <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span></div>
+                                <div class="row-Subject"><span style="font-weight:bold">Subject:- </span></div>
+                                <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span></div>
+                                <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span></div>
+                                <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span></div>
+                                <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span></div>
+                                <div style="text-align:center; margin-top:10px;">
+                                    <button type="button" disabled style="background:#e0e0e0; color:#999; border:none; padding:5px 12px; border-radius:3px; font-size:12px;">View Detail</button>
+                                </div>
+                              </div>
+                            </td>`;
+                        }
+                    } else {
+                        html += `<td style="width: 260px; padding:6px;"></td>`;
+                    }
+                }
+            } else {
+                // Zigzag Distribution
+                if (rowIdx % 2 === 0) {
+                    for (let col = 0; col < colsPerRow; col++) {
+                        if (rowIdx === 0) {
+                            seatNo = col + 1;
+                        } else {
+                            seatNo = (rowIdx * colsPerRow) + (col + 1);
+                        }
+                        
+                        let seatIdx = actualSeatNo - (seatNo - 1);
+
+                        if (seatIdx <= capacity && seatIdx > 0) {
+                            const c = seatMap[seatIdx];
+
+                            if (c) {
+                                html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                                  <div style="border:1px solid #c5d5ee; padding:10px; border-radius:6px; background:#f4f8ff; font-size:12.5px; line-height:1.6; box-shadow: 0 3px 6px rgba(0,0,0,.06); position:relative; overflow:hidden;">
+                                    <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#2e5090;"></div>
+                                    <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #b0bec5; padding-bottom: 4px; color: #c62828;">Seat No:- ${seatIdx}</div>
+                                    <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span>${c.reg_no||''}</div>
+                                    <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span><span style="font-size:16px; font-weight:900; color:#000;">${c.roll_no||''}</span></div>
+                                    <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span>${c.degree_type||''}</div>
+                                    <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span>${c.subject||''}</div>
+                                    <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span>${c.center||''}</div>
+                                    <div class="row-Subject"><span style="font-weight:bold">Subject:- </span>${c.subject||''}</div>
+                                    <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span>${c.exam_type||''}</div>
+                                    <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span><span style="color:#0056b3; font-weight:bold;">${c.name||''}</span></div>
+                                    <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span>${c.mobile||''}</div>
+                                    <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span>${c.father_name||''}</div>
+                                    <div style="text-align:center; margin-top:10px;">
+                                        <button type="button" style="background:#17a2b8; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:12px; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.1);" onmouseover="this.style.background='#138496'" onmouseout="this.style.background='#17a2b8'">View Detail</button>
+                                    </div>
+                                  </div>
+                                </td>`;
+                            } else {
+                                html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                                  <div style="border:1px dashed #ccc; padding:10px; border-radius:6px; background:#fafafa; font-size:12.5px; line-height:1.6; box-shadow: 0 1px 2px rgba(0,0,0,.03); opacity:0.65; position:relative;">
+                                    <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#ddd;"></div>
+                                    <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #ddd; padding-bottom: 4px; color: #888;">Seat No:- ${seatIdx}</div>
+                                    <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span></div>   
+                                    <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span></div>
+                                    <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span></div>  
+                                    <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span></div>
+                                    <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span></div>
+                                    <div class="row-Subject"><span style="font-weight:bold">Subject:- </span></div>
+                                    <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span></div>
+                                    <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span></div>
+                                    <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span></div>
+                                    <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span></div>
+                                    <div style="text-align:center; margin-top:10px;">
+                                        <button type="button" disabled style="background:#e0e0e0; color:#999; border:none; padding:5px 12px; border-radius:3px; font-size:12px;">View Detail</button>
+                                    </div>
+                                  </div>
+                                </td>`;
+                            }
+                        } else {
+                            html += `<td style="width: 260px; padding:6px;"></td>`;
+                        }
+                    }
+                } else {
+                    for (let col = 0; col < colsPerRow; col++) {
+                        if (col === 0) {
+                            seatNo = seatNo + colsPerRow;
+                        } else {
+                            seatNo = seatNo - 1;
+                        }
+
+                        let seatIdx = actualSeatNo - (seatNo - 1);
+
+                        if (seatIdx <= capacity && seatIdx > 0) {
+                            const c = seatMap[seatIdx];
+
+                            if (c) {
+                                html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                                  <div style="border:1px solid #c5d5ee; padding:10px; border-radius:6px; background:#f4f8ff; font-size:12.5px; line-height:1.6; box-shadow: 0 3px 6px rgba(0,0,0,.06); position:relative; overflow:hidden;">
+                                    <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#2e5090;"></div>
+                                    <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #b0bec5; padding-bottom: 4px; color: #c62828;">Seat No:- ${seatIdx}</div>
+                                    <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span>${c.reg_no||''}</div>
+                                    <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span><span style="font-size:16px; font-weight:900; color:#000;">${c.roll_no||''}</span></div>
+                                    <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span>${c.degree_type||''}</div>
+                                    <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span>${c.subject||''}</div>
+                                    <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span>${c.center||''}</div>
+                                    <div class="row-Subject"><span style="font-weight:bold">Subject:- </span>${c.subject||''}</div>
+                                    <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span>${c.exam_type||''}</div>
+                                    <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span><span style="color:#0056b3; font-weight:bold;">${c.name||''}</span></div>
+                                    <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span>${c.mobile||''}</div>
+                                    <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span>${c.father_name||''}</div>
+                                    <div style="text-align:center; margin-top:10px;">
+                                        <button type="button" style="background:#17a2b8; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:12px; transition:0.2s; box-shadow:0 1px 2px rgba(0,0,0,0.1);" onmouseover="this.style.background='#138496'" onmouseout="this.style.background='#17a2b8'">View Detail</button>
+                                    </div>
+                                  </div>
+                                </td>`;
+                            } else {
+                                html+=`<td style="padding:6px; vertical-align:top; width: 260px;">
+                                  <div style="border:1px dashed #ccc; padding:10px; border-radius:6px; background:#fafafa; font-size:12.5px; line-height:1.6; box-shadow: 0 1px 2px rgba(0,0,0,.03); opacity:0.65; position:relative;">
+                                    <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:#ddd;"></div>
+                                    <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:6px; border-bottom: 1px dashed #ddd; padding-bottom: 4px; color: #888;">Seat No:- ${seatIdx}</div>
+                                    <div class="row-registrationNo"><span style="font-weight:bold">Reg No:- </span></div>   
+                                    <div class="row-rollNo"><span style="font-weight:bold">Roll No:- </span></div>
+                                    <div class="row-DegreeType"><span style="font-weight:bold">Degree Type:- </span></div>  
+                                    <div class="row-specialization"><span style="font-weight:bold">Specialization:- </span></div>
+                                    <div class="row-CollegeName"><span style="font-weight:bold">College Name:- </span></div>
+                                    <div class="row-Subject"><span style="font-weight:bold">Subject:- </span></div>
+                                    <div class="row-ExamType"><span style="font-weight:bold">Exam Type:- </span></div>
+                                    <div class="row-studentName"><span style="font-weight:bold">Student Name:- </span></div>
+                                    <div class="row-mobileNo"><span style="font-weight:bold">Mobile No:- </span></div>
+                                    <div class="row-fatherName"><span style="font-weight:bold">Father Name:- </span></div>
+                                    <div style="text-align:center; margin-top:10px;">
+                                        <button type="button" disabled style="background:#e0e0e0; color:#999; border:none; padding:5px 12px; border-radius:3px; font-size:12px;">View Detail</button>
+                                    </div>
+                                  </div>
+                                </td>`;
+                            }
+                        } else {
+                            html += `<td style="width: 260px; padding:6px;"></td>`;
+                        }
+                    }
+                }
+            }
+            html += `</tr>`;
+        }
+        
+        html += `<tr><td colspan="${colsPerRow}" style="padding-top:15px; text-align:center;"><div style="font-weight: bold; padding: 10px; border-top: 3px solid #333; margin-top: 10px; display: inline-block; width: 100%;">Blackboard is on this side!</div></td></tr>`;
+
+        html+=`</tbody></table>`;
+      });      display.innerHTML=html;
+      applyFilters(); // Apply current checkbox states
+      
+    }).catch(()=>{
+      display.innerHTML='<p style="color:red;">Error loading seating arrangement data.</p>';
+    });
+}
+
+function applyFilters() {
+    document.querySelectorAll('.chkFilterGroup').forEach(chk => {
+        const rowClass = '.row-' + chk.value;
+        const els = document.querySelectorAll(rowClass);
+        els.forEach(el => {
+            el.style.display = chk.checked ? 'block' : 'none';
+        });
+    });
+}
+
+// Bind checkboxes to filter logic dynamically
+document.querySelectorAll('.chkFilterGroup').forEach(chk => {
+    chk.addEventListener('change', applyFilters);
+});
+
+/* Bindings */
+sessionSel.addEventListener('change', fetchBySession);
+etSel.addEventListener('change', ()=>{ fetchCenters(); resetSeating(); });
+centerSel.addEventListener('change', ()=>{ fetchRooms(); resetSeating(); });
+btnView.addEventListener('click', renderSeating);
+btnReset.addEventListener('click', resetSeating);
+
+/* Initial load */
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(sessionSel.value) fetchBySession();
+});
+})();
+</script>
+{% endblock %}

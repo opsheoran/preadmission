@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    @page {
+        size: A4 landscape;
+        margin: 1cm;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+    }
+    .header {
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+    <div class="header">
+        CHAUDHARY CHARAN SINGH HARYANA AGRICULTURAL UNIVERSITY<br>
+        CollegeWise DepartmentWise Allotment Report<br>
+        {% if session_name %}Session: {{ session_name }}{% endif %}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>SNo</th>
+                <th>Session</th>
+                <th>Degree</th>
+                <th>College</th>
+                <th>Cutoff</th>
+                <th>RegistrationNo</th>
+                <th>Name</th>
+                <th>FatherName</th>
+                <th>ETMarks</th>
+                <th>Lastqualifiedmarks</th>
+                <th>OldAllotment</th>
+                <th>NewAllotement</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in records %}
+            <tr>
+                <td style="text-align: center;">{{ loop.index }}</td>
+                <td>{{ row.Session }}</td>
+                <td>{{ row.Degree }}</td>
+                <td>{{ row.College }}</td>
+                <td>{{ row.Cutoff }}</td>
+                <td>{{ row.RegistrationNo }}</td>
+                <td>{{ row.Name }}</td>
+                <td>{{ row.FatherName }}</td>
+                <td>{{ row.ETMarks }}</td>
+                <td>{{ row.Lastqualifiedmarks }}</td>
+                <td>{{ row.OldAllotment }}</td>
+                <td>{{ row.NewAllotement }}</td>
+                <td>{{ row.Status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

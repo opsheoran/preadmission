@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* ── compact form controls ── */
+.sa-dd   { width: 250px; padding: 6px 8px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; }
+.sa-tb   { width: 250px; padding: 6px 8px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; }
+/* ── section panel ── */
+.sa-panel {
+    background: #f7f9fc; border: 1px solid #dde3ee;
+    border-radius: 4px; padding: 15px 20px; margin-top: 10px;
+}
+/* ── spacer row ── */
+.row-gap td { height: 12px; }
+/* ── inline label style reuse ── */
+.vl { text-align: right; font-weight: bold; font-size: 11.5px;
+      color: #333; padding-right: 6px; white-space: nowrap; vertical-align: middle; }
+.cl { text-align: center; font-weight: bold; vertical-align: middle; padding: 0 4px; }
+.fc { vertical-align: middle; }
+</style>
+
+<div class="tableheading">CollegeWise DepartmentWise Allotment</div>
+
+<form method="POST" action="{{ url_for('merit_reports.collegewise_departmentwise') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="sa-panel">
+        <table style="border-collapse:collapse;width:100%;border:none;">
+            <!-- Row 1: Session | Degree Type -->
+            <tr>
+                <td class="vl" style="width:15%;">Session</td>
+                <td class="cl" style="width:1%;">:</td>
+                <td class="fc" style="width:34%;">
+                    <select name="session_id" class="sa-dd">
+                        <option value="0"> -- Select Academic Session -- </option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+                <td class="vl" style="width:15%;">Degree Type</td>
+                <td class="cl" style="width:1%;">:</td>
+                <td class="fc" style="width:34%;">
+                    <select name="degree_type_id" class="sa-dd">
+                        <option value="0"> -- Select Degree Type --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_type_id == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr class="row-gap"><td colspan="6"></td></tr>
+
+            <!-- Row 2: College | CutOff -->
+            <tr>
+                <td class="vl">College</td>
+                <td class="cl">:</td>
+                <td class="fc">
+                    <select name="college_id" class="sa-dd">
+                        <option value="0"> -- Select College -- </option>
+                        {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if form_data.college_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="vl">CutOff</td>
+                <td class="cl">:</td>
+                <td class="fc">
+                    <select name="cutoff" class="sa-dd">
+                        <option value="0">-- Select CutOff --</option>
+                        {% for i in range(1, 11) %}
+                        <option value="{{ i }}" {% if form_data.cutoff == i|string %}selected{% endif %}>{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr class="row-gap"><td colspan="6"></td></tr>
+
+            <!-- Row 3: Report Type -->
+            <tr>
+                <td class="vl">Report Type</td>
+                <td class="cl">:</td>
+                <td class="fc" colspan="4">
+                    <select name="report_type" class="sa-dd">
+                        <option value="0">-- Select File Type --</option>
+                        <option value="1" {% if form_data.report_type == '1' %}selected{% endif %}>Excel</option>
+                        <option value="2" {% if form_data.report_type == '2' %}selected{% endif %}>PDF</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            
+            <tr class="row-gap"><td colspan="6"></td></tr>
+            <tr>
+                <td colspan="6" style="text-align: center; padding-top: 10px;">
+                    <button type="submit" class="btn btn-save">EXPORT</button>
+                    <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('merit_reports.collegewise_departmentwise') }}'">RESET</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+{% endblock %}

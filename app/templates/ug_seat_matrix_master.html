@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading" id="page-top">UG Seat Matrix Master</div>
+
+<form id="seatMatrixForm" method="POST" action="{{ url_for('config_mgmt.ug_seat_matrix_master', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    <input type="hidden" name="detail_id" value="{{ edit_detail.id if edit_detail else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <!-- MASTER FIELDS -->
+            <tr>
+                <td class="vtext label-column">Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required onchange="updateFilters()" {{ 'disabled' if edit_record else '' }}>
+                        <option value="0">-- Select Academic Session --</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (edit_record and (edit_record.session_id|string) == (s.id|string)) or (selected_session_id|string == s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if edit_record %}<input type="hidden" name="session_id" value="{{ edit_record.session_id }}">{% endif %}
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Degree</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_id" id="degree_id" required onchange="updateFilters()" {{ 'disabled' if edit_record else '' }}>
+                        <option value="0">-- Select Degree --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {{ 'selected' if edit_record and (edit_record.degree_id|string) == (d.id|string) else '' }}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if edit_record %}<input type="hidden" name="degree_id" value="{{ edit_record.degree_id }}">{% endif %}
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">College</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="college_id" id="college_id" required onchange="updateFilters()" {{ 'disabled' if edit_record else '' }}>
+                        <option value="0">-- Select College --</option>
+                        {% for c in colleges %}
+                        <option value="{{ c.id }}" {{ 'selected' if edit_record and (edit_record.college_id|string) == (c.id|string) else '' }}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if edit_record %}<input type="hidden" name="college_id" value="{{ edit_record.college_id }}">{% endif %}
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+
+            {% if not edit_record %}
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 10px 0;">
+                    <button type="button" class="btn btn-save" style="background-color: #4CAF50;" onclick="showAddSection()">ADD NEW MATRIX</button>
+                </td>
+            </tr>
+            {% endif %}
+
+            <!-- DETAIL FIELDS -->
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">Gender</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="gender">
+                        <option value=""> -- Select Gender -- </option>
+                        <option value="M" {{ 'selected' if edit_detail and edit_detail.gender == 'M' else '' }}>MALE</option>
+                        <option value="F" {{ 'selected' if edit_detail and edit_detail.gender == 'F' else '' }}>FEMALE</option>
+                        <option value="T" {{ 'selected' if edit_detail and edit_detail.gender == 'T' else '' }}>TRANSGENDER</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">Category</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="cat_id" id="cat_id">
+                        <option value="0">-- Select Category --</option>
+                        {% for sc in student_categories %}
+                        <option value="{{ sc.Pk_StuCatId }}" {{ 'selected' if edit_detail and (edit_detail.cat_id|string) == (sc.Pk_StuCatId|string) else '' }}>{{ sc.Description }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">Is ESM Seat</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="checkbox" name="is_esm" style="width:auto;" {{ 'checked' if edit_detail and edit_detail.is_esm else '' }}>
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">No of Seats</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="number" name="seats" class="textbox" value="{{ edit_detail.seats if edit_detail else '' }}" style="width: 100px !important;">
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td></td><td></td>
+                <td style="padding: 10px 0;">
+                    <button type="submit" class="btn btn-save" style="background-color: #2196F3;">{{ 'UPDATE' if edit_detail else 'ADD' }}</button>
+                    <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.ug_seat_matrix_master', edit_id=(edit_record.id if edit_record else ''), session_id=selected_session_id) }}#seatMatrixForm'">RESET DETAIL</button>
+                </td>
+            </tr>
+
+            <!-- DETAIL GRID -->
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td colspan="3" class="tablesubheading section-header">List of Seat Matrix Detail</td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td colspan="3">
+                    <table class="grid-table" style="margin: 10px 0;">
+                        <thead>
+                            <tr class="header-style">
+                                <th style="width:10%">S.No.</th>
+                                <th>Gender</th>
+                                <th>Category</th>
+                                <th style="width:15%">ESM Seat</th>
+                                <th style="width:15%">No of Seats</th>
+                                <th style="width:5%">EDIT</th>
+                                <th style="width:5%">DELETE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in detail_records %}
+                            <tr style="{{ 'background-color:#fff9c4;' if edit_detail and (edit_detail.id|string) == (d.id|string) else '' }}">
+                                <td style="text-align:center;">{{ loop.index }}</td>
+                                <td style="text-align:center;">{{ d.gender or '' }}</td>
+                                <td>{{ d.category_name }}</td>
+                                <td style="text-align:center;">{{ '1' if d.is_esm else '0' }}</td>
+                                <td style="text-align:center;">{{ d.seats }}</td>
+                                <td style="text-align:center;"><a href="{{ url_for('config_mgmt.ug_seat_matrix_master', edit_id=edit_record.id, detail_id=d.id, session_id=selected_session_id) }}#seatMatrixForm" class="action-icon icon-edit"></a></td>
+                                <td style="text-align:center;"><a href="#" class="action-icon icon-delete"></a></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="7" style="text-align:center; font-style:italic; color:#999;">No detail records.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- ADDITIONAL SEATS -->
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td colspan="3" class="tablesubheading section-header">Additional Seats</td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">LDV</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="number" name="ldv" value="{{ other_seats.ldv if other_seats else '0' }}" class="textbox" style="width: 100px !important;">
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">Employee Ward</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="number" name="emp_ward" value="{{ other_seats.emp_ward if other_seats else '0' }}" class="textbox" style="width: 100px !important;">
+                </td>
+            </tr>
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td class="vtext label-column">Sports</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="number" name="sports" value="{{ other_seats.sports if other_seats else '0' }}" class="textbox" style="width: 100px !important;">
+                </td>
+            </tr>
+
+            <tr class="detail-section" style="{{ 'display:none;' if not edit_record else '' }}">
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">UPDATE ALL</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.ug_seat_matrix_master', session_id=selected_session_id) }}'">CANCEL</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait..</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<div class="tablesubheading section-header">List of UG Seat Matrix(s)</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>Session</th>
+            <th>Degree</th>
+            <th>College</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr style="{{ 'background-color:#e1f5fe; font-weight:bold;' if edit_record and (edit_record.id|string) == (r.id|string) else '' }}">
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td>{{ r.degree_name }}</td>
+            <td>{{ r.college_name }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.ug_seat_matrix_master', edit_id=r.id, session_id=selected_session_id) }}#seatMatrixForm" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.delete_ug_seat_matrix_master', id=r.id) }}" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="text-align:center;">No configurations found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.ug_seat_matrix_master' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+    function updateFilters() {
+        var s = document.getElementById('session_id').value;
+        var url = new URL(window.location.href);
+        url.searchParams.set('session_id', s);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
+    function showAddSection() {
+        var s = document.getElementById('session_id').value;
+        var d = document.getElementById('degree_id').value;
+        var c = document.getElementById('college_id').value;
+        
+        if(s == '0' || d == '0' || c == '0') {
+            alert("Please select Session, Degree and College first.");
+            return;
+        }
+        
+        var sections = document.querySelectorAll('.detail-section');
+        sections.forEach(function(el) { el.style.display = 'table-row'; });
+        document.getElementById('cat_id').required = true;
+        // Scroll to form area
+        document.getElementById('seatMatrixForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    (function () {
+        // Auto-scroll to form if editing
+        if (window.location.hash === '#seatMatrixForm' || {{ 'true' if edit_record else 'false' }}) {
+            setTimeout(function() {
+                var el = document.getElementById('seatMatrixForm');
+                if(el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }, 100);
+        }
+
+        var form = document.getElementById('seatMatrixForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 750px !important; }
+    
+    .table-form input[type="text"], .table-form select, .table-form input[type="number"] { height: 24px; font-size: 11px; padding: 2px 5px; width: 300px; }
+    
+    .tablesubheading.section-header {
+        background-color: #f1f8ff !important; color: #0d47a1 !important; padding: 6px 10px !important; border-left: 4px solid #0d47a1; margin-top: 15px; border-bottom: 1px solid #d0e8ff;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

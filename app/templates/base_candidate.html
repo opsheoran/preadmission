@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCSHAU :: STUDENT PORTAL</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        :root {
+            --primary-color: #0d47a1;
+            --secondary-color: #1976d2;
+            --header-bg: #ffffff;
+            --bg-color: #f4f6f8;
+            --border-color: #ced4da;
+            --required-color: #ff0000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-size: 12px;
+            color: #333;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background-color: #4caf50;
+            z-index: 9999;
+            transition: width 0.4s ease, opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .top-pinned {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: white;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 8px 25px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        .header .logo img { height: 45px; }
+        .login-info { text-align: right; font-size: 11px; color: #666; }
+        .login-info a { color: var(--primary-color); text-decoration: none; font-weight: 600; margin: 0 3px; }
+        .login-info a:hover { text-decoration: underline; }
+
+        .container {
+            max-width: 100%;
+            margin: 15px;
+            padding: 20px;
+            background-color: white;
+            min-height: 600px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="password"], input[type="tel"], select, textarea {
+            border: 1px solid #ccc;
+            padding: 7px 12px;
+            font-size: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus { border-color: var(--secondary-color); outline: none; box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1); }
+
+        .btn { padding: 8px 22px; cursor: pointer; font-weight: 600; font-size: 11px; text-transform: uppercase; border-radius: 4px; transition: all 0.2s; border: 1px solid var(--primary-color); }
+        .btn-save, .btn-primary { background-color: var(--primary-color); color: white; border:none; padding: 10px 15px; border-radius: 4px;}
+        .btn-save:hover, .btn-primary:hover { background-color: #0a3d91; transform: translateY(-1px); }
+
+        .flash-inline { display: inline-block; margin-bottom: 10px; padding: 10px 15px; border-radius: 4px; font-size: 12px; font-weight: 600; animation: fadeIn 0.4s; width: 100%; box-sizing: border-box;}
+        .flash-success-inline { color: #1b5e20; background-color: #e8f5e9; border: 1px solid #c8e6c9; }
+        .flash-error-inline { color: #b71c1c; background-color: #fff1f0; border: 1px solid #ffa39e; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <div class="top-pinned">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CCSHAU Logo">
+                </div>
+                <div style="line-height: 1.2;">
+                    <div style="font-family: 'Times New Roman', Times, serif; font-size: 22px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px;">
+                        CCS Haryana Agricultural University, Hisar
+                    </div>
+                    <div style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #555; text-transform: uppercase;">
+                        Pre Admission Portal
+                    </div>
+                </div>
+            </div>
+            <div class="login-info">
+                {% if session.get('candidate_id') %}
+                    <strong>Welcome, {{ session.get('candidate_name', 'Candidate') }}</strong><br>
+                    <a href="{{ url_for('main.candidate_dashboard') }}">DASHBOARD</a> |
+                    <a href="{{ url_for('main.candidate_logout') }}">LOG OUT</a>
+                {% else %}
+                    <strong>STUDENT PORTAL</strong><br>
+                    <a href="{{ url_for('main.candidate_landing') }}">HOME</a> |
+                    <a href="{{ url_for('main.login') }}">ADMIN LOGIN</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-inline {% if category == 'success' %}flash-success-inline{% else %}flash-error-inline{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var flashes = document.querySelectorAll('.flash-inline');
+                flashes.forEach(function(f) {
+                    if (f.classList.contains('flash-success-inline')) {
+                        f.style.transition = 'opacity 0.5s ease';
+                        f.style.opacity = '0';
+                        setTimeout(function() { f.remove(); }, 500);
+                    }
+                });
+            }, 4000);
+        });
+
+        window.onload = function() {
+            var bar = document.getElementById('progress-bar');
+            bar.style.width = '100%';
+            setTimeout(function() { bar.style.opacity = '0'; }, 400);
+        };
+
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('a');
+            if (target && target.href && !target.href.includes('#') && !target.href.startsWith('javascript:')) {
+                showLoading();
+            }
+        });
+        document.addEventListener('submit', function() { showLoading(); });
+
+        function showLoading() {
+            var bar = document.getElementById('progress-bar');
+            bar.style.opacity = '1'; bar.style.width = '30%';
+            var width = 30;
+            var interval = setInterval(function() {
+                if (width >= 95) clearInterval(interval);
+                else { width += 2; bar.style.width = width + '%'; }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

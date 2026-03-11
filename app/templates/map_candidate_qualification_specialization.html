@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Map Candidate Qualification & Specialization</td>
         </tr>
         <form method="POST" action="{{ url_for('main.map_candidate_qualification_specialization') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <tr>
             <td class="vtext">Qualification</td>
             <td class="colon">:</td>
@@ -70,7 +71,7 @@
             <td style="text-align: center;">{{ m.qualification.description if m.qualification else '' }}</td>
             <td style="text-align: left;">{{ m.specialization.description if m.specialization else '' }}</td>
             <td style="text-align: center;">
-                <a href="#" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this mapping?');"></a>
+                <a href="{{ url_for('main.delete_map_cand_qual_spec', id=m.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this mapping?');"></a>
             </td>
         </tr>
         {% else %}

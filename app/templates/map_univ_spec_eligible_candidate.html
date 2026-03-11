@@ -26,6 +26,7 @@
             <td class="tableheading" colspan="3">Map Required University Degree Specilization & Candidate Qualification Specilization</td>
         </tr>
         <form method="POST" action="{{ url_for('main.map_univ_spec_eligible_candidate') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <tr>
             <td class="vtext" style="width: 15%">College Name</td>
             <td class="colon">:</td>
@@ -47,7 +48,7 @@
                     <option value=""> -- Select Degree --</option>
                     {% for um in univ_maps %}
                     <option value="{{ um.id }}" {{ 'selected' if f_map_id == um.id else '' }}>
-                        {{ um.degree.name if um.degree else '' }}({{ um.specialization.description if um.specialization else '' }})()
+                        {{ um.degree.name if um.degree else '' }}({{ um.specialization.description if um.specialization else '' }})({% if um.degree and 'B.' not in um.degree.name and 'Bachelor' not in um.degree.name %}{{ um.college.name if um.college else '' }}{% endif %})
                     </option>
                     {% endfor %}
                 </select>
@@ -90,7 +91,7 @@
 
 <div class="tablesubheading">List of Map Required Degree Specilization Qualification Specilization</div>
 
-<table class="table-grid-view" cellspacing="1" cellpadding="1" rules="all" border="1" style="width:100%; border-collapse:collapse; margin:15px 0;">
+<table class="grid-table">
     <thead>
         <tr class="header-style">
             <th align="center" style="width:5%;">S.No.</th>

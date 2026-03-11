@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading" id="admForm">Admission Process Configuration</div>
+
+<form id="admFormTag" method="POST" action="{{ url_for('config_mgmt.admission_process_configuration', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    <input type="hidden" name="detail_id" value="{{ edit_detail.id if edit_detail else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <!-- MASTER FIELDS -->
+            <tr>
+                <td class="vtext label-column">Academic Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required onchange="updateFilters()" {{ 'disabled' if edit_record else '' }}>
+                        <option value="0">-- Select Session --</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (edit_record and (edit_record.session_id|string) == (s.id|string)) or (selected_session_id|string == s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if edit_record %}<input type="hidden" name="session_id" value="{{ edit_record.session_id }}">{% endif %}
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Dated</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="dated" class="datepicker-dmy" value="{{ edit_record.dated if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Order/Reference No.</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="order_no" value="{{ edit_record.order_no if edit_record else '' }}" class="textbox" style="width: 250px !important;">
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Remarks</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <textarea name="remarks" rows="2" style="width: 100%; height: 50px;">{{ edit_record.remarks if edit_record else '' }}</textarea>
+                </td>
+            </tr>
+
+            <!-- DETAIL FIELDS (ONLY IF EDITING MASTER) -->
+            {% if edit_record %}
+            <tr><td colspan="3" class="tableheading section-header">Admission Configuration Details</td></tr>
+            <tr>
+                <td class="vtext label-column">Degree/College Type</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_id" required>
+                        <option value="">-- Select Degree --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {{ 'selected' if edit_detail and (edit_detail.degree_id|string) == (d.id|string) else '' }}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Login Allowed</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="checkbox" name="login_allowed" style="width:auto;" {{ 'checked' if edit_detail and edit_detail.login_allowed else '' }}>
+                </td>
+            </tr>
+
+            <!-- PROCESS DATES -->
+            <tr><td colspan="3" class="tablesubheading">Entrance Process Date</td></tr>
+            <tr>
+                <td class="vtext label-column">Entrance Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="entrance_date" class="datepicker-dmy" value="{{ edit_detail.entrance_date if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Login Configuration</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="login_start" class="datepicker-dmy" value="{{ edit_detail.login_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="login_end" class="datepicker-dmy" value="{{ edit_detail.login_end if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Payment Configuration</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="pay_start" class="datepicker-dmy" value="{{ edit_detail.pay_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="pay_end" class="datepicker-dmy" value="{{ edit_detail.pay_end if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Registration Process Configuration</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="reg_start" class="datepicker-dmy" value="{{ edit_detail.reg_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="reg_end" class="datepicker-dmy" value="{{ edit_detail.reg_end if edit_detail else '' }}">
+                    &nbsp; Late Fee Date :
+                    <input type="text" name="reg_late" class="datepicker-dmy" value="{{ edit_detail.reg_late if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Registration Configuration For NRI</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="nri_start" class="datepicker-dmy" value="{{ edit_detail.nri_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="nri_end" class="datepicker-dmy" value="{{ edit_detail.nri_end if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Grievance Key Fees Configuration</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="griv_start" class="datepicker-dmy" value="{{ edit_detail.griv_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="griv_end" class="datepicker-dmy" value="{{ edit_detail.griv_end if edit_detail else '' }}">
+                    &nbsp; Fees :
+                    <input type="number" step="0.01" name="griv_fee" value="{{ edit_detail.griv_fee if edit_detail else '0.00' }}" style="width:80px;">
+                </td>
+            </tr>
+
+            <tr><td colspan="3" class="tablesubheading">Admit Card Download Configuration</td></tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="text" name="admit_start" class="datepicker-dmy" value="{{ edit_detail.admit_start if edit_detail else '' }}">
+                    &nbsp; End Date :
+                    <input type="text" name="admit_end" class="datepicker-dmy" value="{{ edit_detail.admit_end if edit_detail else '' }}">
+                </td>
+            </tr>
+
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">UPDATE CONFIG</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.admission_process_configuration', session_id=selected_session_id) }}'">CANCEL EDIT</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait..</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- DETAIL GRID -->
+            <tr><td colspan="3" class="tableheading section-header">List of Configuration Detail</td></tr>
+            <tr>
+                <td colspan="3">
+                    <table class="grid-table" style="margin: 15px 0;">
+                        <thead>
+                            <tr class="header-style">
+                                <th style="width:10%">S.No.</th>
+                                <th>Degree/College Type</th>
+                                <th style="width:15%">Login Allowed</th>
+                                <th style="width:5%">EDIT</th>
+                                <th style="width:5%">DELETE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in detail_records %}
+                            <tr style="{{ 'background-color:#fff9c4;' if edit_detail and (edit_detail.id|string) == (d.id|string) else '' }}">
+                                <td style="text-align:center;">{{ loop.index }}</td>
+                                <td>{{ d.degree_name }}</td>
+                                <td style="text-align:center;">{{ 'True' if d.login_allowed else 'False' }}</td>
+                                <td style="text-align:center;"><a href="{{ url_for('config_mgmt.admission_process_configuration', edit_id=edit_record.id, detail_id=d.id, session_id=selected_session_id) }}#admForm" class="action-icon icon-edit"></a></td>
+                                <td style="text-align:center;"><a href="#" class="action-icon icon-delete"></a></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" style="text-align:center;">No detail records.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</form>
+
+<div class="tableheading section-header">List of Admission Configuration</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>Academic Session</th>
+            <th style="width:20%">Order/Reference No.</th>
+            <th style="width:15%">Dated</th>
+            <th>Remarks</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr style="{{ 'background-color:#e1f5fe; font-weight:bold;' if edit_record and (edit_record.id|string) == (r.id|string) else '' }}">
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td style="text-align:center;">{{ r.order_no or '' }}</td>
+            <td style="text-align:center;">{{ r.dated }}</td>
+            <td>{{ r.remarks or '' }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.admission_process_configuration', edit_id=r.id, session_id=selected_session_id) }}#admForm" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="#" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="text-align:center;">No records found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.admission_process_configuration' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+    function updateFilters() {
+        var s = document.getElementById('session_id').value;
+        var url = new URL(window.location.href);
+        url.searchParams.set('session_id', s);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
+    (function () {
+        if (window.location.hash === '#admForm' || {{ 'true' if edit_record else 'false' }}) {
+            setTimeout(function() {
+                var el = document.getElementById('admForm');
+                if(el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }, 100);
+        }
+
+        var form = document.getElementById('admFormTag');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 750px !important; }
+    
+    .table-form input[type="text"], .table-form select, .table-form input[type="number"] { height: 24px; font-size: 11px; padding: 2px 5px; width: 300px; }
+    
+    .datepicker-dmy {
+        background-image: url('{{ url_for("static", filename="img/calendar.svg") }}');
+        background-repeat: no-repeat; background-position: right 5px center; background-size: 14px 14px;
+        padding-right: 25px !important; width: 110px !important; font-size: 11px !important; height: 24px !important;
+    }
+
+    .tablesubheading {
+        background-color: #f1f8ff !important; color: #0d47a1 !important; padding: 6px 10px !important; border-left: 4px solid #0d47a1; margin-top: 15px; border-bottom: 1px solid #d0e8ff;
+        font-weight: bold; font-size: 12px;
+    }
+    .section-header { margin-top: 20px; }
+</style>
+{% endblock %}

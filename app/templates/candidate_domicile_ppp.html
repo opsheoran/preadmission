@@ -1,0 +1,482 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    /* =========================================================
+       ULTRA-PREMIUM FORM STYLING
+       ========================================================= */
+    :root {
+        --theme-primary: #1e3a8a;
+        --theme-secondary: #2563eb;
+        --theme-accent: #f59e0b;
+        --theme-bg: #f8fafc;
+        --theme-surface: #ffffff;
+        --theme-text-main: #1e293b;
+        --theme-text-muted: #64748b;
+        --theme-border: #e2e8f0;
+        --theme-error: #ef4444;
+        --theme-success: #10b981;
+    }
+
+    body { background-color: var(--theme-bg); }
+
+    .premium-container { 
+        padding: 40px 20px; 
+        max-width: 1280px; 
+        margin: 0 auto; 
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    .premium-card {
+        background: var(--theme-surface); 
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05); 
+        padding: 45px 50px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative top accent line */
+    .premium-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary), var(--theme-accent));
+    }
+    
+    .page-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--theme-border);
+    }
+
+    .step-badge {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--theme-secondary);
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .page-title {
+        font-size: 28px; 
+        color: var(--theme-text-main); 
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* Section Styling */
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin: 45px 0 25px;
+    }
+
+    .section-header h3 {
+        font-size: 16px; 
+        font-weight: 700; 
+        color: var(--theme-primary);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-header::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--theme-border);
+        margin-left: 20px;
+    }
+
+    /* Responsive Grid */
+    .smart-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+        gap: 24px 32px; 
+    }
+
+    /* Input Groups */
+    .input-group { 
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .input-label { 
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px; 
+        font-weight: 600; 
+        color: var(--theme-text-main); 
+        font-size: 13px; 
+    }
+
+    .required-star { 
+        color: var(--theme-error); 
+        margin-left: 4px; 
+        font-weight: bold;
+    }
+
+    /* Controls */
+    .premium-input {
+        width: 100%; 
+        height: 48px; 
+        padding: 0 16px; 
+        border: 2px solid var(--theme-border);
+        border-radius: 8px; 
+        background-color: var(--theme-surface); 
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--theme-text-main);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .premium-input::placeholder { color: #a1a1aa; font-weight: 400; }
+
+    .premium-input:hover:not(:disabled) {
+        border-color: #cbd5e1;
+    }
+
+    .premium-input:focus {
+        border-color: var(--theme-secondary); 
+        outline: none; 
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        background-color: #fff;
+    }
+
+    .premium-input:disabled, .premium-input[readonly] { 
+        background-color: #f1f5f9; 
+        color: var(--theme-text-muted); 
+        cursor: not-allowed; 
+        border-color: var(--theme-border);
+    }
+
+        /* Standard Custom Radio Buttons (Checkbox style) */
+    .radio-group {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        height: 48px;
+        padding: 0 16px;
+        border: 2px solid var(--theme-border);
+        border-radius: 8px;
+        background: var(--theme-surface);
+        transition: border-color 0.25s;
+    }
+    
+    .radio-group:hover { border-color: #cbd5e1; }
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--theme-text-main);
+    }
+
+    .radio-group input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px; /* Square checkbox style */
+        margin: 0;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .radio-group input[type="radio"]::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        transform: scale(0);
+        background-color: var(--theme-secondary);
+        transition: 0.2s transform ease-in-out;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        border-color: var(--theme-secondary);
+    }
+
+    .radio-group input[type="radio"]:checked::before {
+        transform: scale(1);
+    }
+
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .file-upload-wrapper:hover {
+        border-color: var(--theme-secondary);
+        background: #eff6ff;
+    }
+    .file-upload-wrapper input[type="file"] {
+        display: none;
+    }
+    .file-upload-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--theme-secondary);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    .file-upload-label svg { width: 24px; height: 24px; }
+
+    /* Action Bar */
+    .action-bar {
+        margin-top: 50px; 
+        padding-top: 30px; 
+        border-top: 1px solid var(--theme-border);
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+    }
+
+    .btn-epic { 
+        padding: 14px 32px; 
+        font-size: 14px; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        border-radius: 8px; 
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-epic-primary {
+        background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+        color: white; 
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+    }
+    .btn-epic-primary:hover { 
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-epic-secondary {
+        background: var(--theme-surface);
+        color: var(--theme-text-main);
+        border: 2px solid var(--theme-border);
+        text-decoration: none;
+    }
+    .btn-epic-secondary:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    
+    /* Dynamic field animation */
+    .dynamic-field {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.4s ease;
+    }
+    .dynamic-field.show {
+        max-height: 200px;
+        opacity: 1;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="premium-container" style="max-width: 800px;">
+    <div class="premium-card">
+        
+        <div class="page-title-wrapper" style="justify-content: center;">
+            <h2 class="page-title" style="margin-bottom: 0; padding-bottom: 0; border: none;">Domicile & Identity Verification</h2>
+        </div>
+        <p style="text-align: center; color: var(--theme-text-muted); margin-bottom: 40px; font-size: 15px;">Verify your Haryana Family ID (PPP) to proceed with registration.</p>
+
+        <div class="smart-grid" style="grid-template-columns: 1fr;">
+            <div class="input-group">
+                <label class="input-label">Select Domicile <span class="required-star">*</span></label>
+                <select class="premium-input" id="ddlDomicile" onchange="checkDomicile()">
+                    <option value="">-- Select Domicile --</option>
+                    <option value="1">Haryana</option>
+                    <option value="2">Other State</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="pppSection" class="dynamic-field" style="background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid var(--theme-border); margin-top: 20px;">
+            <div class="smart-grid" style="grid-template-columns: 1fr;">
+                <div class="input-group">
+                    <label class="input-label">Do You Have Family Id? <span class="required-star">*</span></label>
+                    <select class="premium-input" id="ddlHavePPP">
+                        <option value="Yes" selected>I Have Family ID</option>
+                        <option value="No">I don't have Family ID but I have Adhar Number</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="smart-grid" style="grid-template-columns: 2fr 1fr; margin-top: 20px; align-items: end;">
+                <div class="input-group">
+                    <label class="input-label">Parivar Pahchan Patra (Family ID) <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" id="txtFamilyID" maxlength="8" placeholder="e.g. 2KXW5828" style="text-transform: uppercase;">
+                </div>
+                <button type="button" class="btn-epic btn-epic-secondary" onclick="verifyFamilyId()" style="margin-bottom: 0;">Verify ID</button>
+            </div>
+        </div>
+
+        <div id="membersSection" class="dynamic-field" style="margin-top: 20px;">
+            <div class="smart-grid" style="grid-template-columns: 2fr 1fr; align-items: end;">
+                <div class="input-group">
+                    <label class="input-label">Select Family Member <span class="required-star">*</span></label>
+                    <select class="premium-input" id="ddlFamilyMember">
+                        <option value="">-- Select Family Member --</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-epic btn-epic-primary" onclick="sendOtp()" style="margin-bottom: 0; background: var(--theme-secondary);">Send OTP</button>
+            </div>
+        </div>
+
+        <div id="otpSection" class="dynamic-field" style="margin-top: 20px;">
+            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 15px;" id="otpMsg">
+                OTP Sent to your registered mobile No. ******6397. It is Valid for 10 min
+            </div>
+            <div class="smart-grid" style="grid-template-columns: 2fr 1fr; align-items: end;">
+                <div class="input-group">
+                    <label class="input-label">Enter OTP <span class="required-star">*</span></label>
+                    <input type="text" class="premium-input" id="txtOTP" maxlength="6" placeholder="Enter Any 6 Digits">
+                </div>
+                <button type="button" class="btn-epic btn-epic-primary" onclick="verifyOtp()" style="margin-bottom: 0; background: var(--theme-primary);">Verify OTP</button>
+            </div>
+        </div>
+
+        <div id="continueSection" class="dynamic-field" style="margin-top: 40px; text-align: center; border-top: 2px dashed var(--theme-border); padding-top: 30px;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #d1fae5; color: #047857; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 15px; margin-bottom: 30px;">
+                <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Identity Verified Successfully!
+            </div>
+            <form method="POST" action="{{ url_for('main.candidate_domicile_ppp') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="dtype_id" value="{{ request.args.get('dtype_id', '') }}">
+                <input type="hidden" name="degree_id" value="{{ request.args.get('degree_id', '') }}">
+                
+                <input type="hidden" id="mock_name" name="name" value="">
+                <input type="hidden" id="mock_family_id" name="family_id" value="">
+                <input type="hidden" name="mobile" value="9729976397">
+                <input type="hidden" name="f_name" value="HARI SINGH">
+                <input type="hidden" name="m_name" value="PARMESHRI">
+                <input type="hidden" name="dob" value="1982-12-12">
+                <input type="hidden" name="gender" value="M">
+                <input type="hidden" id="mock_domicile" name="domicile" value="">
+
+                <button type="submit" class="btn-epic btn-epic-primary" style="background: linear-gradient(135deg, var(--theme-success), #059669); font-size: 16px; padding: 18px;">
+                    Proceed to Registration Form
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function checkDomicile() {
+        const val = document.getElementById('ddlDomicile').value;
+        const pppSec = document.getElementById('pppSection');
+        const contSec = document.getElementById('continueSection');
+        
+        document.getElementById('membersSection').classList.remove('show');
+        document.getElementById('otpSection').classList.remove('show');
+        contSec.classList.remove('show');
+        
+        if (val === "1") {
+            pppSec.classList.add('show');
+            document.getElementById('mock_domicile').value = '1';
+        } else if (val === "2") {
+            pppSec.classList.remove('show');
+            contSec.classList.add('show');
+            document.getElementById('mock_domicile').value = '2';
+            document.getElementById('mock_name').value = '';
+            document.getElementById('mock_family_id').value = '';
+        } else {
+            pppSec.classList.remove('show');
+        }
+    }
+
+    function verifyFamilyId() {
+        const fid = document.getElementById('txtFamilyID').value;
+        if(fid.length < 5) { alert('Please enter a valid Family ID.'); return; }
+        
+        fetch('/api/ppp_dev/get_members', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ family_id: fid })
+        }).then(r => r.json()).then(data => {
+            if (data.status === 'success') {
+                const select = document.getElementById('ddlFamilyMember');
+                select.innerHTML = '<option value="">-- Select Family Member --</option>';
+                data.members.forEach(m => { select.innerHTML += `<option value="${m.member_id}">${m.name}</option>`; });
+                document.getElementById('membersSection').classList.add('show');
+                document.getElementById('mock_family_id').value = fid.toUpperCase();
+            } else { alert(data.message); }
+        }).catch(err => { alert('Error connecting to PPP server.'); console.error(err); });
+    }
+
+    function sendOtp() {
+        const member_id = document.getElementById('ddlFamilyMember').value;
+        if(!member_id) { alert('Please select a family member.'); return; }
+        
+        fetch('/api/ppp_dev/send_otp', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ member_id: member_id })
+        }).then(r => r.json()).then(data => {
+            if (data.status === 'success') {
+                document.getElementById('otpMsg').innerText = data.message;
+                document.getElementById('otpSection').classList.add('show');
+            } else { alert(data.message); }
+        });
+    }
+
+    function verifyOtp() {
+        const otp = document.getElementById('txtOTP').value;
+        const member_id = document.getElementById('ddlFamilyMember').value;
+        if(otp.length < 4) { alert('Invalid OTP'); return; }
+        
+        fetch('/api/ppp_dev/verify_otp', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ otp: otp, member_id: member_id })
+        }).then(r => r.json()).then(data => {
+            if (data.status === 'success') {
+                document.getElementById('txtOTP').disabled = true;
+                document.getElementById('continueSection').classList.add('show');
+                
+                document.getElementById('mock_name').value = data.data.name;
+                document.querySelector('input[name="f_name"]').value = data.data.f_name;
+                document.querySelector('input[name="m_name"]').value = data.data.m_name;
+                document.querySelector('input[name="dob"]').value = data.data.dob;
+                document.querySelector('input[name="gender"]').value = data.data.gender;
+                document.querySelector('input[name="mobile"]').value = data.data.mobile;
+            } else { alert(data.message); }
+        });
+    }
+</script>
+{% endblock %}

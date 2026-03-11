@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('invigilator.exam_center_copy') }}" id="copyForm" onsubmit="return validateSelection()">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tbody>
+            <tr>
+                <td class="tableheading" colspan="7">Exam Center Copy</td>
+            </tr>
+            
+            <tr>
+                <td colspan="7">
+                    <div class="tablesubheading">Source Configuration (Copy From)</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Select Session</td>
+                <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+                <td class="required" style="width: 30%; vertical-align: middle;">
+                    <select name="source_session_id" id="source_session_id" class="dropdownlong" required onchange="filterSourceETs()">
+                        <option value="">-- Select Session --</option>
+                        {% for session in sessions %}
+                        <option value="{{ session.id }}">{{ session.session_name }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+                <td style="width: 6%;"></td>
+                <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">ET Name</td>
+                <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+                <td class="required" style="vertical-align: middle;">
+                    <select name="source_et_id" id="source_et_id" class="dropdownlong" required onchange="filterCenters()">
+                        <option value="">-- Select Entrance Test --</option>
+                        {% for et in ets %}
+                        <option value="{{ et.id }}" data-session="{{ et.fk_session_id }}">{{ et.description }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="7" style="padding-top: 20px;">
+                    <div class="tablesubheading">Destination Configuration (Copy To)</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext" style="text-align: right; vertical-align: middle;">Select Session</td>
+                <td class="colon" style="vertical-align: middle;">:</td>
+                <td class="required" style="vertical-align: middle;">
+                    <select name="dest_session_id" id="dest_session_id" class="dropdownlong" required onchange="filterDestETs()">
+                        <option value="">-- Select Session --</option>
+                        {% for session in sessions %}
+                        <option value="{{ session.id }}">{{ session.session_name }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+                <td></td>
+                <td class="vtext" style="text-align: right; vertical-align: middle;">ET Name</td>
+                <td class="colon" style="vertical-align: middle;">:</td>
+                <td class="required" style="vertical-align: middle;">
+                    <select name="dest_et_id" id="dest_et_id" class="dropdownlong" required>
+                        <option value="">-- Select Entrance Test --</option>
+                        {% for et in ets %}
+                        <option value="{{ et.id }}" data-session="{{ et.fk_session_id }}">{{ et.description }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="7" style="padding-top: 20px;">
+                    <div class="tablesubheading">Select Centers to Copy</div>
+                    <table class="grid-table" style="margin-top: 10px;">
+                        <thead>
+                            <tr style="position: sticky; top: 0; z-index: 1;">
+                                <th style="width: 10%; text-align: center;">
+                                    <input type="checkbox" id="chkAll" onchange="toggleAll(this)"> All
+                                </th>
+                                <th>Center Name</th>
+                                <th>Code</th>
+                                <th>Rooms Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="centersListBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <tr style="background-color: #4a534a; color: white;">
+                <td colspan="2"></td>
+                <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                    <button type="submit" class="btn btn-save">COPY Exam Center</button>
+                    <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('invigilator.exam_center_copy') }}'">RESET</button>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<script>
+    // Data passed from backend
+    const allCenters = [
+        {% for c in all_centers %}
+        {
+            id: {{ c.id }},
+            et_id: {{ c.fk_et_id if c.fk_et_id else 'null' }},
+            name: "{{ c.name|replace('"', '\\"') }}",
+            code: "{{ c.code if c.code else '' }}",
+            rooms: {{ c.rooms|length }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function filterSourceETs() {
+        const sessionId = document.getElementById('source_session_id').value;
+        const etDropdown = document.getElementById('source_et_id');
+        filterDropdown(etDropdown, sessionId);
+        filterCenters(); // clear centers
+    }
+
+    function filterDestETs() {
+        const sessionId = document.getElementById('dest_session_id').value;
+        const etDropdown = document.getElementById('dest_et_id');
+        filterDropdown(etDropdown, sessionId);
+    }
+
+    function filterDropdown(dropdown, sessionId) {
+        dropdown.value = '';
+        const options = dropdown.options;
+        for (let i = 1; i < options.length; i++) {
+            if (options[i].getAttribute('data-session') == sessionId || sessionId == "") {
+                options[i].style.display = '';
+            } else {
+                options[i].style.display = 'none';
+            }
+        }
+    }
+
+    function filterCenters() {
+        const sourceEtId = document.getElementById('source_et_id').value;
+        const tbody = document.getElementById('centersListBody');
+        tbody.innerHTML = '';
+        
+        if (!sourceEtId) return;
+
+        const filteredCenters = allCenters.filter(c => c.et_id == sourceEtId);
+        
+        if (filteredCenters.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No centers found for the selected Entrance Test.</td></tr>';
+            return;
+        }
+
+        filteredCenters.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align: center;">
+                    <input type="checkbox" name="center_ids" value="${c.id}" class="center-chk">
+                </td>
+                <td>${c.name}</td>
+                <td>${c.code}</td>
+                <td style="text-align: center;">${c.rooms}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('chkAll').checked = false;
+    }
+
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('.center-chk');
+        checkboxes.forEach(chk => {
+            chk.checked = source.checked;
+        });
+    }
+
+    function validateSelection() {
+        const checkboxes = document.querySelectorAll('.center-chk');
+        let checkedCount = 0;
+        checkboxes.forEach(chk => {
+            if (chk.checked) checkedCount++;
+        });
+
+        if (checkedCount === 0) {
+            alert('Please select at least one Exam Center to copy.');
+            return false;
+        }
+
+        const sourceEt = document.getElementById('source_et_id').value;
+        const destEt = document.getElementById('dest_et_id').value;
+        if (sourceEt === destEt) {
+            alert('Source and Destination Entrance Tests cannot be the same.');
+            return false;
+        }
+
+        return confirm('Are you sure you want to copy the selected ' + checkedCount + ' centers?');
+    }
+</script>
+
+{% endblock %}

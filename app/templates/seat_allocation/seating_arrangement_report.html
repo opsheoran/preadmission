@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.sa-dd { width: 220px; padding: 4px; }
+.btn-row { text-align: center; padding-top: 20px; padding-bottom: 10px; }
+.btn-action { margin: 0 5px; padding: 8px 14px; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; border: 1px solid transparent; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.btn-action:hover { opacity: 0.9; }
+.btn-view { background: #2e7d32; border-color: #1b5e20; }
+.btn-pdf { background: #c62828; border-color: #b71c1c; }
+.btn-reset { background: #757575; border-color: #616161; }
+.seat-room-hdr {
+    font-weight:bold; font-size:16px; color:#fff;
+    background:#17b1d7;
+    padding:8px 10px; margin:20px 0 0; text-align:center;
+}
+.seat-center-hdr {
+    font-weight:bold; font-size:18px; color:#fff;
+    background:#17b1d7;
+    padding:8px 10px; margin:20px 0 0; text-align:center;
+}
+.seat-card {
+    display: inline-block; padding: 5px; border: 1px solid #17b1d7; width: 110px; border-radius: 5px;
+    font-size: 11px; background-color: #dcf8ff; font-family: Calibri; text-align: center; vertical-align: top; margin: 4px;
+}
+.seat-card span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.seat-card .rno { font-weight: bold; font-size: 14px; }
+.seat-card .sno { font-weight: bold; color: #d32f2f; margin-bottom: 2px; }
+.blackboard { text-align: center; font-weight: bold; margin-top: 10px; font-size: 14px; padding: 10px; border-top: 3px solid #333; }
+.room-container { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background: #fff; }
+</style>
+
+<div class="tableheading">Seating Arrangement Report</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.seating_arrangement_report') }}" id="frmSAR">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<div style="background:#f7f9fc; border:1px solid #dde3ee; border-radius:4px; padding:20px 12px; margin-top:10px; display:flex; justify-content:center;">
+  <table style="border: none; border-collapse: separate; border-spacing: 0;">
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Academic Session</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="padding-right: 30px; vertical-align: middle;">
+        <select id="session_id" name="session_id" class="sa-dd" required onchange="fetchETs()">
+          <option value="">-- Select Academic Session --</option>
+          {% for s in sessions %}
+          <option value="{{ s.id }}">{{ s.session_name }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">ET Type</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="vertical-align: middle;">
+        <select id="et_id" name="et_id" class="sa-dd" required onchange="fetchCenters()">
+          <option value="">-- Select ET Type --</option>
+          {% for e in ets %}
+          <option value="{{ e.id }}">{{ e.description }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+    </tr>
+    <tr><td colspan="6" style="height: 10px;"></td></tr>
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Exam Center</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="padding-right: 30px; vertical-align: middle;">
+        <select id="exam_center_id" name="exam_center_id" class="sa-dd" required onchange="fetchRooms()">
+          <option value="">-- Select Exam Center --</option>
+          {% for c in centers %}
+          <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Exam Room No.</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="vertical-align: middle;">
+        <select id="room_id" name="room_id" class="sa-dd">
+          <option value="">-- All Rooms --</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="6" class="btn-row">
+        <button type="button" id="btnView" class="btn-action btn-view">VIEW</button>
+        <button type="submit" name="action" value="generate_pdf" class="btn-action btn-pdf">View PDF Report</button>
+        <button type="button" id="btnReset" class="btn-action btn-reset">Reset</button>
+      </td>
+    </tr>
+  </table>
+</div>
+</form>
+
+<div id="reportDisplay" style="margin-top:14px;"></div>
+
+<script>
+(function(){
+"use strict";
+const sessionSel = document.getElementById('session_id');
+const etSel      = document.getElementById('et_id');
+const centerSel  = document.getElementById('exam_center_id');
+const roomSel    = document.getElementById('room_id');
+const btnView    = document.getElementById('btnView');
+const btnReset   = document.getElementById('btnReset');
+const display    = document.getElementById('reportDisplay');
+
+function apiBase(){ return '{{ url_for("seat_allocation.seat_allotment") }}'.replace('/seat-allotment',''); }
+
+window.fetchETs = function(){
+  const sid = sessionSel.value;
+  etSel.innerHTML='<option value="">-- Select ET Type --</option>';
+  centerSel.innerHTML='<option value="">-- Select Exam Center --</option>';
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  if(!sid) return;
+  fetch(apiBase()+`/api/get_et_by_session?session_id=${sid}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(e=>{ const o=document.createElement('option'); o.value=e.id; o.textContent=e.name; etSel.appendChild(o); });
+    });
+}
+
+window.fetchCenters = function(){
+  const etId = etSel.value;
+  centerSel.innerHTML='<option value="">-- Select Exam Center --</option>';
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  display.innerHTML='';
+  if(!etId) return;
+  fetch(apiBase()+`/api/get_exam_centers_by_et?et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; centerSel.appendChild(o); });
+    });
+}
+
+window.fetchRooms = function(){
+  const cId = centerSel.value;
+  const etId = etSel.value;
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  display.innerHTML='';
+  if(!cId) return;
+  fetch(apiBase()+`/api/get_rooms_by_center?center_id=${cId}&et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(r=>{ const o=document.createElement('option'); o.value=r.id; o.textContent=r.room_no; roomSel.appendChild(o); });
+    });
+}
+
+function renderReport(){
+  const etId  = etSel.value;
+  const cId   = centerSel.value;
+  const rId   = roomSel.value;
+  if(!etId || !cId){ display.innerHTML='<p style="color:#888;font-style:italic;text-align:center;">Select ET Type and Exam Center to view the report.</p>'; return; }
+  display.innerHTML='<p style="color:#888;text-align:center;">Loading…</p>';
+  fetch(apiBase()+`/api/get_candidates?et_id=${etId}&exam_center_id=${cId}&room_id=${rId}`)
+    .then(r=>r.json()).then(data=>{
+      if(!data.length){ display.innerHTML='<p style="color:#888;font-style:italic;text-align:center;">No candidates found for selected criteria.</p>'; return; }
+      
+      const rooms={};
+      const roomKeys=[];
+      let cName = "";
+      data.forEach(c=>{
+        cName = c.center;
+        const k=c.room||'N/A';
+        if(!rooms[k]) {
+            rooms[k]={ capacity: c.capacity, no_row: c.no_row, no_column: c.no_column, paper_dist: c.paper_dist, cands: [] };
+            roomKeys.push(k);
+        }
+        rooms[k].cands.push(c);
+      });
+
+      let html=`<div class="seat-center-hdr">${cName}</div>`;
+
+      roomKeys.forEach(rNo=>{        const roomData = rooms[rNo];
+        html+=`<div class="seat-room-hdr">Room No:- ${rNo}</div><div class="room-container">`;
+        
+        const cands = roomData.cands;
+        const capacity = roomData.capacity || cands.length;
+        const dist = roomData.paper_dist || '';
+        const isSequential = dist && dist.toLowerCase().includes('sequential');
+        
+        let cols = parseInt(roomData.no_column, 10);
+        if (isNaN(cols) || cols <= 0) cols = 4;
+        
+        let rows = parseInt(roomData.no_row, 10);
+        if (isNaN(rows) || rows <= 0) rows = Math.ceil(capacity / cols);
+        
+        const actualSeatNo = rows * cols;
+        let seatNo = 0;
+
+        html += `<table class="rooms" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; text-align:center;">`;
+        
+        const seatMap = {};
+        cands.forEach(c => { seatMap[c.seat] = c; });
+        
+        for(let j = 0; j < rows; j++) {
+            html += `<tr>`;
+            
+            if (isSequential) {
+                for (let k = 0; k < cols; k++) {
+                    if (k === 0) {
+                        seatNo = j + 1;
+                    } else {
+                        seatNo = seatNo + rows;
+                    }
+                    
+                    let seatIdx = actualSeatNo - (seatNo - 1);
+
+                    if (seatIdx <= capacity && capacity > 0) {
+                        let c = seatMap[seatIdx];
+                        
+                        if (c) {
+                            html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dcf8ff; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                              <div style="font-weight: bold; font-size: 17px; padding-bottom: 2px;">${c.roll_no || 'Vacant'}</div>
+                              <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                              <div>${c.reg_no || '&nbsp;'}</div>
+                              <div style="font-size: 10px;" title="${c.degree_type || ''}">${c.degree_type ? c.degree_type.substring(0,15) : '&nbsp;'}</div>
+                              <div title="${c.name || ''}">${c.name ? c.name.substring(0,15) : '&nbsp;'}</div>
+                              <div>${c.mobile || '&nbsp;'}</div>
+                              <div title="${c.father_name || ''}">${c.father_name ? c.father_name.substring(0,15) : '&nbsp;'}</div>
+                            </td>`;
+                        } else {
+                            html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dec8c8; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden;">
+                              <div style="font-weight: bold; font-size: 13px; color: #555;">Vacant</div>
+                              <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                              <div>&nbsp;</div>
+                              <div>&nbsp;</div>
+                              <div style="color: #555;">Unallotted</div>
+                              <div>&nbsp;</div>
+                              <div>&nbsp;</div>
+                            </td>`;
+                        }
+                    } else {
+                        html += `<td style="border: none; width: 94px; padding: 5px; margin: 5px; display: inline-block;"></td>`;
+                    }
+                }
+            } else {
+                if (j % 2 === 0) {
+                    for (let k = 0; k < cols; k++) {
+                        let seatNo = 0;
+                        if (j === 0) {
+                            seatNo = k + 1;
+                        } else {
+                            seatNo = (j * cols) + (k + 1);
+                        }
+
+                        let seatIdx = actualSeatNo - (seatNo - 1);
+                        
+                        if (seatIdx <= capacity && capacity > 0) {
+                            let c = seatMap[seatIdx];
+                            
+                            if (c) {
+                                html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dcf8ff; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                  <div style="font-weight: bold; font-size: 17px; padding-bottom: 2px;">${c.roll_no || 'Vacant'}</div>
+                                  <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                                  <div>${c.reg_no || '&nbsp;'}</div>
+                                  <div style="font-size: 10px;" title="${c.degree_type || ''}">${c.degree_type ? c.degree_type.substring(0,15) : '&nbsp;'}</div>
+                                  <div title="${c.name || ''}">${c.name ? c.name.substring(0,15) : '&nbsp;'}</div>
+                                  <div>${c.mobile || '&nbsp;'}</div>
+                                  <div title="${c.father_name || ''}">${c.father_name ? c.father_name.substring(0,15) : '&nbsp;'}</div>
+                                </td>`;
+                            } else {
+                                html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dec8c8; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden;">
+                                  <div style="font-weight: bold; font-size: 13px; color: #555;">Vacant</div>
+                                  <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                                  <div>&nbsp;</div>
+                                  <div>&nbsp;</div>
+                                  <div style="color: #555;">Unallotted</div>
+                                  <div>&nbsp;</div>
+                                  <div>&nbsp;</div>
+                                </td>`;
+                            }
+                        } else {
+                            html += `<td style="border: none; width: 94px; padding: 5px; margin: 5px; display: inline-block;"></td>`;
+                        }
+                    }
+                } else {
+                    for (let k = 0; k < cols; k++) {
+                        let seatNo = 0;
+                        if (k === 0) {
+                            seatNo = (j * cols) + cols;
+                        } else {
+                            seatNo = (j * cols) + cols - k;
+                        }
+
+                        let seatIdx = actualSeatNo - (seatNo - 1);
+                        
+                        if (seatIdx <= capacity && capacity > 0) {
+                            let c = seatMap[seatIdx];
+                            
+                            if (c) {
+                                html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dcf8ff; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                  <div style="font-weight: bold; font-size: 17px; padding-bottom: 2px;">${c.roll_no || 'Vacant'}</div>
+                                  <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                                  <div>${c.reg_no || '&nbsp;'}</div>
+                                  <div style="font-size: 10px;" title="${c.degree_type || ''}">${c.degree_type ? c.degree_type.substring(0,15) : '&nbsp;'}</div>
+                                  <div title="${c.name || ''}">${c.name ? c.name.substring(0,15) : '&nbsp;'}</div>
+                                  <div>${c.mobile || '&nbsp;'}</div>
+                                  <div title="${c.father_name || ''}">${c.father_name ? c.father_name.substring(0,15) : '&nbsp;'}</div>
+                                </td>`;
+                            } else {
+                                html += `<td style="display: inline-block; padding: 5px !important; border: 1px solid #17b1d7; width: 94px; border-radius: 5px; height: auto; font-size: 11px; background-color: #dec8c8; font-family: Calibri; text-align: center; vertical-align: top; margin: 5px; overflow: hidden;">
+                                  <div style="font-weight: bold; font-size: 13px; color: #555;">Vacant</div>
+                                  <div style="color: #d32f2f; font-weight: bold; margin: 2px 0;">${seatIdx}</div>
+                                  <div>&nbsp;</div>
+                                  <div>&nbsp;</div>
+                                  <div style="color: #555;">Unallotted</div>
+                                  <div>&nbsp;</div>
+                                  <div>&nbsp;</div>
+                                </td>`;
+                            }
+                        } else {
+                            html += `<td style="border: none; width: 94px; padding: 5px; margin: 5px; display: inline-block;"></td>`;
+                        }
+                    }
+                }
+            }
+            html += `</tr>`;
+        }
+        
+        html += `<tr><td colspan="${cols}" style="padding-top:15px; text-align:center;"><div style="font-weight: bold; padding: 10px; border-top: 3px solid #333; margin-top: 10px; display: inline-block; width: 100%;">Blackboard is on this side!</div></td></tr>`;
+        html += `</table></div>`;
+
+      });
+      display.innerHTML=html;
+    }).catch(()=>{ display.innerHTML='<p style="color:red;text-align:center;">Error loading data.</p>'; });
+}
+
+btnView.addEventListener('click', renderReport);
+btnReset.addEventListener('click',()=>{
+  sessionSel.value = '';
+  etSel.innerHTML='<option value="">-- Select ET Type --</option>';
+  centerSel.innerHTML='<option value="">-- Select Exam Center --</option>';
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  display.innerHTML='';
+});
+})();
+</script>
+{% endblock %}

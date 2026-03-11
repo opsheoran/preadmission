@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Candidate Dashboard (Counselling)</td>
+        </tr>
+        <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="session_id">
+                    <option value="0">-- Select --</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="degree_id">
+                    <option value="0">-- Select --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_id|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_dashboard_counselling') }}'">RESET</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Dashboard (Counselling) Report</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Degree</th>
+            <th>Category</th>
+            <th>Total Qualified</th>
+            <th>Total Payments</th>
+            <th>Total Revenue (&#8377;)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ row.Degree }}</td>
+            <td>{{ row.Category }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ row.TotalQualified }}</td>
+            <td style="text-align: center; font-weight: bold; color: #3b82f6;">{{ row.TotalPayments }}</td>
+            <td style="text-align: right; font-weight: bold; color: #16a34a;">{{ '%.2f'|format(row.TotalRevenue|float) }}</td>
+        </tr>
+        {% endfor %}
+        <tr style="background-color: #dbeafe; font-weight: bold;">
+            <td colspan="3" style="text-align: right;">TOTAL</td>
+            <td style="text-align: center;">{{ total_qualified }}</td>
+            <td style="text-align: center; color: #3b82f6;">{{ total_payments }}</td>
+            <td style="text-align: right; color: #16a34a;">{{ '%.2f'|format(total_revenue) }}</td>
+        </tr>
+    </tbody>
+</table>
+<div style="margin-top: 6px; font-size: 12px; color: #555;">
+    <strong>Total Duplicate Payment Amount:</strong> &#8377; {{ '%.2f'|format(total_revenue - total_payments * (total_revenue / total_payments if total_payments else 0)) if total_payments else '0.00' }}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <strong>Actual Received Amount:</strong> &#8377; {{ '%.2f'|format(total_revenue) }}
+</div>
+{% elif request.method == 'POST' %}
+<div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">No Records Found !</div>
+{% endif %}
+{% endblock %}

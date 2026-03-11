@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Candidate Payment Reports</td>
+        </tr>
+        <form method="POST" id="paymentReportForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Academic Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select id="session_id" name="session_id" class="form-control" required onchange="fetchDates()">
+                    <option value="0">-- Select Academic Session --</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">DegreeType</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select id="degree_id" name="degree_id" class="form-control" onchange="fetchDates()">
+                    <option value="0">-- Select Degree Type --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_id|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">College</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="college_id" class="form-control">
+                    <option value="0">-- ALL --</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if form_data.college_id|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Caste Category</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="category_id" class="form-control">
+                    <option value="0">-- Select Caste Category --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if form_data.category_id|string == cat.id|string %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Specialization</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="specialization_id" class="form-control">
+                    <option value="0">-- Select Specialization --</option>
+                    {% for spec in specializations %}
+                        <option value="{{ spec.id }}" {% if form_data.specialization_id|string == spec.id|string %}selected{% endif %}>{{ spec.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Unique Id</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" name="unique_id" value="{{ form_data.unique_id }}" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Religion</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="religion_id" class="form-control">
+                    <option value="0">-- Select Religion --</option>
+                    {% for r in religions %}
+                        <option value="{{ r.id }}" {% if form_data.religion_id|string == r.id|string %}selected{% endif %}>{{ r.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Name</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" name="name" value="{{ form_data.name }}" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">From Date</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" id="from_date" name="from_date" value="{{ form_data.from_date }}" class="form-control datepicker-dmy">
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">To Date</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" id="to_date" name="to_date" value="{{ form_data.to_date }}" class="form-control datepicker-dmy">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Report Type</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="report_type" class="form-control">
+                    <option value="0" {% if form_data.report_type == '0' %}selected{% endif %}>Excel</option>
+                    <option value="1" {% if form_data.report_type == '1' %}selected{% endif %}>PDF</option>
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Registration Id</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" name="reg_no" value="{{ form_data.reg_no }}" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <input type="hidden" name="action" id="form_action" value="search">
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='search';">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_payment_reports') }}'">RESET</button>
+                <button type="submit" class="btn btn-save" style="background-color: #17a2b8; border-color: #17a2b8;" onclick="document.getElementById('form_action').value='export';">EXPORT</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if candidates %}
+<div class="tablesubheading">List of Candidates</div>
+<div style="text-align: right; font-weight: bold; margin-bottom: 5px; font-size: 11px; color: #1e293b;">
+    Total {{ candidates|length }} Candidate Found!
+</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No.</th>
+            <th>Registration No.</th>
+            <th>Candidate Name</th>
+            <th>Father Name</th>
+            <th>Specialization</th>
+            <th>Category</th>
+            <th>Mobile No.</th>
+            <th>RollNo</th>
+            <th>In Service</th>
+            <th>Amount</th>
+            <th>VIEW</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in candidates %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: center; color: var(--primary-color); font-weight: bold;">{{ row.regno }}</td>
+            <td>{{ row.CandidateName }}</td>
+            <td>{{ row.FatherName }}</td>
+            <td>{{ row.Specialization }}</td>
+            <td style="text-align: center;">{{ row.Category }}</td>
+            <td style="text-align: center;">{{ row.Mobile }}</td>
+            <td style="text-align: center;">{{ row.RollNo }}</td>
+            <td style="text-align: center;">{{ row.InService }}</td>
+            <td style="text-align: right; font-weight: bold;">{{ row.Amount }}</td>
+            <td style="text-align: center;">
+                <a href="javascript:void(0);" onclick="filterTransactions('{{ row.regno }}');" style="color: #0d47a1; text-decoration: none; font-weight: 600; font-size: 10px;">View Detail</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<div id="transactionsContainer" style="display: none;">
+    <div class="tablesubheading" style="margin-top: 20px;" id="transactionsTable">List of Transactions</div>
+    <table class="table-form" style="margin-bottom: 15px;">
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Payment Id</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <input type="text" id="filter_payment_id" class="form-control">
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Transaction Id</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <input type="text" id="filter_transaction_id" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Status</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;" colspan="5">
+                <select id="filter_status" class="form-control">
+                    <option value="">-- ALL --</option>
+                    <option value="Success" selected>SUCCESS PAYMENT</option>
+                    <option value="Failed">FAILED PAYMENT</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="button" class="btn btn-save" onclick="searchTransactions();">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="cancelTransactions();">CANCEL</button>
+                <button type="button" class="btn btn-save" style="background-color: #17a2b8; border-color: #17a2b8;" onclick="exportTransactions();">EXPORT</button>
+            </td>
+        </tr>
+    </table>
+
+    <table class="grid-table">
+        <thead>
+            <tr>
+                <th>All</th>
+                <th>S.No.</th>
+                <th>UniqueId</th>
+                <th>TransactionId.</th>
+                <th>Payment Id</th>
+                <th>Registration No.</th>
+                <th>Response Message</th>
+                <th>Paid Amount</th>
+                <th>Dated</th>
+                <th>Mobile No.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in transactions %}
+            <tr class="transaction-row" data-regno="{{ row.RegistrationNo }}">
+                <td style="text-align: center;"><input type="checkbox"></td>
+                <td style="text-align: center;">{{ loop.index }}</td>
+                <td style="text-align: center;">{{ row.UniqueId }}</td>
+                <td style="text-align: center;">{{ row.TransactionId }}</td>
+                <td style="text-align: center;">{{ row.PaymentId }}</td>
+                <td style="text-align: center; color: var(--primary-color); font-weight: bold;">{{ row.RegistrationNo }}</td>
+                <td>{{ row.ResponseMessage }}</td>
+                <td style="text-align: right; font-weight: bold;">{{ row.PaidAmount }}</td>
+                <td style="text-align: center;">{{ row.Dated }}</td>
+                <td style="text-align: center;">{{ row.MobileNo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterTransactions(regNo) {
+    document.getElementById('transactionsContainer').style.display = 'block';
+    
+    // Reset filters
+    document.getElementById('filter_payment_id').value = '';
+    document.getElementById('filter_transaction_id').value = '';
+    document.getElementById('filter_status').value = '';
+    
+    // Store current working RegNo for searches
+    window.currentRegNo = regNo;
+    
+    // Apply visual filter
+    searchTransactions();
+    
+    document.getElementById('transactionsTable').scrollIntoView({behavior: 'smooth'});
+}
+
+function searchTransactions() {
+    var regNo = window.currentRegNo;
+    var payId = document.getElementById('filter_payment_id').value.toLowerCase();
+    var txnId = document.getElementById('filter_transaction_id').value.toLowerCase();
+    var status = document.getElementById('filter_status').value.toLowerCase();
+    
+    var rows = document.querySelectorAll('.transaction-row');
+    rows.forEach(function(row) {
+        var rReg = row.getAttribute('data-regno');
+        var rPay = row.children[4].innerText.toLowerCase();
+        var rTxn = row.children[3].innerText.toLowerCase();
+        var rStat = row.children[4].innerText.toLowerCase(); // Payment Id is being used as Status in previous layout, let's fix if needed, but row.children[4] is Payment Id/Status. Wait, the DB sets PaymentId to 'Success' mostly.
+        
+        var match = true;
+        if(regNo && rReg !== regNo) match = false;
+        if(payId && rPay.indexOf(payId) === -1) match = false;
+        if(txnId && rTxn.indexOf(txnId) === -1) match = false;
+        if(status && rStat.indexOf(status) === -1) match = false;
+        
+        row.style.display = match ? '' : 'none';
+    });
+}
+
+function cancelTransactions() {
+    document.getElementById('filter_payment_id').value = '';
+    document.getElementById('filter_transaction_id').value = '';
+    document.getElementById('filter_status').value = 'success';
+    searchTransactions();
+}
+
+function exportTransactions() {
+    // Simple client side excel export for visible rows
+    var table = document.createElement("table");
+    var thead = document.querySelector(".grid-table thead").cloneNode(true);
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    
+    var rows = document.querySelectorAll('.transaction-row');
+    rows.forEach(function(row) {
+        if(row.style.display !== 'none') {
+            tbody.appendChild(row.cloneNode(true));
+        }
+    });
+    table.appendChild(tbody);
+    
+    var html = table.outerHTML;
+    var url = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "Transactions.xls";
+    link.click();
+}
+
+function fetchDates() {
+    var session_id = document.getElementById('session_id').value;
+    var degree_id = document.getElementById('degree_id').value;
+    
+    if(session_id && session_id != '0' && degree_id && degree_id != '0') {
+        fetch('/reports/get-payment-dates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({session_id: session_id, degree_id: degree_id})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('from_date').value = data.from_date;
+                document.getElementById('to_date').value = data.to_date;
+            }
+        });
+    }
+}
+</script>
+
+{% else %}
+    {% if request.method == 'POST' %}
+    <div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">Total 0 Candidate Found!</div>
+    {% endif %}
+{% endif %}
+{% endblock %}

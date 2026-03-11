@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .tableheading {
+        background-color: #0e7176;
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 8px;
+        text-align: left;
+    }
+    .tablesubheading {
+        background-color: #e0e0e0;
+        color: #333;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+    .vtext {
+        font-size: 12px;
+        font-weight: bold;
+        padding: 5px;
+        color: #333;
+    }
+    .colon {
+        width: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .required {
+        padding: 5px;
+    }
+    .dropdownmedium {
+        width: 250px;
+        padding: 3px;
+    }
+    .dropdownsmall {
+        width: 180px;
+        padding: 3px;
+    }
+    .textboxmedium {
+        width: 100px;
+        padding: 3px;
+    }
+    .DivStyleWithScroll {
+        border: 1px solid #666;
+        overflow-y: scroll;
+        background-color: #fff;
+        padding: 5px;
+    }
+    .chkboxlist label {
+        font-size: 11px;
+        margin-left: 5px;
+        cursor: pointer;
+    }
+    .chkboxlist td {
+        padding: 2px;
+    }
+    .btn-original {
+        background-color: #ff8a00;
+        color: #fff;
+        font-weight: bold;
+        padding: 6px 15px;
+        border: 1px solid #ff8a00;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-original:hover {
+        background-color: #ea7900;
+    }
+    .lblmessage {
+        color: #0e7176;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .grid-table-original {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .grid-table-original th {
+        background-color: #0e7176;
+        color: #fff;
+        font-size: 12px;
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+    .grid-table-original td {
+        font-size: 11px;
+        padding: 4px;
+        border: 1px solid #ccc;
+    }
+    .dgitem-style { background-color: White; }
+    .dgalt-style { background-color: #F8F8F8; }
+</style>
+
+<form method="POST" action="{{ url_for('seat_allocation.seat_allotment') }}" id="aspnetForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" class="table" width="100%">
+        <tbody><tr>
+            <td colspan="6" class="tableheading">Seat Allotment Generation</td>
+        </tr>
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; text-align: left; border: groove" class="table">
+                    <tbody><tr>
+                        <td class="vtext">
+                            <b>SESSION:</b><br>
+                            <select id="session_id" name="session_id" class="dropdownmedium" required onchange="fetchBySession()">
+                                <option value="">-- Select Session --</option>
+                                {% for s in sessions %}
+                                <option value="{{ s.id }}" {% if s.id == 71 %}selected{% endif %}>{{ s.session_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <span style="color: red">*</span>
+                        </td>
+                        <td class="vtext">
+                            <b>DEGREE TYPE:</b><br>
+                            <select id="degree_id" name="degree_id" class="dropdownmedium" required onchange="fetchByDegree()">
+                                <option value="">-- Select Degree --</option>
+                            </select>
+                        </td>
+                        <td class="vtext">
+                            <b>NO.OF RECORDS</b><br>
+                            <input name="txtRecord" type="text" value="30" id="txtRecord" class="textboxmedium">
+                            <span style="color: red">*</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vtext">
+                            <b>COLLEGE NAME:</b>
+                            <div class="DivStyleWithScroll" style="height: 100px;">
+                                <div id="college_panel"></div>
+                            </div>
+                        </td>
+                        <td class="vtext">
+                            <b>SPECIALIZATION:</b>
+                            <div class="DivStyleWithScroll" style="height: 100px;">
+                                <div id="spec_panel"></div>
+                            </div>
+                        </td>
+                        <td class="vtext">
+                            <b>EXAM TYPE:</b>
+                            <div class="DivStyleWithScroll" style="height: 100px;">
+                                <div id="et_type_panel"></div>
+                            </div>
+                        </td>
+                        <td class="vtext">
+                            <b>SUBJECT:</b>
+                            <div class="DivStyleWithScroll" style="height: 100px;">
+                                <div id="subject_panel"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 10px;">
+                            <input type="button" value="VIEW" id="btnViewNA" class="btn-original">
+                            <input type="button" value="RESET" onclick="location.reload();" class="btn-original" style="background-color:#666; border-color:#666;">
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border: groove; margin-top: 10px;">
+                    <tbody><tr>
+                        <td>
+                            <table cellpadding="5">
+                                <tbody><tr>
+                                    <td class="vtext"><b>FROM S.NO:</b><br><input type="text" id="from_sno" class="textboxmedium"></td>
+                                    <td class="vtext"><b>TO S.NO:</b><br><input type="text" id="to_sno" class="textboxmedium"></td>
+                                    <td valign="bottom"><input type="button" value="Select" id="btnSelectRange" class="btn-original" style="background-color:#14abd1; border-color:#14abd1;"></td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tablesubheading">List of Candidates [Seat Not Alloted]</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="DivStyleWithScroll" style="width: 100%; height: 250px">
+                                <table class="grid-table-original" id="tblNotAllotted">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="chkAllNA"></th>
+                                            <th>S.No.</th>
+                                            <th>Registration No.</th>
+                                            <th>Candidate Name</th>
+                                            <th>Father Name</th>
+                                            <th>Subject / Specialization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyNA">
+                                        <tr><td colspan="6" align="center">Select filters and click VIEW</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <span id="lblTotalNA" class="lblmessage"></span>
+                        </td>
+                    </tr>
+                </tbody></table>
+
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border: groove; margin-top: 15px;">
+                    <tbody><tr>
+                        <td class="tableheading" colspan="10" style="background-color:#555;">Seat Allocation Parameters</td>
+                    </tr>
+                    <tr style="background-color:#f9f9f9;">
+                        <td class="vtext" style="width: 15%">ET Type</td>
+                        <td class="colon">:</td>
+                        <td class="required">
+                            <select id="allotted_et_id" name="allotted_et_id" class="dropdownsmall" onchange="fetchCenters()">
+                                <option value="0">-- Select ET Type --</option>
+                            </select>
+                        </td>
+                        <td class="vtext" style="width: 15%">Exam Centre</td>
+                        <td class="colon">:</td>
+                        <td class="required">
+                            <select id="allotted_exam_center_id" name="allotted_exam_center_id" class="dropdownmedium" onchange="fetchRooms()">
+                                <option value="0">-- Select Exam Center --</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="10" style="padding:10px;">
+                            <b>SEATS ALLOCATION STATUS:</b>
+                            <div class="DivStyleWithScroll" style="height: 150px; margin-top:5px;">
+                                <table class="grid-table-original" id="tblStatus">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No.</th>
+                                            <th>Exam Center</th>
+                                            <th>Room No.</th>
+                                            <th>Total Capacity</th>
+                                            <th>Total Allotted</th>
+                                            <th>Available</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyStatus"></tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody></table>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <button type="submit" name="action" value="process_allotment" class="btn-original" style="background-color:#2e7d32; border-color:#2e7d32; padding:10px 30px;">PROCESS SEAT ALLOTMENT</button>
+                    <button type="submit" name="action" value="unprocess_allotment" class="btn-original" style="background-color:#c62828; border-color:#c62828; padding:10px 30px; margin-left:20px;" onclick="return confirm('Are you sure you want to unprocess?');">UNPROCESS</button>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        <div style="margin-top:10px;">
+                        {% for category, message in messages %}
+                          <span class="lblmessage" style="color:{% if category=='success' %}green{% else %}red{% endif %}; font-size:16px;">
+                            {{ message }}
+                          </span>
+                        {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% endwith %}
+                </div>
+
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border: groove;">
+                    <tbody><tr>
+                        <td class="tablesubheading" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>List of Candidates [Seat Allotted]</span>
+                            <input type="button" value="VIEW ALLOTTED" id="btnViewAD" class="btn-original" style="font-size:10px; padding:3px 10px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="DivStyleWithScroll" style="width: 100%; height: 300px">
+                                <table class="grid-table-original" id="tblAllotted">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="chkAllAD"></th>
+                                            <th>S.No.</th>
+                                            <th>Reg. No.</th>
+                                            <th>Candidate Name</th>
+                                            <th>Father Name</th>
+                                            <th>Specialization</th>
+                                            <th>Center</th>
+                                            <th>Room</th>
+                                            <th>Seat No.</th>
+                                            <th>Roll No.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyAD"></tbody>
+                                </table>
+                            </div>
+                            <span id="lblTotal" class="lblmessage"></span>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+    </tbody></table>
+</form>
+
+<script>
+(function(){
+"use strict";
+const sessionSel = document.getElementById('session_id');
+const degreeSel  = document.getElementById('degree_id');
+const allotEtSel = document.getElementById('allotted_et_id');
+const centerSel  = document.getElementById('allotted_exam_center_id');
+const colPanel   = document.getElementById('college_panel');
+const specPanel  = document.getElementById('spec_panel');
+const etPanel    = document.getElementById('et_type_panel');
+const subPanel   = document.getElementById('subject_panel');
+
+function apiUrl(path){ return '{{ url_for("seat_allocation.seat_allotment") }}'.replace('/seat-allotment','') + path; }
+
+window.fetchBySession = function(){
+  const sid = sessionSel.value;
+  degreeSel.innerHTML = '<option value="">-- Select Degree --</option>';
+  if(!sid) return;
+  fetch(apiUrl(`/api/get_degrees_by_session?session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      data.forEach(d=>{ const o=document.createElement('option'); o.value=d.id; o.textContent=d.name; degreeSel.appendChild(o); });
+    });
+  fetch(apiUrl(`/api/get_et_by_session?session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      allotEtSel.innerHTML = '<option value="0">-- Select ET Type --</option>';
+      data.forEach(e=>{ const o=document.createElement('option'); o.value=e.id; o.textContent=e.name; allotEtSel.appendChild(o); });
+    });
+};
+
+window.fetchByDegree = function(){
+  const did = degreeSel.value;
+  colPanel.innerHTML = specPanel.innerHTML = etPanel.innerHTML = subPanel.innerHTML = '';
+  if(!did) return;
+  fetch(apiUrl(`/api/get_colleges?degree_id=${did}`))
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c => colPanel.innerHTML += `<div><input type="checkbox" name="college_id" value="${c.id}" onchange="fetchSpecs()"><label>${c.name}</label></div>`);
+    });
+  fetch(apiUrl(`/api/get_exam_types?degree_id=${did}`))
+    .then(r=>r.json()).then(data=>{
+      data.forEach(et => etPanel.innerHTML += `<div><input type="checkbox" name="exam_type_id" value="${et.id}" onchange="fetchSubjects()"><label>${et.name}</label></div>`);
+    });
+};
+
+window.fetchSpecs = function(){
+  const did = degreeSel.value;
+  const cids = [...colPanel.querySelectorAll('input:checked')].map(i=>i.value);
+  specPanel.innerHTML = '';
+  if(!cids.length) return;
+  let url = apiUrl(`/api/get_specializations?degree_id=${did}`);
+  cids.forEach(id => url += `&college_ids[]=${id}`);
+  fetch(url).then(r=>r.json()).then(data=>{
+    data.forEach(s => specPanel.innerHTML += `<div><input type="checkbox" name="specialization_id" value="${s.id}"><label>${s.name}</label></div>`);
+  });
+};
+
+window.fetchSubjects = function(){
+  const etids = [...etPanel.querySelectorAll('input:checked')].map(i=>i.value);
+  subPanel.innerHTML = '';
+  if(!etids.length) return;
+  let url = apiUrl(`/api/get_subjects?`);
+  etids.forEach(id => url += `&exam_type_ids[]=${id}`);
+  fetch(url).then(r=>r.json()).then(data=>{
+    data.forEach(s => subPanel.innerHTML += `<div><input type="checkbox" name="subject_id" value="${s.id}"><label>${s.name}</label></div>`);
+  });
+};
+
+window.fetchCenters = function(){
+  const etid = allotEtSel.value;
+  centerSel.innerHTML = '<option value="0">-- Select Center --</option>';
+  if(!etid || etid=="0") return;
+  fetch(apiUrl(`/api/get_exam_centers_by_et?et_id=${etid}`))
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; centerSel.appendChild(o); });
+    });
+};
+
+window.fetchRooms = function(){
+  const etid = allotEtSel.value;
+  const cid = centerSel.value;
+  const sid = sessionSel.value;
+  if(!etid || etid=="0" || !cid || cid=="0") return;
+  fetch(apiUrl(`/api/get_allocation_status?et_id=${etid}&exam_center_id=${cid}&session_id=${sid}`))
+    .then(r=>r.json()).then(data=>{
+      document.getElementById('tbodyStatus').innerHTML = data.map((r,i)=>`<tr><td align="center">${i+1}</td><td>${r.center}</td><td align="center">${r.room}</td><td align="center">${r.capacity}</td><td align="center">${r.allotted}</td><td align="center" style="color:blue;font-weight:bold;">${r.available}</td></tr>`).join('');
+    });
+};
+
+document.getElementById('btnViewNA').onclick = () => {
+  const sid = sessionSel.value;
+  const did = degreeSel.value;
+  if(!sid || !did) return alert("Select Session and Degree.");
+  const cids = [...colPanel.querySelectorAll('input:checked')].map(i=>i.value);
+  const sids = [...specPanel.querySelectorAll('input:checked')].map(i=>i.value);
+  let url = apiUrl(`/api/get_unallotted_candidates?session_id=${sid}&degree_id=${did}`);
+  cids.forEach(id => url += `&college_ids[]=${id}`);
+  sids.forEach(id => url += `&specialization_ids[]=${id}`);
+  
+  document.getElementById('tbodyNA').innerHTML = '<tr><td colspan="6" align="center">Loading...</td></tr>';
+  fetch(url).then(r=>r.json()).then(data=>{
+    document.getElementById('lblTotalNA').textContent = `Total ${data.length} Candidate(s) Found!`;
+    document.getElementById('tbodyNA').innerHTML = data.map((r,i)=>`
+      <tr class="${i%2?'dgalt-style':'dgitem-style'}">
+        <td align="center"><input type="checkbox" name="cand_na" value="${r.pk_regid}"></td>
+        <td align="center">${i+1}</td><td align="center">${r.regno}</td><td>${r.name}</td><td>${r.father_name}</td><td>${r.subject||'-'}</td>
+      </tr>`).join('');
+  });
+};
+
+document.getElementById('btnViewAD').onclick = () => {
+  const etid = allotEtSel.value;
+  const cid = centerSel.value;
+  if(!etid || etid=="0") return alert("Select ET Type.");
+  
+  document.getElementById('tbodyAD').innerHTML = '<tr><td colspan="10" align="center">Loading...</td></tr>';
+  fetch(apiUrl(`/api/get_candidates?et_id=${etid}&exam_center_id=${cid}&session_id=${sessionSel.value}`))
+    .then(r=>r.json()).then(data=>{
+      document.getElementById('lblTotal').textContent = `Total ${data.length} Candidate(s) Found!`;
+      document.getElementById('tbodyAD').innerHTML = data.map((r,i)=>`
+        <tr class="${i%2?'dgalt-style':'dgitem-style'}">
+          <td align="center"><input type="checkbox" name="cand_sel" value="${r.reg_no}"></td>
+          <td align="center">${i+1}</td><td align="center">${r.reg_no}</td><td>${r.name}</td><td>${r.father_name}</td><td>${r.subject}</td><td>${r.center}</td><td>${r.room}</td><td align="center">${r.seat}</td><td align="center">${r.roll_no||'-'}</td>
+        </tr>`).join('');
+    });
+};
+
+document.getElementById('chkAllNA').onclick = () => document.querySelectorAll('input[name="cand_na"]').forEach(c => c.checked = document.getElementById('chkAllNA').checked);
+document.getElementById('chkAllAD').onclick = () => document.querySelectorAll('input[name="cand_sel"]').forEach(c => c.checked = document.getElementById('chkAllAD').checked);
+
+document.getElementById('btnSelectRange').onclick = () => {
+  const from = parseInt(document.getElementById('from_sno').value);
+  const to = parseInt(document.getElementById('to_sno').value);
+  const chks = document.querySelectorAll('input[name="cand_na"]');
+  chks.forEach((c, i) => { const n = i+1; c.checked = (n >= from && n <= to); });
+};
+
+if(sessionSel.value) fetchBySession();
+})();
+</script>
+{% endblock %}

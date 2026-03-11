@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Candidate Education Qualification Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.candidate_qualification_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="qid" value="{{ edit_obj.id if edit_obj else '' }}">
         <tr>
             <td class="vtext">Description</td>

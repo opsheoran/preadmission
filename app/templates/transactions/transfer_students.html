@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block content %}
+<form id="mainForm" method="GET" action="{{ url_for('transactions.transfer_students') }}">
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">Transfer Students (Search Criteria)</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right;">Stream</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 30%;">
+                <select name="stream_id" id="stream_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0">--Select--</option>
+                    {% for st in streams %}
+                        <option value="{{ st.id }}" {% if f_stream == st.id|string %}selected{% endif %}>{{ st.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="width: 15%; text-align: right;">College</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required">
+                <select name="campus_id" id="campus_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0">--Select--</option>
+                    {% for c in campuses %}
+                        <option value="{{ c.id }}" {% if f_campus == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Session</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="session_id" id="session_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();" required>
+                    <option value="">--Select--</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if f_session == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">Degree Type</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="degree_id" id="degree_id" class="dropdownlong" onchange="document.getElementById('mainForm').submit();" required>
+                    <option value="">--Select--</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">Registration No.</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="text" name="reg_no" class="textbox" style="width: 200px;" value="{{ f_regno or '' }}">
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right;">Cutoff</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="cutoff" id="cutoff" class="dropdownlong">
+                    <option value="0">--Select CutOff--</option>
+                    {% for i in cutoffs %}
+                    <option value="{{ i }}" {% if f_cutoff == i|string %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <button type="submit" name="action" value="export" class="btn btn-save">EXPORT TRANSFER STUDENTS</button>
+                <a href="{{ url_for('transactions.transfer_students') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if records %}
+    <form method="POST" action="{{ url_for('transactions.transfer_students') }}" style="margin: 0; padding: 0;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="session_id" value="{{ f_session }}">
+        <input type="hidden" name="degree_id" value="{{ f_degree }}">
+        <input type="hidden" name="campus_id" value="{{ f_campus }}">
+        <input type="hidden" name="stream_id" value="{{ f_stream }}">
+        
+        <table border="0" cellpadding="0" cellspacing="0" class="table" width="100%" style="margin-top: 25px;">
+            <tr>
+                <td colspan="7" class="tableheading">Students List</td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <div class="grid-div" style="max-height: 200px; overflow-y: auto; border: 1px solid #B0B0B0;">
+                        <table class="grid-table" style="margin-top: 0; border: none;">
+                            <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+                                <th style="width: 50px; text-align: center;">S.No.</th>
+                                <th>Registration No</th>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Father Name</th>
+                                <th>Degree</th>
+                                <th>Allotted Category</th>
+                                <th>Allotted Specialisation</th>
+                                <th>Allotted CollegeName</th>
+                                <th style="width: 80px; text-align: center;">View</th>
+                            </tr>
+                            {% if records|length > 0 %}
+                                {% for r in records %}
+                                <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+                                    <td style="text-align: center;">{{ loop.index }}</td>
+                                    <td>{{ r.regno }}</td>
+                                    <td>{{ r.rollno }}</td>
+                                    <td>{{ r.name }}</td>
+                                    <td>{{ r.father_name }}</td>
+                                    <td>{{ r.degree }}</td>
+                                    <td>{{ r.category }}</td>
+                                    <td>{{ r.specialization }}</td>
+                                    <td>{{ r.college }}</td>
+                                    <td style="text-align: center;">
+                                        <a href="#" class="action-icon icon-edit" title="Edit" onclick="alert('Verification logic can be connected here.'); return false;">
+                                            <img src="{{ url_for('static', filename='img/edit.svg') }}" width="16" height="16" alt="Edit" style="border-width:0px;">
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr style="background-color: White;"><td colspan="10" style="text-align: center;">No Records Found</td></tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </td>
+            </tr>
+
+            <tr><td colspan="7" class="tdgap"></td></tr>
+
+            <tr>
+                <td colspan="7" class="tableheading">Students List(Document Verified)</td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <div class="grid-div" style="max-height: 200px; overflow-y: auto; border: 1px solid #B0B0B0;">
+                        <table class="grid-table" style="margin-top: 0; border: none;">
+                            <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+                                <th style="width: 50px; text-align: center;">
+                                    <input type="checkbox" id="chkAll" onclick="const checkboxes = document.querySelectorAll('.chk-item'); checkboxes.forEach(cb => cb.checked = this.checked);">
+                                    <label for="chkAll">All</label>
+                                </th>
+                                <th style="width: 50px; text-align: center;">S.No.</th>
+                                <th>Registration No</th>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Father Name</th>
+                                <th>Degree</th>
+                                <th>Allotted Category</th>
+                                <th>Allotted Specialisation</th>
+                                <th>Allotted CollegeName</th>
+                                <th>DOB</th>
+                                <th>Gender</th>
+                            </tr>
+                            {% if records|length > 0 %}
+                                {% for r in records %}
+                                <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+                                    <td style="text-align: center;"><input type="checkbox" class="chk-item" name="student_id" value="{{ r.id }}"></td>
+                                    <td style="text-align: center;">{{ loop.index }}</td>
+                                    <td>{{ r.regno }}</td>
+                                    <td>{{ r.rollno }}</td>
+                                    <td>{{ r.name }}</td>
+                                    <td>{{ r.father_name }}</td>
+                                    <td>{{ r.degree }}</td>
+                                    <td>{{ r.category }}</td>
+                                    <td>{{ r.specialization }}</td>
+                                    <td>{{ r.college }}</td>
+                                    <td>{{ r.dob_str }}</td>
+                                    <td>{{ r.gender }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr style="background-color: White;"><td colspan="12" style="text-align: center;">No Records Found</td></tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </td>
+            </tr>
+
+            <tr><td colspan="7" class="tdgap"></td></tr>
+
+            <tr>
+                <td colspan="7" class="tableheading">Academic Details for Mapping</td>
+            </tr>
+            <tr>
+                <td class="vtext" style="width: 15%; text-align: right;">College Name</td>
+                <td class="colon" style="width: 2%;">:</td>
+                <td class="required" style="width: 30%;">
+                    <select name="transfer_college_id" class="dropdownlong" required>
+                        <option value="">--Select--</option>
+                        {% for c in all_colleges %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+                <td></td>
+                <td class="vtext" style="width: 15%; text-align: right;">Session</td>
+                <td class="colon" style="width: 2%;">:</td>
+                <td class="required">
+                    <select name="transfer_session_id" class="dropdownlong" required>
+                        <option value="">--Select--</option>
+                        {% for s in sessions %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext" style="text-align: right;">Degree Type</td>
+                <td class="colon">:</td>
+                <td class="required">
+                    <select name="transfer_degree_id" class="dropdownlong" required>
+                        <option value="">--Select--</option>
+                        {% for d in all_degrees %}
+                            <option value="{{ d.id }}">{{ d.name }}</option>
+                        {% endfor %}
+                    </select> *
+                </td>
+                <td></td>
+                <td class="vtext" style="text-align: right;">Specialization</td>
+                <td class="colon">:</td>
+                <td class="required">
+                    <select name="transfer_spec_id" class="dropdownlong">
+                        <option value="">--Select--</option>
+                        {% for sp in all_specs %}
+                            <option value="{{ sp.id }}">{{ sp.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7" style="text-align: center; padding-top: 15px;">
+                    <button type="submit" name="action" value="transfer_students" class="btn btn-save" style="width: 200px;">TRANSFER TO ACADEMIC MODULE</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endif %}
+{% endblock %}

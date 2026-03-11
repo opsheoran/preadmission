@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading" id="instForm">Instructions Master</div>
+
+<form id="instFormTag" method="POST" action="{{ url_for('config_mgmt.instructions_master', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <tr>
+                <td class="vtext label-column">Academic Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required onchange="updateFilters()">
+                        <option value="0">-- Select Academic Session --</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (edit_record and (edit_record.session_id|string) == (s.id|string)) or (selected_session_id|string == s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Degree Type</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_id" required>
+                        <option value="">-- Select Degree --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {{ 'selected' if edit_record and (edit_record.degree_id|string) == (d.id|string) else '' }}>{{ d.description }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Instruction</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <textarea name="instruction" rows="10" style="width: 100%; height: 250px;" required>{{ edit_record.instruction if edit_record else '' }}</textarea>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Order BY</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="number" name="order_by" value="{{ edit_record.order_by if edit_record else '1' }}" class="textbox" style="width: 80px !important;">
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Is Active</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="checkbox" name="is_active" style="width:auto;" {{ 'checked' if not edit_record or edit_record.active else '' }}>
+                </td>
+            </tr>
+
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">{{ 'UPDATE' if edit_record else 'SAVE' }}</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.instructions_master', session_id=selected_session_id) }}'">RESET</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait..</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<div class="tablesubheading section-header">List of Instructions</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>Academic Session</th>
+            <th>Degree</th>
+            <th>Instruction</th>
+            <th style="width:8%">Status</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr style="{{ 'background-color:#e1f5fe; font-weight:bold;' if edit_record and (edit_record.id|string) == (r.id|string) else '' }}">
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td>{{ r.degree_name }}</td>
+            <td>
+                <div style="max-width: 400px; max-height: 60px; overflow: hidden; font-size: 10px; color: #666; line-height: 1.2;">
+                    {{ r.instruction|striptags|truncate(200) }}
+                </div>
+            </td>
+            <td style="text-align:center; color: {{ 'green' if r.active else 'red' }}; font-weight: bold;">{{ 'Active' if r.active else 'Inactive' }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.instructions_master', edit_id=r.id, session_id=selected_session_id) }}#instForm" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.delete_instructions_master', id=r.id) }}" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="text-align:center;">No instructions found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.instructions_master' %}
+{% include 'includes/pagination.html' %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea[name="instruction"]',
+        plugins: 'code lists',
+        menubar: false,
+        toolbar: 'formatselect | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist indent outdent | cut copy paste | undo redo | code',
+        height: 350,
+        branding: false,
+        promotion: false,
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    });
+
+    function updateFilters() {
+        var s = document.getElementById('session_id').value;
+        var url = new URL(window.location.href);
+        url.searchParams.set('session_id', s);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
+    (function () {
+        if (window.location.hash === '#instForm' || {{ 'true' if edit_record else 'false' }}) {
+            setTimeout(function() {
+                var el = document.getElementById('instForm');
+                if(el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }, 100);
+        }
+
+        var form = document.getElementById('instFormTag');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                // Ensure TinyMCE saves content to the textarea before submission
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 750px !important; }
+    
+    .table-form input[type="text"], .table-form select, .table-form input[type="number"] { height: 24px; font-size: 11px; padding: 2px 5px; width: 300px; }
+</style>
+{% endblock %}

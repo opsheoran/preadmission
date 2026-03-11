@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST" action="{{ url_for('transactions.counselling_raw_data') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">Counselling Raw Data</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; width: 15%;">Session</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="session_id" class="dropdownmedium" required>
+                    <option value="0"> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if (f_session and f_session == s.id|string) or loop.first %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                *
+            </td>
+            <td class="vtext" style="text-align: right; width: 15%;">Degree</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 33%;">
+                <select name="degree_id" id="degree_id" class="dropdownmedium" required onchange="fetchColleges(this.value)">
+                    <option value="">-- Select Degree --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+                *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right;">College</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="college_id" id="college_id" class="dropdownlong">
+                    <option value=""> -- Select College Type -- </option>
+                    {% for s in streams %}
+                        <option value="{{ s.id }}" {% if f_college == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext" style="text-align: right;">Cutoff</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="cutoff" class="dropdownmedium">
+                    <option value="0"> -- Select Cutoff -- </option>
+                    {% for i in cutoffs %}
+                    <option value="{{ i }}" {% if f_cutoff == i|string %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="4" style="padding-top: 15px;">
+                <button type="submit" name="action" value="export" class="btn btn-save">EXPORT</button>
+                <a href="{{ url_for('transactions.counselling_raw_data') }}" class="btn btn-reset" style="text-decoration: none; display: inline-block;">RESET</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+    function fetchColleges(degree_id) {
+        var collegeSelect = document.getElementById('college_id');
+        collegeSelect.innerHTML = '<option value=""> -- Select College Type -- </option>';
+        if (degree_id) {
+            fetch('/transactions/api/get-colleges-by-degree/' + degree_id)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(function(college) {
+                        var option = document.createElement('option');
+                        option.value = college.id;
+                        option.textContent = college.name;
+                        collegeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching colleges:', error));
+        }
+    }
+</script>
+{% endblock %}

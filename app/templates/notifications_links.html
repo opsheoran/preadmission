@@ -6,56 +6,54 @@
         <tr>
             <td class="tableheading" colspan="7">List of Notifications & Links</td>
         </tr>
-        <form method="POST" action="{{ url_for('main.notifications_links') }}">
+        <form method="POST" action="{{ url_for('main.notifications_links') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="nid" value="{{ edit_obj.id if edit_obj else '' }}">
         <tr>
-            <td class="vtext">Link Name</td>
+            <td class="vtext">Notice / Link Text</td>
+            <td class="colon">:</td>
+            <td class="required-cell" colspan="5">
+                <input type="text" name="name" maxlength="500" required value="{{ edit_obj.noticetext if edit_obj else '' }}" style="width: 80%;">
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Section (Div)</td>
             <td class="colon">:</td>
             <td class="required-cell">
-                <input type="text" name="name" maxlength="255" required value="{{ edit_obj.name if edit_obj else '' }}">
-                <span class="required-mark">*</span>
+                <select name="div_type" required>
+                    <option value="1" {% if edit_obj and edit_obj.div == '1' %}selected{% endif %}>Important Links</option>
+                    <option value="2" {% if edit_obj and edit_obj.div == '2' %}selected{% endif %}>Syllabus</option>
+                    <option value="3" {% if edit_obj and edit_obj.div == '3' %}selected{% endif %}>Old Question Papers</option>
+                </select>
             </td>
             <td style="width:5%"></td>
             <td class="vtext">Order No.</td>
             <td class="colon">:</td>
             <td class="required-cell">
-                <input type="number" name="order" required value="{{ edit_obj.order if edit_obj else '' }}">
-                <span class="required-mark">*</span>
+                <input type="number" name="order" value="{{ edit_obj.order_by if edit_obj else '0' }}">
             </td>
         </tr>
         <tr>
-            <td class="vtext">Degree</td>
+            <td class="vtext">File Upload (PDF)</td>
             <td class="colon">:</td>
-            <td class="required-cell">
-                <select name="degree_id">
-                    <option value="">-- Select Degree --</option>
-                    {% for d in degrees %}
-                    <option value="{{ d.id }}" {{ 'selected' if edit_obj and edit_obj.fk_degreeid == d.id else '' }}>{{ d.name }}</option>
-                    {% endfor %}
-                </select>
-            </td>
-            <td></td>
-            <td class="vtext">Session</td>
-            <td class="colon">:</td>
-            <td class="required-cell">
-                <select name="session_id">
-                    <option value="">-- Select Session --</option>
-                    {% for s in sessions %}
-                    <option value="{{ s.id }}" {{ 'selected' if edit_obj and edit_obj.fk_sessionid == s.id else '' }}>{{ s.session_name }}</option>
-                    {% endfor %}
-                </select>
+            <td colspan="5">
+                <input type="file" name="pdf_file" accept=".pdf,.doc,.docx"> 
+                <span style="font-size:11px; color:#666;">(Leave blank to keep existing)</span>
             </td>
         </tr>
         <tr>
-            <td class="vtext">Active</td>
+            <td class="vtext">Status</td>
             <td class="colon">:</td>
             <td class="required-cell">
-                <input type="checkbox" name="is_active" {{ 'checked' if not edit_obj or edit_obj.active else '' }} style="width: auto;">
+                <input type="checkbox" name="is_active" {% if edit_obj is none or edit_obj.active %}checked{% endif %} style="width: auto;"> Active
             </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td style="width:5%"></td>
+            <td class="vtext">Is New (Blinking Badge)</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="checkbox" name="is_new" {% if edit_obj and edit_obj.is_new %}checked{% endif %} style="width: auto;"> NEW!
+            </td>
         </tr>
         <tr>
             <td></td>
@@ -63,7 +61,7 @@
             <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
                 <button type="submit" class="btn btn-save">{{ 'UPDATE' if edit_obj else 'SAVE' }}</button>
                 <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('main.notifications_links') }}'">RESET</button>
-
+                
                 {% with messages = get_flashed_messages(with_categories=true) %}
                   {% if messages %}
                     {% for category, message in messages %}
@@ -77,38 +75,42 @@
     </tbody>
 </table>
 
-<div id="list-grid" class="tablesubheading">List of Notifications & Links(s)</div>
+<div id="list-grid" class="tablesubheading">List of Notifications & Links</div>
 
 <table class="grid-table">
     <thead>
         <tr>
-            <th style="width:5%">S.No</th>
-            <th>Link Name</th>
-            <th>File Name</th>
-            <th style="width:10%">Order By</th>
-            <th style="width:10%">Active</th>
-            <th style="width:10%">EDIT</th>
-            <th style="width:10%">DELETE</th>
+            <th style="width:5%">S. No.</th>
+            <th style="width:10%">Order</th>
+            <th style="width:15%">Section</th>
+            <th>Text</th>
+            <th style="width:15%">File Attached</th>
+            <th style="width:8%">New Badge</th>
+            <th style="width:8%">Status</th>
+            <th style="width:5%; text-align:center;">Edit</th>
+            <th style="width:5%; text-align:center;">Delete</th>
         </tr>
     </thead>
     <tbody>
         {% for link in links %}
         <tr>
             <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
-            <td style="text-align: left;">{{ link.name }}</td>
-            <td style="text-align: left;">{{ link.filename if link.filename else '' }}</td>
-            <td style="text-align: center;">{{ link.order }}</td>
-            <td style="text-align: center;">{{ 'YES' if link.active else 'NO' }}</td>
+            <td style="text-align: center;">{{ link.order_by }}</td>
+            <td style="text-align: center;">{% if link.div == '1' %}Links{% elif link.div == '2' %}Syllabus{% else %}Papers{% endif %}</td>
+            <td style="text-align: left;">{{ link.noticetext }}</td>
+            <td style="text-align: center;">{{ link.filename if link.filename else 'No File' }}</td>
+            <td style="text-align: center;">{{ 'YES' if link.is_new else 'NO' }}</td>
+            <td style="text-align: center;">{{ 'ACTIVE' if link.active else 'INACTIVE' }}</td>
             <td style="text-align: center;">
                 <a href="{{ url_for('main.notifications_links', edit_id=link.id) }}" class="action-icon icon-edit" title="Edit"></a>
             </td>
             <td style="text-align: center;">
-                <a href="{{ url_for('main.delete_notification_link', id=link.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Delete?');"></a>
+                <a href="{{ url_for('main.delete_notification_link', id=link.id) }}" class="action-icon icon-delete" title="Delete" onclick="return confirm('Are you sure you want to delete this notification?');"></a>
             </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="7" style="text-align: center;">No records found.</td>
+            <td colspan="8" style="text-align: center;">No notifications found.</td>
         </tr>
         {% endfor %}
     </tbody>

@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Religion Master</td>
         </tr>
         <form method="POST" action="{{ url_for('main.religion_master') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="religion_id" value="{{ edit_religion.id if edit_religion else '' }}">
         <tr>
             <td class="vtext">Religion Name</td>

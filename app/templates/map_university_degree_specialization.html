@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Map University Degree & Specialization</td>
         </tr>
         <form method="POST" action="{{ url_for('main.map_university_degree_specialization') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="mid" value="{{ edit_obj.id if edit_obj else '' }}">
         <tr>
             <td class="vtext">University Degree</td>
@@ -15,7 +16,7 @@
                 <select id="ddlDegree" name="degree_id" required class="dropdownlong" onchange="fetchColleges()">
                     <option value=""> -- Select Degree --</option>
                     {% for d in degrees %}
-                    <option value="{{ d.id }}" {% if edit_obj and edit_obj.fk_degreeid == d.id %}selected{% endif %}>{{ d.name }}</option>
+                    <option value="{{ d.id }}" {% if edit_obj and edit_obj.fk_degreeid|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
                     {% endfor %}
                 </select>
                 <span class="required-mark">*</span>
@@ -29,7 +30,7 @@
                     <option value="">-- Select College Name --</option>
                     {% if edit_obj %}
                         {% for c in edit_colleges %}
-                        <option value="{{ c.id }}" {% if edit_obj.fk_collegeid == c.id %}selected{% endif %}>{{ c.name }}</option>
+                        <option value="{{ c.id }}" {% if edit_obj and edit_obj.fk_collegeid|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
                         {% endfor %}
                     {% endif %}
                 </select>
@@ -44,7 +45,7 @@
                     <option value=""> -- Select Specialization --</option>
                     {% if edit_obj %}
                         {% for s in edit_specs %}
-                        <option value="{{ s.id }}" {% if edit_obj.fk_sid == s.id %}selected{% endif %}>{{ s.description }}</option>
+                        <option value="{{ s.id }}" {% if edit_obj and edit_obj.fk_sid|string == s.id|string %}selected{% endif %}>{{ s.description }}</option>
                         {% endfor %}
                     {% endif %}
                 </select>
@@ -55,7 +56,12 @@
             <td class="vtext">Exam Type</td>
             <td class="colon">:</td>
             <td class="required-cell">
-                <input type="text" name="exam_type" maxlength="50" placeholder="Optional" value="{{ edit_obj.exam_type if edit_obj and edit_obj.exam_type else '' }}">
+                <select name="exam_type">
+                    <option value="">-- Select Exam Type --</option>
+                    {% for et in exam_types %}
+                    <option value="{{ et.exam_type_id }}" {% if edit_obj and edit_obj.exam_type|string == et.exam_type_id|string %}selected{% endif %}>{{ et.exam_type_desc }}</option>
+                    {% endfor %}
+                </select>
             </td>
         </tr>
         <tr>
@@ -99,7 +105,7 @@
             <td style="text-align: left;">{{ m.degree.name if m.degree else '' }}</td>
             <td style="text-align: left;">{{ m.college.name if m.college else '' }}</td>
             <td style="text-align: left;">{{ m.specialization.description if m.specialization else '' }}</td>
-            <td style="text-align: center;">{{ m.exam_type if m.exam_type else '' }}</td>
+            <td style="text-align: center;">{{ exam_type_map.get(m.exam_type, m.exam_type) if m.exam_type else '' }}</td>
             <td style="text-align: center;">
                 <a href="{{ url_for('main.map_university_degree_specialization', edit_id=m.id) }}" class="action-icon icon-edit" title="Edit"></a>
             </td>

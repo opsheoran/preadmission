@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading">Admit Card Configuration</div>
+
+<form id="admitCardForm" method="POST" action="{{ url_for('config_mgmt.admit_card_configuration', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <tr>
+                <td class="vtext label-column">Degree Type</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_id" id="degree_id" required onchange="updateFilters()">
+                        <option value="0">-- Select Degree --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {{ 'selected' if (selected_degree_id|string) == (d.id|string) else '' }}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required onchange="updateFilters()">
+                        <option value="0">--- Select Session ---</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (selected_session_id|string) == (s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Entrance Test</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="entrance_test_id" id="entrance_test_id" required onchange="updateFilters()">
+                        <option value="0">-- Select ET --</option>
+                        {% for et in entrance_tests %}
+                        <option value="{{ et.Pk_ETID }}" {{ 'selected' if (edit_record and (edit_record.entrance_test_id|string) == (et.Pk_ETID|string)) or (request.args.get("entrance_test_id")|string == et.Pk_ETID|string) else '' }}>{{ et.Description }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Examination Centre</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <div id="divCol" style="width: 450px; height: 150px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px; background: #fff;">
+                        {% for c in centers %}
+                        <div style="font-size: 11px; margin-bottom: 3px;">
+                            <input type="checkbox" name="exam_center_ids" value="{{ c.pk_Examcid }}" style="width:auto;" {{ 'checked' if (c.pk_Examcid|string) in (checked_centers or []) else '' }}> {{ c.Description }} [{{ c.CentreCode }}]
+                        </div>
+                        {% else %}
+                        <div style="color: #999; font-style: italic; padding: 10px;">Select Degree to load centres.</div>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Instructions</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <textarea name="instructions" rows="4" style="width: 100%; height: 100px;">{{ edit_record.instructions if edit_record else '' }}</textarea>
+                </td>
+            </tr>
+
+            <!-- EXAM TIME DETAIL SECTION -->
+            <tr><td colspan="3" class="tablesubheading section-header">Exam Time Detail</td></tr>
+            <tr>
+                <td class="vtext label-column">Date of Exam</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="date_of_exam" class="datepicker-dmy" value="{{ edit_record.date_of_exam if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Day of Exam</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="day_of_exam" required>
+                        <option value="0">-- Select --</option>
+                        {% for d in ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] %}
+                        <option value="{{ loop.index }}" {{ 'selected' if edit_record and ((edit_record.day_of_exam|string)) == (loop.index|string) else '' }}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Reporting Time</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="reporting_time_h" class="time-select">
+                        <option value="Hour">Hour</option>
+                        {% for h in range(0, 13) %}<option value="{{ h }}" {{ 'selected' if edit_record and ((edit_record.reporting_time_h|string)) == (h|string) else '' }}>{{ h }}</option>{% endfor %}
+                    </select> HH 
+                    <select name="reporting_time_m" class="time-select">
+                        <option value="Minute">Minute</option>
+                        {% for m in range(0, 60) %}<option value="{{ m }}" {{ 'selected' if edit_record and ((edit_record.reporting_time_m|string)) == (m|string) else '' }}>{{ m }}</option>{% endfor %}
+                    </select> MM 
+                    <select name="reporting_time_ampm" class="time-select">
+                        <option value="">Select</option>
+                        <option value="A" {{ 'selected' if edit_record and (edit_record.reporting_time_ampm|string|trim|upper) == 'A' else '' }}>AM</option>
+                        <option value="P" {{ 'selected' if edit_record and (edit_record.reporting_time_ampm|string|trim|upper) == 'P' else '' }}>PM</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">No Entry After</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="no_entry_after_h" class="time-select">
+                        <option value="Hour">Hour</option>
+                        {% for h in range(0, 13) %}<option value="{{ h }}" {{ 'selected' if edit_record and ((edit_record.no_entry_after_h|string)) == (h|string) else '' }}>{{ h }}</option>{% endfor %}
+                    </select> HH 
+                    <select name="no_entry_after_m" class="time-select">
+                        <option value="Minute">Minute</option>
+                        {% for m in range(0, 60) %}<option value="{{ m }}" {{ 'selected' if edit_record and ((edit_record.no_entry_after_m|string)) == (m|string) else '' }}>{{ m }}</option>{% endfor %}
+                    </select> MM 
+                    <select name="no_entry_after_ampm" class="time-select">
+                        <option value="">Select</option>
+                        <option value="A" {{ 'selected' if edit_record and (edit_record.no_entry_after_ampm|string|trim|upper) == 'A' else '' }}>AM</option>
+                        <option value="P" {{ 'selected' if edit_record and (edit_record.no_entry_after_ampm|string|trim|upper) == 'P' else '' }}>PM</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Duration of Exam (From)</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="duration_from_h" class="time-select">
+                        <option value="Hour">Hour</option>
+                        {% for h in range(0, 13) %}<option value="{{ h }}" {{ 'selected' if edit_record and ((edit_record.duration_from_h|string)) == (h|string) else '' }}>{{ h }}</option>{% endfor %}
+                    </select> HH 
+                    <select name="duration_from_m" class="time-select">
+                        <option value="Minute">Minute</option>
+                        {% for m in range(0, 60) %}<option value="{{ m }}" {{ 'selected' if edit_record and ((edit_record.duration_from_m|string)) == (m|string) else '' }}>{{ m }}</option>{% endfor %}
+                    </select> MM 
+                    <select name="duration_from_ampm" class="time-select">
+                        <option value="">Select</option>
+                        <option value="A" {{ 'selected' if edit_record and (edit_record.duration_from_ampm|string|trim|upper) == 'A' else '' }}>AM</option>
+                        <option value="P" {{ 'selected' if edit_record and (edit_record.duration_from_ampm|string|trim|upper) == 'P' else '' }}>PM</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Duration of Exam (To)</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="duration_to_h" class="time-select">
+                        <option value="Hour">Hour</option>
+                        {% for h in range(0, 13) %}<option value="{{ h }}" {{ 'selected' if edit_record and ((edit_record.duration_to_h|string)) == (h|string) else '' }}>{{ h }}</option>{% endfor %}
+                    </select> HH 
+                    <select name="duration_to_m" class="time-select">
+                        <option value="Minute">Minute</option>
+                        {% for m in range(0, 60) %}<option value="{{ m }}" {{ 'selected' if edit_record and ((edit_record.duration_to_m|string)) == (m|string) else '' }}>{{ m }}</option>{% endfor %}
+                    </select> MM 
+                    <select name="duration_to_ampm" class="time-select">
+                        <option value="">Select</option>
+                        <option value="A" {{ 'selected' if edit_record and (edit_record.duration_to_ampm|string|trim|upper) == 'A' else '' }}>AM</option>
+                        <option value="P" {{ 'selected' if edit_record and (edit_record.duration_to_ampm|string|trim|upper) == 'P' else '' }}>PM</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Can Not Leave Before</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="cannot_leave_h" class="time-select">
+                        <option value="Hour">Hour</option>
+                        {% for h in range(0, 13) %}<option value="{{ h }}" {{ 'selected' if edit_record and ((edit_record.cannot_leave_h|string)) == (h|string) else '' }}>{{ h }}</option>{% endfor %}
+                    </select> HH 
+                    <select name="cannot_leave_m" class="time-select">
+                        <option value="Minute">Minute</option>
+                        {% for m in range(0, 60) %}<option value="{{ m }}" {{ 'selected' if edit_record and ((edit_record.cannot_leave_m|string)) == (m|string) else '' }}>{{ m }}</option>{% endfor %}
+                    </select> MM 
+                    <select name="cannot_leave_ampm" class="time-select">
+                        <option value="">Select</option>
+                        <option value="A" {{ 'selected' if edit_record and (edit_record.cannot_leave_ampm|string|trim|upper) == 'A' else '' }}>AM</option>
+                        <option value="P" {{ 'selected' if edit_record and (edit_record.cannot_leave_ampm|string|trim|upper) == 'P' else '' }}>PM</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">{{ 'UPDATE' if edit_record else 'SAVE' }}</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.admit_card_configuration', session_id=selected_session_id) }}'">RESET</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait..</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<div class="tablesubheading section-header">List of Admit Card Configuration</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>Degree</th>
+            <th style="width:10%">Session</th>
+            <th>ET Name</th>
+            <th style="width:12%">Exam Date</th>
+            <th style="width:15%">Reporting Time</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ r.degree_name }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td>{{ r.et_name }}</td>
+            <td style="text-align:center;">{{ r.date_of_exam }}</td>
+            <td style="text-align:center;">{{ r.reporting_time_h }}:{{ r.reporting_time_m }} {{ 'AM' if r.reporting_time_ampm == 'A' else 'PM' }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.admit_card_configuration', edit_id=r.id, session_id=selected_session_id, degree_id=r.degree_id) }}" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.delete_admit_card_configuration', id=r.id) }}" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;">No configurations found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.admit_card_configuration' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+    function updateFilters() {
+        var s = document.getElementById('session_id').value;
+        var d = document.getElementById('degree_id').value;
+        var et = document.getElementById('entrance_test_id').value;
+        var url = new URL(window.location.href);
+        url.searchParams.set('session_id', s);
+        url.searchParams.set('degree_id', d);
+        if(et !== '0') url.searchParams.set('entrance_test_id', et);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
+    (function () {
+        var form = document.getElementById('admitCardForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 750px !important; }
+
+    .datepicker-dmy {
+        background-image: url('{{ url_for("static", filename="img/calendar.svg") }}');
+        background-repeat: no-repeat; background-position: right 5px center; background-size: 14px 14px;
+        padding-right: 25px !important; width: 110px !important; font-size: 11px !important; height: 24px !important;
+    }
+    
+    .table-form input[type="text"], .table-form select { height: 24px; font-size: 11px; padding: 2px 5px; width: 300px; }
+    .time-select { width: 70px !important; }
+    
+    .tablesubheading.section-header {
+        background-color: #f1f8ff !important; color: #0d47a1 !important; padding: 6px 10px !important; border-left: 4px solid #0d47a1; margin-top: 15px; border-bottom: 1px solid #d0e8ff;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

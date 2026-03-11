@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.sa-dd { width: 220px; padding: 4px; }
+.btn-row { text-align: center; padding-top: 20px; padding-bottom: 10px; }
+.btn-action { margin: 0 5px; padding: 8px 14px; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; border: 1px solid transparent; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.btn-action:hover { opacity: 0.9; }
+.btn-view { background: #2e7d32; border-color: #1b5e20; }
+.btn-pdf { background: #c62828; border-color: #b71c1c; }
+.btn-excel { background: #1565c0; border-color: #0d47a1; }
+</style>
+
+<div class="tableheading">Exam Center Detail Report</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.exam_center_detail_report') }}" id="frmECDR">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<div style="background:#f7f9fc; border:1px solid #dde3ee; border-radius:4px; padding:20px 12px; margin-top:10px; display:flex; justify-content:center;">
+  <table style="border: none; border-collapse: separate; border-spacing: 0;">
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Academic Session</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="padding-right: 30px; vertical-align: middle;">
+        <select id="session_id" name="session_id" class="sa-dd" required onchange="fetchETs(this.value)">
+          <option value="">-- Select Academic Session --</option>
+          {% for s in sessions %}
+          <option value="{{ s.id }}" {% if s.id == session_id %}selected{% endif %}>{{ s.session_name }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">ET Type</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="vertical-align: middle;">
+        <select id="et_id" name="et_id" class="sa-dd" required onchange="fetchCenters()">
+          <option value="">-- Select ET Type --</option>
+          {% for e in ets %}
+          <option value="{{ e.id }}" {% if e.id == et_id %}selected{% endif %}>{{ e.description }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+    </tr>
+    <tr><td colspan="6" style="height: 10px;"></td></tr>
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Exam Center</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td style="padding-right: 30px; vertical-align: middle;" colspan="4">
+        <select id="exam_center_id" name="exam_center_id" class="sa-dd" required style="width: 300px;">
+          <option value="">-- Select Exam Center --</option>
+          {% for c in centers %}
+          <option value="{{ c.id }}" {% if c.id == center_id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="required-mark" style="color: red; margin-left: 2px;">*</span>
+      </td>
+    </tr>
+    <tr><td colspan="6" style="height: 10px;"></td></tr>
+    <tr>
+      <td style="text-align: right; font-weight: bold; font-size: 13px; padding-right: 10px; vertical-align: middle;">Purpose</td>
+      <td style="padding-right: 10px; font-weight: bold; vertical-align: middle;">:</td>
+      <td colspan="4" style="vertical-align: middle;">
+        <table style="border: none; margin: 0; padding: 0;">
+          <tr>
+            <td style="padding-right: 15px;"><input type="radio" name="purpose" value="E" id="p_e" {% if purpose == 'E' or not purpose %}checked{% endif %}><label for="p_e" style="margin-left: 5px; cursor: pointer;">Exam Center</label></td>
+            <td style="padding-right: 15px;"><input type="radio" name="purpose" value="D" id="p_d" {% if purpose == 'D' %}checked{% endif %}><label for="p_d" style="margin-left: 5px; cursor: pointer;">For Display</label></td>
+            <td style="padding-right: 15px;"><input type="radio" name="purpose" value="R" id="p_r" {% if purpose == 'R' %}checked{% endif %}><label for="p_r" style="margin-left: 5px; cursor: pointer;">Room Wise</label></td>
+            <td style="padding-right: 15px;"><input type="radio" name="purpose" value="P" id="p_p" {% if purpose == 'P' %}checked{% endif %}><label for="p_p" style="margin-left: 5px; cursor: pointer;">Distribution Pattern</label></td>
+            <td><input type="radio" name="purpose" value="EX" id="p_ex" {% if purpose == 'EX' %}checked{% endif %}><label for="p_ex" style="margin-left: 5px; cursor: pointer;">Excel Report Of Distribution Pattern</label></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="6" class="btn-row" style="padding-top: 25px;">
+        <button type="submit" name="action" value="generate" class="btn-action btn-pdf" style="background:#2e7d32; border-color:#1b5e20; padding: 10px 30px; font-size: 14px;">VIEW / GENERATE REPORT</button>
+      </td>
+    </tr>
+  </table>
+</div>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="flash-inline flash-{{ cat }}-inline" style="margin-top:10px; text-align:center;">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+{% if show_grid %}
+<div style="margin-top:20px;">
+  <div class="tableheading" style="font-size:14px; background:#f0f0f0; color:#333; padding:8px 12px; border:1px solid #ccc; border-bottom:none;">
+    Room-wise Detail for {{ selected_center.name if selected_center else 'N/A' }}
+  </div>
+  <table class="grid-table" style="margin-top:0;">
+    <thead>
+      <tr>
+        <th style="width:8%;text-align:center;">S.No.</th>
+        <th style="text-align:center;">Room No.</th>
+        <th style="text-align:center;">Capacity</th>
+        <th style="text-align:center;">Allotted</th>
+        <th style="text-align:center;">Starting Roll No</th>
+        <th style="text-align:center;">Ending Roll No</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rooms %}
+      <tr>
+        <td style="text-align:center;">{{ loop.index }}</td>
+        <td style="text-align:center;">{{ r.room_no }}</td>
+        <td style="text-align:center;">{{ r.capacity }}</td>
+        <td style="text-align:center;">{{ r.allotted }}</td>
+        <td style="text-align:center;">{{ r.start_roll }}</td>
+        <td style="text-align:center;">{{ r.end_roll }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" style="text-align:center;color:#888;padding:15px;">No rooms configured for this exam center.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<script>
+function fetchETs(sessionId) {
+  const etSel = document.getElementById('et_id');
+  const centerSel = document.getElementById('exam_center_id');
+  etSel.innerHTML = '<option value="">-- Select ET Type --</option>';
+  centerSel.innerHTML = '<option value="">-- Select Exam Center --</option>';
+  if(!sessionId) return;
+
+  fetch(`{{ url_for('seat_allocation.get_et_by_session') }}?session_id=${sessionId}`)
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.name;
+        etSel.appendChild(opt);
+      });
+    })
+    .catch(err => console.error("Error fetching ETs:", err));
+}
+
+function fetchCenters() {
+  const etId = document.getElementById('et_id').value;
+  const centerSel = document.getElementById('exam_center_id');
+  centerSel.innerHTML = '<option value="">-- Select Exam Center --</option>';
+  if(!etId) return;
+
+  fetch(`{{ url_for('seat_allocation.get_exam_centers_by_et') }}?et_id=${etId}`)
+    .then(r => r.json())
+    .then(data => {
+      data.forEach(c => { 
+        const opt = document.createElement('option'); 
+        opt.value = c.id; 
+        opt.textContent = c.name; 
+        centerSel.appendChild(opt); 
+      });
+    })
+    .catch(err => console.error("Error fetching Centers:", err));
+}
+</script>
+{% endblock %}

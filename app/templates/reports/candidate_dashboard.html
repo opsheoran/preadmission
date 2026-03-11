@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Candidate DashBoard</td>
+        </tr>
+        <form method="POST" action="{{ url_for('reports.candidate_dashboard') }}" id="reportForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="action" id="form_action" value="view">
+        
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Academic Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="session_id" required>
+                    <option value="">Please Select</option>
+                    {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if form_data.session_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="degree_type_id">
+                    <option value="0">-- ALL --</option>
+                    {% for d in degrees %}
+                    <option value="{{ d.id }}" {% if form_data.degree_type_id == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">College</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="college_id">
+                    <option value="0">-- ALL --</option>
+                    {% for c in colleges %}
+                    <option value="{{ c.id }}" {% if form_data.college_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Type</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="status_type">
+                    <option value="1" {% if form_data.status_type == '1' or not form_data.status_type %}selected{% endif %}>STUDENTS</option>
+                    <option value="2" {% if form_data.status_type == '2' %}selected{% endif %}>REVENUE</option>
+                    <option value="3" {% if form_data.status_type == '3' %}selected{% endif %}>More than one time Fee</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Payment For</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="payment_for">
+                    <option value="1" {% if form_data.payment_for == '1' %}selected{% endif %}>Online Registration Fee</option>
+                    <option value="2" {% if form_data.payment_for == '2' %}selected{% endif %}>Online Counselling Fee</option>
+                </select>
+            </td>
+            <td colspan="4"></td>
+        </tr>
+
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='view';">VIEW</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_dashboard') }}'">RESET</button>
+                <button type="submit" class="btn btn-save" style="background-color: #17a2b8; border-color: #17a2b8;" onclick="document.getElementById('form_action').value='export';">EXPORT PAYMENT DETAILS</button>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Candidate DashBoard Report</div>
+<table class="grid-table">
+    <thead>
+        <tr style="position: sticky; top: 0; z-index: 1;">
+            <th style="width: 5%;">S.No.</th>
+            <th>Degree</th>
+            <th>College</th>
+            <th>Specialization</th>
+            <th>Registered Students</th>
+            <th>Payment Success Students</th>
+            <th>Payment Success Students(Counselling)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td style="text-align: left;">{{ r.Degree }}</td>
+            <td style="text-align: left;">{{ r.College }}</td>
+            <td style="text-align: left;">{{ r.Specialization }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ r.Registered }}</td>
+            <td style="text-align: center; font-weight: bold; color: #10b981;">{{ r.PaymentSuccess }}</td>
+            <td style="text-align: center; font-weight: bold; color: #3b82f6;">{{ r.CounsellingSuccess }}</td>
+        </tr>
+        {% endfor %}
+        <tr style="background-color: #f1f5f9; font-weight: bold;">
+            <td colspan="4" style="text-align: right; font-weight: bold;">TOTAL</td>
+            <td style="text-align: center;">{{ records|sum(attribute='Registered') }}</td>
+            <td style="text-align: center; color: #10b981;">{{ records|sum(attribute='PaymentSuccess') }}</td>
+            <td style="text-align: center; color: #3b82f6;">{{ records|sum(attribute='CounsellingSuccess') }}</td>
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+
+{% endblock %}

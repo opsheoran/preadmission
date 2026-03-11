@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+
+<form method="POST" id="exportForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="action" id="form_action" value="view">
+    <table class="table-form">
+    <tbody>
+        <tr><td class="tableheading" colspan="7">Candidate Export</td></tr>
+        <tr>
+            <td class="vtext">Academic Session</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="session_id" class="sa-dd">
+                    <option value="0">-- Select Academic Session --</option>
+                    {% for session in sessions %}
+                        <option value="{{ session.id }}" {% if form_data.session_id|string == session.id|string %}selected{% endif %}>{{ session.name }}</option>
+                    {% endfor %}
+                </select><span class="required-star">*</span>
+            </td>
+            <td class="vtext">DegreeType</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="degree_type_id" class="sa-dd">
+                    <option value="0">-- Select Degree Type --</option>
+                    {% for degree in degrees %}
+                        <option value="{{ degree.id }}" {% if form_data.degree_type_id|string == degree.id|string %}selected{% endif %}>{{ degree.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">College</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="college_id" class="sa-dd">
+                    <option value="0">-- Select College --</option>
+                    {% for college in colleges %}
+                        <option value="{{ college.id }}" {% if form_data.college_id|string == college.id|string %}selected{% endif %}>{{ college.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext">Specialization</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="specialization_id" class="sa-dd">
+                    <option value="0">-- Select Specialization --</option>
+                    {% for spec in specializations %}
+                        <option value="{{ spec.id }}" {% if form_data.specialization_id|string == spec.id|string %}selected{% endif %}>{{ spec.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Caste Category</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="category_id" class="sa-dd">
+                    <option value="0">-- Select Caste Category --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if form_data.category_id|string == cat.id|string %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext">Religion</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="religion_id" class="sa-dd">
+                    <option value="0">-- Select Religion --</option>
+                    {% for rel in religions %}
+                        <option value="{{ rel.id }}" {% if form_data.religion_id|string == rel.id|string %}selected{% endif %}>{{ rel.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">From Date</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="from_date" class="sa-tb" value="{{ form_data.from_date }}" placeholder="DD/MM/YYYY" autocomplete="off">
+            </td>
+            <td class="vtext">To Date</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="to_date" class="sa-tb" value="{{ form_data.to_date }}" placeholder="DD/MM/YYYY" autocomplete="off">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Registration No.</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="reg_no" class="sa-tb" value="{{ form_data.reg_no }}" maxlength="10">
+            </td>
+            <td class="vtext">Name</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="name" class="sa-tb" value="{{ form_data.name }}" maxlength="100">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Status</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="status" class="sa-dd">
+                    <option value="0" {% if form_data.status == '0' %}selected{% endif %}>--ALL--</option>
+                    <option value="1" {% if form_data.status == '1' %}selected{% endif %}>REGISTERED</option>
+                    <option value="2" {% if form_data.status == '2' %}selected{% endif %}>SUCCESS PAYMENT</option>
+                    <option value="3" {% if form_data.status == '3' %}selected{% endif %}>ROLL NO</option>
+                </select>
+            </td>
+            <td class="vtext">Service</td>
+            <td class="colon">:</td>
+            <td>
+                <select name="service" class="sa-dd">
+                    <option value="0" {% if form_data.service == '0' %}selected{% endif %}>--ALL--</option>
+                    <option value="1" {% if form_data.service == '1' %}selected{% endif %}>IN SERVICE</option>
+                    <option value="2" {% if form_data.service == '2' %}selected{% endif %}>NOT IN SERVICE</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">From S.No.</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="from_sno" class="sa-tb" value="{{ form_data.from_sno }}" style="width: 100px;">
+            </td>
+            <td class="vtext">To S.No.</td>
+            <td class="colon">:</td>
+            <td>
+                <input type="text" name="to_sno" class="sa-tb" value="{{ form_data.to_sno }}" style="width: 100px;">
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='view';" style="padding: 6px 10px; margin-left: 5px;">Select</button>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Report Type</td>
+            <td class="colon">:</td>
+            <td colspan="4">
+                <select name="report_type" class="sa-dd">
+                    <option value="0" {% if form_data.report_type == '0' %}selected{% endif %}>Excel</option>
+                    <option value="1" {% if form_data.report_type == '1' %}selected{% endif %}>PDF</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td><td></td>
+            <td colspan="4">
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='view';">VIEW</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_export') }}'">RESET</button>
+                <button type="submit" class="btn btn-save" onclick="document.getElementById('form_action').value='export';">EXPORT</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</form>
+
+{% if records %}
+<div style="background-color: #f5f5f5; padding: 10px; border-bottom: 1px solid #ddd; margin-top: 20px; font-weight: bold; font-size: 14px; color: #333;">
+    List of Candidates
+</div>
+<div class="grid-div">
+    <table class="grid-table">
+        <thead><tr>
+            <th>S.No.</th>
+            <th>Registration No.</th>
+            <th>Candidate Name</th>
+            <th>Father Name</th>
+            <th>College</th>
+            <th>Specialization</th>
+            <th>DOB</th>
+            <th>Dated</th>
+            <th>Mobile No.</th>
+            <th>Email</th>
+            <th>Degree</th>
+            <th>Status</th>
+            <th>APPLICATION PRINT</th>
+            <th>ADMIT CARD</th>
+            <th>MARKS SHEET</th>
+            <th>REPORTING LETTER</th>
+        </tr>
+        {% for row in records %}
+        <tr>
+            <td>{{ loop.index + (form_data.from_sno|int - 1 if form_data.from_sno and form_data.from_sno.isdigit() else 0) }}</td>
+            <td>{{ row.regno }}</td>
+            <td style="text-align: left;">{{ row.CandidateName }}</td>
+            <td style="text-align: left;">{{ row.FatherName }}</td>
+            <td style="text-align: left;">{{ row.College or '' }}</td>
+            <td style="text-align: left;">{{ row.Specialization or '' }}</td>
+            <td>{{ row.DOB }}</td>
+            <td>{{ row.Dated }}</td>
+            <td>{{ row.MobileNo }}</td>
+            <td>{{ row.Email }}</td>
+            <td>{{ row.Degree }}</td>
+            <td>{{ row.Status }}</td>
+            <td><a href="{{ url_for('merit_reports.application_print', reg_id=row.pk_regid) }}" target="_blank" style="color: blue;"><img src="{{ url_for('static', filename='img/printer.svg') }}" alt="Print" width="16" height="16"></a></td>
+            <td><a href="{{ url_for('seat_allocation.print_admit_card', reg_no=row.regno, session_id=form_data.session_id) }}" target="_blank" style="color: blue;"><img src="{{ url_for('static', filename='img/eye.svg') }}" alt="View" width="16" height="16"></a></td>
+            <td><a href="{{ url_for('merit_reports.score_card_print', reg_id=row.pk_regid) }}" target="_blank" style="color: blue;"><img src="{{ url_for('static', filename='img/eye.svg') }}" alt="View" width="16" height="16"></a></td>
+            <td>
+                {% if row.College %}
+                <a href="{{ url_for('reports.print_reporting_letter', reg_id=row.pk_regid) }}" target="_blank" style="color: blue;"><img src="{{ url_for('static', filename='img/printer.svg') }}" alt="Print" width="16" height="16"></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div style="margin-top: 10px; font-weight: bold; color: #555;">
+    Total {{ records|length }} Candidate Found!
+</div>
+{% elif request.method == 'POST' and form_data.action == 'view' %}
+<div style="text-align: center; margin-top: 20px; color: #666; font-weight: bold;">
+    Total 0 Candidate Found!
+</div>
+{% endif %}
+
+{% endblock %}

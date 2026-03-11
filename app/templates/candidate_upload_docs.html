@@ -1,0 +1,172 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        padding: 20px;
+    }
+    
+    .form-card {
+        background: #fff; border: 1px solid var(--border-color);
+        border-top: 4px solid var(--primary-color); border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px;
+    }
+    
+    .form-header {
+        font-size: 18px; color: var(--primary-color); font-weight: bold;
+        border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;
+    }
+
+    .doc-upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 20px;
+    }
+
+    .upload-box {
+        border: 1px dashed #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        text-align: center;
+        position: relative;
+    }
+
+    .upload-box h4 {
+        margin-top: 0;
+        color: #333;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .upload-instructions {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .custom-file-input {
+        color: transparent;
+        width: 100%;
+    }
+    .custom-file-input::-webkit-file-upload-button {
+        visibility: hidden;
+    }
+    .custom-file-input::before {
+        content: 'Select File';
+        color: #333;
+        display: inline-block;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        padding: 6px 12px;
+        outline: none;
+        white-space: nowrap;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 12px;
+    }
+    .custom-file-input:hover::before {
+        border-color: #999;
+    }
+    
+    .preview-box {
+        margin-top: 15px;
+        max-width: 150px;
+        max-height: 150px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        object-fit: contain;
+    }
+
+    .btn-toolbar {
+        margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee;
+        display: flex; justify-content: space-between;
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">Step 4: Upload Documents</div>
+
+        <form method="POST" action="{{ url_for('main.candidate_upload_docs') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div class="doc-upload-grid">
+                
+                <!-- PHOTO -->
+                <div class="upload-box">
+                    <h4>Passport Size Photo <span style="color:red;">*</span></h4>
+                    <p class="upload-instructions">Format: JPG, JPEG, PNG<br>Max Size: 100 KB</p>
+                    <input type="file" name="photo" class="custom-file-input" accept="image/jpeg, image/png" onchange="previewImage(this, 'photo_preview')" {% if not doc or not doc.filename_p %}required{% endif %}>
+                    
+                    {% if doc and doc.filename_p %}
+                        <div style="margin-top: 10px; font-size: 11px; color: green;">File uploaded: {{ doc.filename_p }}</div>
+                        <!-- We could load base64 preview here if needed -->
+                    {% endif %}
+                    <img id="photo_preview" class="preview-box" style="display: none;">
+                </div>
+
+                <!-- SIGNATURE -->
+                <div class="upload-box">
+                    <h4>Candidate Signature <span style="color:red;">*</span></h4>
+                    <p class="upload-instructions">Format: JPG, JPEG, PNG<br>Max Size: 100 KB</p>
+                    <input type="file" name="signature" class="custom-file-input" accept="image/jpeg, image/png" onchange="previewImage(this, 'sig_preview')" {% if not doc or not doc.filename_s %}required{% endif %}>
+                    
+                    {% if doc and doc.filename_s %}
+                        <div style="margin-top: 10px; font-size: 11px; color: green;">File uploaded: {{ doc.filename_s }}</div>
+                    {% endif %}
+                    <img id="sig_preview" class="preview-box" style="display: none;">
+                </div>
+
+                <!-- THUMB IMPRESSION -->
+                <div class="upload-box">
+                    <h4>Thumb Impression <span style="color:red;">*</span></h4>
+                    <p class="upload-instructions">Format: JPG, JPEG, PNG<br>Max Size: 100 KB</p>
+                    <input type="file" name="thumb" class="custom-file-input" accept="image/jpeg, image/png" onchange="previewImage(this, 'thumb_preview')" {% if not doc or not doc.filename_t %}required{% endif %}>
+                    
+                    {% if doc and doc.filename_t %}
+                        <div style="margin-top: 10px; font-size: 11px; color: green;">File uploaded: {{ doc.filename_t }}</div>
+                    {% endif %}
+                    <img id="thumb_preview" class="preview-box" style="display: none;">
+                </div>
+
+                <!-- AADHAR CARD / CATEGORY PROOF -->
+                <div class="upload-box">
+                    <h4>Aadhar Card / Verification Document <span style="color:red;">*</span></h4>
+                    <p class="upload-instructions">Format: PDF, JPG<br>Max Size: 500 KB</p>
+                    <input type="file" name="category_proof" class="custom-file-input" accept="application/pdf, image/jpeg, image/png" {% if not doc or not doc.filename_c %}required{% endif %}>
+                    
+                    {% if doc and doc.filename_c %}
+                        <div style="margin-top: 10px; font-size: 11px; color: green;">File uploaded: {{ doc.filename_c }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="btn-toolbar">
+                <a href="{{ url_for('main.candidate_dashboard') }}" class="btn" style="background-color: #6c757d; color: white; text-decoration: none;">Back to Dashboard</a>
+                <button type="submit" class="btn btn-save">Upload & Continue</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(input, imgId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = document.getElementById(imgId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

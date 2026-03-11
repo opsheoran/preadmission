@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* ── compact form controls ── */
+.sa-dd   { width: 250px; padding: 6px 8px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; }
+.sa-tb   { width: 250px; padding: 6px 8px; font-size: 11px; border: 1px solid #ccc; border-radius: 4px; }
+/* ── section panel ── */
+.sa-panel {
+    background: #f7f9fc; border: 1px solid #dde3ee;
+    border-radius: 4px; padding: 15px 20px; margin-top: 10px;
+}
+/* ── spacer row ── */
+.row-gap td { height: 12px; }
+/* ── inline label style reuse ── */
+.vl { text-align: right; font-weight: bold; font-size: 11.5px;
+      color: #333; padding-right: 6px; white-space: nowrap; vertical-align: middle; }
+.cl { text-align: center; font-weight: bold; vertical-align: middle; padding: 0 4px; }
+.fc { vertical-align: middle; }
+</style>
+
+<div class="tableheading">Verify Student</div>
+
+<form method="POST" action="{{ url_for('merit_reports.check_documents') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="sa-panel">
+        <table style="border-collapse:collapse;width:100%;border:none;">
+            <!-- Row 1: Session | Degree Type -->
+            <tr>
+                <td class="vl" style="width:15%;">Academic Session</td>
+                <td class="cl" style="width:1%;">:</td>
+                <td class="fc" style="width:34%;">
+                    <select name="session_id" class="sa-dd">
+                        <option value="0"> -- Select Academic Session -- </option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+                <td class="vl" style="width:15%;">Degree Type</td>
+                <td class="cl" style="width:1%;">:</td>
+                <td class="fc" style="width:34%;">
+                    <select name="degree_type_id" class="sa-dd">
+                        <option value="0"> -- Select Degree Type --</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_type_id == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr class="row-gap"><td colspan="6"></td></tr>
+            
+            <!-- Row 2: College | Status -->
+            <tr>
+                <td class="vl">College</td>
+                <td class="cl">:</td>
+                <td class="fc">
+                    <select name="college_id" class="sa-dd">
+                        <option value="0"> -- Select College -- </option>
+                        {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if form_data.college_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="vl">Status</td>
+                <td class="cl">:</td>
+                <td class="fc">
+                    <select name="status" class="sa-dd">
+                        <option value="1" {% if form_data.status == '1' %}selected{% endif %}>ALL</option>
+                        <option value="2" {% if form_data.status == '2' %}selected{% endif %}>ALLOTED</option>
+                        <option value="3" {% if form_data.status == '3' %}selected{% endif %}>NOT ALLOTED</option>
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr class="row-gap"><td colspan="6"></td></tr>
+
+            <!-- Row 3: Reg No. -->
+            <tr>
+                <td class="vl">Reg No.</td>
+                <td class="cl">:</td>
+                <td class="fc" colspan="4">
+                    <input type="text" name="reg_no" maxlength="50" class="sa-tb" value="{{ form_data.reg_no }}">
+                </td>
+            </tr>
+            
+            <tr class="row-gap"><td colspan="6"></td></tr>
+            <tr>
+                <td colspan="6" style="text-align: center; padding-top: 10px;">
+                    <button type="submit" class="btn btn-save">VIEW</button>
+                    <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('merit_reports.check_documents') }}'">RESET</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {% if students %}
+    <div class="grid-div" style="margin-top: 20px;">
+        <table class="grid-table">
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>RegNo.</th>
+                    <th>Student Name</th>
+                    <th>MobileNo</th>
+                    <th>Degree</th>
+                    <th>Category</th>
+                    <th>Resident</th>
+                    <th>Roll No.</th>
+                    <th>Obtain Marks</th>
+                    <th>Board Name</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                    <th>VIEW DOCUMENT</th>
+                    <th>APPLICATION PRINT</th>
+                    <th>COUNS. PRINT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td style="text-align: center;">{{ loop.index }}</td>
+                    <td>{{ student.regno }}</td>
+                    <td>{{ student.student_name }}</td>
+                    <td>{{ student.mobileno }}</td>
+                    <td>{{ student.degree_name }}</td>
+                    <td>{{ student.category_name }}</td>
+                    <td>{{ student.resident }}</td>
+                    <td>{{ student.rollno }}</td>
+                    <td>{{ student.obtain_marks }}</td>
+                    <td>{{ student.board_name }}</td>
+                    <td>{{ student.status }}</td>
+                    <td>{{ student.reason }}</td>
+                    <td style="text-align: center;"><a href="javascript:void(0);" onclick="viewDocuments({{ student.pk_regid }})" style="color: var(--primary-color); font-weight: bold;">VIEW DOCUMENT</a></td>
+                    <td style="text-align: center;"><a href="{{ url_for('merit_reports.application_print', reg_id=student.pk_regid) }}" target="_blank" style="color: var(--primary-color); font-weight: bold;">APPLICATION PRINT</a></td>
+                    <td style="text-align: center;"><a href="{{ url_for('merit_reports.couns_print', reg_id=student.pk_regid) }}" target="_blank" style="color: var(--primary-color); font-weight: bold;">COUNS. PRINT</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="document-details-container"></div>
+    
+    <script>
+    function viewDocuments(regId) {
+        document.getElementById('document-details-container').innerHTML = '<div style="text-align:center; padding: 20px;">Loading documents...</div>';
+        fetch(`{{ url_for('merit_reports.check_documents') }}`.replace('check-documents', 'view_candidate_documents/') + regId)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('document-details-container').innerHTML = html;
+                document.getElementById('document-details-container').scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(error => {
+                document.getElementById('document-details-container').innerHTML = '<div style="text-align:center; color:red; padding: 20px;">Error loading documents.</div>';
+                console.error('Error fetching documents:', error);
+            });
+    }
+    </script>
+    {% else %}
+        {% if request.method == 'POST' %}
+        <div style="text-align: center; margin-top: 20px; color: #666;">No candidates found for the selected criteria.</div>
+        {% endif %}
+    {% endif %}
+</form>
+{% endblock %}

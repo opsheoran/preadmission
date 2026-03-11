@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 200" fill="none">
+  <rect width="150" height="200" fill="#f8fafc" rx="8" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4"/>
+  <path d="M50 80 C 50 40 100 40 100 80 C 100 120 50 160 75 160" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M65 70 C 65 50 85 50 85 70 C 85 90 65 110 75 110" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M40 90 C 40 60 110 60 110 90 C 110 130 40 150 75 150" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+  <text x="75" y="185" font-family="sans-serif" font-size="12" font-weight="bold" fill="#94a3b8" text-anchor="middle">NO THUMB</text>
+</svg>

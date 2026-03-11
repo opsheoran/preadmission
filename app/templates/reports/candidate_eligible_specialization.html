@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Candidate Eligible Specialization Report</td>
+        </tr>
+        <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="degree_id">
+                    <option value="0">-- Select --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_id|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">College Name</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="college_id">
+                    <option value="0">-- Select --</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if form_data.college_id|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.candidate_eligible_specialization_report') }}'">RESET</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Eligible Specialization Report</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Degree</th>
+            <th>College</th>
+            <th>Specialization</th>
+            <th>Total Seats</th>
+            <th>Registered Candidates</th>
+            <th>Paid Candidates</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ row.Degree }}</td>
+            <td>{{ row.College }}</td>
+            <td>{{ row.Specialization }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ row.TotalSeats }}</td>
+            <td style="text-align: center;">{{ row.RegisteredCandidates }}</td>
+            <td style="text-align: center; font-weight: bold; color: #3b82f6;">{{ row.PaidCandidates }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% elif request.method == 'POST' %}
+<div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">No Records Found !</div>
+{% endif %}
+{% endblock %}

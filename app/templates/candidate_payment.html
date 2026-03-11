@@ -1,0 +1,214 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --theme-primary: #1e3a8a;
+        --theme-secondary: #2563eb;
+        --theme-success: #10b981;
+        --theme-bg: #f8fafc;
+        --theme-surface: #ffffff;
+        --theme-text-main: #1e293b;
+        --theme-border: #e2e8f0;
+    }
+    
+    .premium-container { 
+        padding: 40px 20px; 
+        max-width: 700px; 
+        margin: 0 auto; 
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    .premium-card {
+        background: var(--theme-surface); 
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .premium-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--theme-primary), var(--theme-success));
+    }
+    
+    .page-title {
+        font-size: 24px; 
+        color: var(--theme-text-main); 
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--theme-border);
+    }
+
+    .payment-summary {
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 30px 20px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .payment-amount {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--theme-primary);
+        margin: 10px 0;
+    }
+    
+    .payment-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* Configurable Gateway Box */
+    .gateway-config-box {
+        background: #fff;
+        border: 1px solid var(--theme-border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+    
+    .gateway-config-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--theme-secondary);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 5px;
+    }
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 13px;
+        box-sizing: border-box;
+    }
+    .form-group input[readonly] {
+        background: #f8fafc;
+        color: #64748b;
+    }
+    
+    .info-text {
+        font-size: 13px;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 30px;
+        line-height: 1.5;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #b45309;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .btn-epic-pay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: 10px;
+        padding: 16px;
+        font-size: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        background: linear-gradient(135deg, var(--theme-success), #059669);
+        color: white;
+        box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-epic-pay:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+</style>
+
+<div class="premium-container">
+    <div class="premium-card">
+        
+        <div class="page-title">Secure Payment Gateway Simulator</div>
+
+        <div class="payment-summary">
+            <div class="payment-label">Total Application Fee</div>
+            <div class="payment-amount">₹ {{ user.totfee if user.totfee else '1500.00' }}</div>
+            <div style="font-size: 13px; font-weight: 600; color: #475569; margin-top: 5px;">Reg No: {{ user.regno }} | Name: {{ user.s_name }}</div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.candidate_payment') }}" id="paymentForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div class="gateway-config-box">
+                <div class="gateway-config-title">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Simulated Gateway Configuration
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Select Gateway Vendor</label>
+                        <select name="gateway_vendor">
+                            <option value="HDFC">HDFC BillDesk</option>
+                            <option value="PNB">PNB ePay</option>
+                            <option value="ATOM">Atom Technologies</option>
+                            <option value="PAYTM">Paytm PG</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Merchant ID (Auto-mapped)</label>
+                        <input type="text" name="merchant_id" value="CCSHAU_DEV_MERCHANT" readonly>
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Simulation Result Behavior</label>
+                        <select name="simulated_status" required style="border-color: var(--theme-secondary);">
+                            <option value="SUCCESS">✅ Always Return SUCCESS (Approve Payment)</option>
+                            <option value="FAILED">❌ Always Return FAILED (Decline Payment)</option>
+                            <option value="PENDING">⏳ Always Return PENDING (Awaiting Bank)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-text">
+                <strong>Note:</strong> In production, clicking the button below will redirect the candidate to the actual bank's secure page. For this environment, it will process the request internally based on your simulated behavior selection above.
+            </div>
+
+            <button type="submit" class="btn-epic-pay">
+                <svg style="width:22px;height:22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                PROCEED TO SECURE PAY
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

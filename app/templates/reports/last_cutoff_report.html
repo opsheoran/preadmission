@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Last Cutoff Report</td>
+        </tr>
+        <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="session_id">
+                    <option value="0">-- Select --</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if form_data.session_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="degree_id">
+                    <option value="0">-- Select --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if form_data.degree_id|string == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">College</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="college_id">
+                    <option value="0">-- Select --</option>
+                    {% for c in colleges %}
+                        <option value="{{ c.id }}" {% if form_data.college_id|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Cutoff</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="cutoff">
+                    <option value="1" {% if form_data.cutoff == '1' %}selected{% endif %}>1st</option>
+                    <option value="2" {% if form_data.cutoff == '2' %}selected{% endif %}>2nd</option>
+                    <option value="3" {% if form_data.cutoff == '3' %}selected{% endif %}>3rd</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">SEARCH</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.last_cutoff_report') }}'">RESET</button>
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Cutoff Report</div>
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>College Name</th>
+            <th>Specialization</th>
+            <th>Category</th>
+            <th>Opening Rank</th>
+            <th>Closing Rank</th>
+            <th>Total Allotted</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in records %}
+        <tr>
+            <td style="text-align: center;">{{ loop.index }}</td>
+            <td>{{ row.CollegeName }}</td>
+            <td>{{ row.Specialization }}</td>
+            <td>{{ row.Category }}</td>
+            <td style="text-align: center;">{{ row.OpeningRank }}</td>
+            <td style="text-align: center;">{{ row.ClosingRank }}</td>
+            <td style="text-align: center; font-weight: bold;">{{ row.TotalAllotted }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% elif request.method == 'POST' %}
+<div style="text-align: center; font-weight: bold; margin-top: 20px; color: #d9534f;">No Records Found !</div>
+{% endif %}
+{% endblock %}

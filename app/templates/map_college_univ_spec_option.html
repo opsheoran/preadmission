@@ -7,6 +7,7 @@
             <td class="tableheading" colspan="7">Map College & University Specilization (For Option Form)</td>
         </tr>
         <form method="POST" action="{{ url_for('main.map_college_univ_spec_option') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="mid" value="{{ edit_obj.id if edit_obj else '' }}">
         <tr>
             <td class="vtext" style="width: 15%">Academic Session</td>

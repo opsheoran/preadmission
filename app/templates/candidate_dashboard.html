@@ -1,0 +1,207 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --theme-primary: #1e3a8a;
+        --theme-secondary: #2563eb;
+        --theme-bg: #f8fafc;
+        --theme-surface: #ffffff;
+        --theme-text-main: #1e293b;
+        --theme-border: #e2e8f0;
+    }
+    .premium-container { 
+        padding: 40px 20px; 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+    .premium-card {
+        background: var(--theme-surface); 
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .premium-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary), #f59e0b);
+    }
+    .dashboard-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 30px; border-bottom: 2px solid var(--theme-border); padding-bottom: 20px;
+    }
+    .dashboard-header h2 { margin: 0; color: var(--theme-text-main); font-weight: 800; font-size: 26px; }
+    .reg-badge { background: #fee2e2; color: #b91c1c; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; }
+    
+    .info-bar {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+        background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 40px; border: 1px solid var(--theme-border);
+    }
+    .info-item { display: flex; flex-direction: column; gap: 4px; }
+    .info-item strong { color: var(--theme-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-item span { color: var(--theme-text-main); font-weight: 600; font-size: 15px; }
+
+    /* Steps Tracker */
+    .steps-container { display: flex; flex-direction: column; gap: 16px; }
+
+    .step-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 20px 25px; border: 1px solid var(--theme-border); border-radius: 12px;
+        background-color: var(--theme-surface); transition: all 0.3s;
+    }
+    .step-row.completed { border-left: 6px solid #10b981; background: #f0fdf4; border-color: #a7f3d0; }
+    .step-row.active { border-left: 6px solid var(--theme-secondary); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1); transform: translateY(-2px); }
+    .step-row.pending { border-left: 6px solid #cbd5e1; opacity: 0.7; }
+
+    .step-info { display: flex; align-items: center; gap: 20px; }
+    .step-number { 
+        background: var(--theme-primary); color: white; 
+        width: 36px; height: 36px; border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;
+    }
+    .completed .step-number { background: #10b981; }
+    .pending .step-number { background: #94a3b8; }
+    
+    .step-title { font-size: 18px; font-weight: 700; color: var(--theme-text-main); margin: 0; }
+    .step-status { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+    
+    .status-completed { color: #047857; background-color: #d1fae5; }
+    .status-active { color: #1d4ed8; background-color: #dbeafe; }
+    .status-pending { color: #475569; background-color: #e2e8f0; }
+
+    .btn-action { 
+        padding: 10px 24px; font-size: 14px; font-weight: 700; text-transform: uppercase;
+        text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;
+        transition: all 0.2s;
+    }
+    .btn-fill { background: var(--theme-secondary); color: white; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+    .btn-fill:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-edit { background: var(--theme-surface); color: var(--theme-primary); border: 2px solid var(--theme-border); }
+    .btn-edit:hover { border-color: var(--theme-primary); background: #f8fafc; }
+    .btn-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+</style>
+
+<div class="premium-container">
+    <div class="premium-card">
+        
+        <div class="dashboard-header">
+            <h2>Candidate Dashboard</h2>
+            <span class="reg-badge">Reg No: {{ user.regno }}</span>
+        </div>
+
+        <div class="info-bar">
+            <div class="info-item"><strong>Candidate Name</strong><span>{{ user.s_name }}</span></div>
+            <div class="info-item"><strong>Email Address</strong><span>{{ user.email }}</span></div>
+            <div class="info-item"><strong>Mobile Number</strong><span>{{ user.mobileno }}</span></div>
+            <div class="info-item"><strong>Degree Selected</strong><span>{% if degree %}{{ degree.name }}{% else %}N/A{% endif %}</span></div>
+        </div>
+
+        <div class="steps-container">
+            <!-- STEP 1 -->
+            <div class="step-row {% if user.step1 %}completed{% else %}active{% endif %}">
+                <div class="step-info">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Personal Information</h3>
+                </div>
+                <div>
+                    {% if user.step1 %}
+                        <span class="step-status status-completed">Completed</span>
+                        <a href="{{ url_for('main.candidate_personal_info') }}" class="btn-action btn-edit" style="margin-left: 15px;">Edit</a>
+                    {% else %}
+                        <span class="step-status status-active">Pending</span>
+                        <a href="{{ url_for('main.candidate_personal_info') }}" class="btn-action btn-fill" style="margin-left: 15px;">Fill Form</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step-row {% if user.step2 %}completed{% elif user.step1 %}active{% else %}pending{% endif %}">
+                <div class="step-info">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Address & Photo</h3>
+                </div>
+                <div>
+                    {% if user.step2 %}
+                        <span class="step-status status-completed">Completed</span>
+                        <a href="{{ url_for('main.candidate_address_info') }}" class="btn-action btn-edit" style="margin-left: 15px;">Edit</a>
+                    {% elif user.step1 %}
+                        <span class="step-status status-active">Pending</span>
+                        <a href="{{ url_for('main.candidate_address_info') }}" class="btn-action btn-fill" style="margin-left: 15px;">Fill Form</a>
+                    {% else %}
+                        <span class="step-status status-pending">Locked</span>
+                        <a href="#" class="btn-action btn-disabled" style="margin-left: 15px;" onclick="return false;">Fill Form</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step-row {% if user.step3 %}completed{% elif user.step2 %}active{% else %}pending{% endif %}">
+                <div class="step-info">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Educational Qualification</h3>
+                </div>
+                <div>
+                    {% if user.step3 %}
+                        <span class="step-status status-completed">Completed</span>
+                        <a href="{{ url_for('main.candidate_education_info') }}" class="btn-action btn-edit" style="margin-left: 15px;">Edit</a>
+                    {% elif user.step2 %}
+                        <span class="step-status status-active">Pending</span>
+                        <a href="{{ url_for('main.candidate_education_info') }}" class="btn-action btn-fill" style="margin-left: 15px;">Fill Form</a>
+                    {% else %}
+                        <span class="step-status status-pending">Locked</span>
+                        <a href="#" class="btn-action btn-disabled" style="margin-left: 15px;" onclick="return false;">Fill Form</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step-row {% if has_additional_info %}completed{% elif user.step3 %}active{% else %}pending{% endif %}">
+                <div class="step-info">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Additional Information</h3>
+                </div>
+                <div>
+                    {% if has_additional_info %}
+                        <span class="step-status status-completed">Completed</span>
+                        <a href="{{ url_for('main.candidate_additional_info') }}" class="btn-action btn-edit" style="margin-left: 15px;">Edit</a>
+                    {% elif user.step3 %}
+                        <span class="step-status status-active">Pending</span>
+                        <a href="{{ url_for('main.candidate_additional_info') }}" class="btn-action btn-fill" style="margin-left: 15px;">Fill Form</a>
+                    {% else %}
+                        <span class="step-status status-pending">Locked</span>
+                        <a href="#" class="btn-action btn-disabled" style="margin-left: 15px;" onclick="return false;">Fill Form</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div class="step-row {% if user.step5 %}completed{% elif has_additional_info %}active{% else %}pending{% endif %}">
+                <div class="step-info">
+                    <div class="step-number">5</div>
+                    <h3 class="step-title">Declaration & Payment</h3>
+                </div>
+                <div>
+                    {% if user.step5 %}
+                        <span class="step-status status-completed">Completed</span>
+                        <a href="{{ url_for('main.candidate_payment') }}" class="btn-action btn-edit" style="margin-left: 15px;">View Receipt</a>
+                    {% elif has_additional_info %}
+                        <span class="step-status status-active">Pending</span>
+                        <a href="{{ url_for('main.candidate_declaration') }}" class="btn-action btn-fill" style="margin-left: 15px; background: #059669; border-color: #059669;">Proceed</a>
+                    {% else %}
+                        <span class="step-status status-pending">Locked</span>
+                        <a href="#" class="btn-action btn-disabled" style="margin-left: 15px;" onclick="return false;">Proceed</a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

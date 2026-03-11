@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading">Counselling Configuration</div>
+
+<form id="counsellingForm" method="POST" action="{{ url_for('config_mgmt.counselling_configuration', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <tr>
+                <td class="vtext label-column">College</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="college_id" id="college_id">
+                        <option value="0">--- Select College ---</option>
+                        {% for c in colleges %}
+                        <option value="{{ c.id }}" {{ 'selected' if edit_record and (edit_record.college_id|string) == (c.id|string) else '' }}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Degree</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_id" id="degree_id" required>
+                        <option value="0">--- Select Degree ---</option>
+                        {% for d in degrees %}
+                        <option value="{{ d.id }}" {{ 'selected' if edit_record and (edit_record.degree_id|string) == (d.id|string) else '' }}>{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Student Category</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="cat_id" id="cat_id" required>
+                        <option value="0">--- Select Student Category ---</option>
+                        {% for sc in student_categories %}
+                        <option value="{{ sc.id }}" {{ 'selected' if edit_record and (edit_record.cat_id|string) == (sc.id|string) else '' }}>{{ sc.description }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required>
+                        <option value="0">--- Select Session ---</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (selected_session_id|string) == (s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">CutOffMarks</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input name="cutoff" type="text" value="{{ edit_record.cutoff if edit_record else '' }}" class="textboxlong" style="width: 150px !important;">
+                    <span class="chkbox"><input id="exempt" type="checkbox" name="exempt" {{ 'checked' if edit_record and edit_record.exempt else '' }} style="width:auto;"></span> Exempt Exam
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Start Date</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="start_date" class="datepicker-dmy" value="{{ edit_record.start_date if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">End Date</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="end_date" class="datepicker-dmy" value="{{ edit_record.end_date if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Payment Date</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="payment_date" class="datepicker-dmy" value="{{ edit_record.payment_date if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">PWD</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="checkbox" name="pwd" {{ 'checked' if edit_record and edit_record.pwd else '' }} style="width:auto;">
+                </td>
+            </tr>
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">{{ 'UPDATE' if edit_record else 'SAVE' }}</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.counselling_configuration', session_id=selected_session_id) }}'">RESET</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait...</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<div class="tablesubheading section-header">List of Configuration(s)</div>
+
+<div style="margin: 10px 0;">
+    <table class="table-form">
+        <tr>
+            <td class="vtext label-column">Degree</td>
+            <td class="colon">:</td>
+            <td class="required-cell field-column">
+                <select id="search_degree_id" style="width:350px;">
+                    <option value="0">--- Select Degree ---</option>
+                    {% for d in degrees %}
+                    <option value="{{ d.id }}" {{ 'selected' if (search_degree_id|string) == (d.id|string) else '' }}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>College Name</th>
+            <th>Degree</th>
+            <th>Student Category</th>
+            <th>Session</th>
+            <th style="width:8%">CutOff</th>
+            <th style="width:10%">Start Date</th>
+            <th style="width:10%">End Date</th>
+            <th style="width:10%">Payment Date</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td>{{ r.college_name }}</td>
+            <td>{{ r.degree_name }}</td>
+            <td>{{ r.cat_name }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td style="text-align:center;">{{ r.cutoff }}</td>
+            <td style="text-align:center;">{{ r.start_date }}</td>
+            <td style="text-align:center;">{{ r.end_date }}</td>
+            <td style="text-align:center;">{{ r.payment_date }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.counselling_configuration', edit_id=r.id, search_degree_id=search_degree_id, session_id=selected_session_id, page=pagination.page) }}" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.delete_counselling_configuration', id=r.id) }}" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="11" style="text-align:center;">No records found for the selected criteria.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.counselling_configuration' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+    (function () {
+        var s = document.getElementById('search_degree_id');
+        if (s) {
+            s.addEventListener('change', function() {
+                var url = new URL(window.location.href);
+                url.searchParams.set('search_degree_id', this.value);
+                url.searchParams.set('page', 1);
+                window.location.href = url.toString() + '#list-grid';
+            });
+        }
+
+        var form = document.getElementById('counsellingForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 350px !important; }
+
+    .datepicker-dmy {
+        background-image: url('{{ url_for("static", filename="img/calendar.svg") }}');
+        background-repeat: no-repeat; background-position: right 5px center; background-size: 14px 14px;
+        padding-right: 25px !important; width: 110px !important; font-size: 11px !important; height: 24px !important;
+    }
+    
+    .table-form input[type="text"], .table-form select, .table-form input[type="number"] { height: 24px; font-size: 11px; padding: 2px 5px; width: 280px; }
+    
+    .tablesubheading.section-header {
+        background-color: #f1f8ff !important; color: #0d47a1 !important; padding: 6px 10px !important; border-left: 4px solid #0d47a1; margin-top: 15px; border-bottom: 1px solid #d0e8ff;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

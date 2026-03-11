@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading">List of Entrance Test(s)
+                <span style="float: right;">
+                    <a id="btnBackAddNew" href="{{ url_for('invigilator.staff_duties_master', action='add_new') }}" style="color:white; text-decoration:underline;">ADD NEW</a>
+                </span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="grid-table" style="margin-top: 15px;">
+    <thead>
+        <tr>
+            <th style="width: 5%; text-align: center;">S.No.</th>
+            <th>Academic Session</th>
+            <th>Entrance Test</th>
+            <th style="width: 5%; text-align: center;">EDIT</th>
+            <th style="width: 5%; text-align: center;">PRINT</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for et in ets %}
+        <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+            <td style="text-align: center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align: center;">{{ et.session.session_name if et.session else '' }}</td>
+            <td style="text-align: center;">{{ et.description }}</td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('invigilator.staff_duties_master', edit_et_id=et.id) }}" class="action-icon icon-edit" title="Edit"></a>
+            </td>
+            <td style="text-align: center;">
+                <a href="{{ url_for('invigilator.export_staff_duties', et_id=et.id) }}" class="action-icon icon-print" title="Print to Excel"></a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="text-align: center;">No Entrance Tests Found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if pagination %}
+    {% set endpoint = 'invigilator.staff_duties_master' %}
+    {% include 'includes/pagination.html' %}
+{% endif %}
+{% endblock %}

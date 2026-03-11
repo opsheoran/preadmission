@@ -17,8 +17,8 @@
             --bg-color: #f4f6f8;
             --border-color: #ced4da;
             --required-color: #ff0000;
-            --grid-header-bg: #4a534a; /* Greenish-Brownish mix */
-            --grid-text: #ffffff;
+            --grid-header-bg: #cbd5e1; /* Slightly Darker Grayish */
+            --grid-text: #1e293b; /* Darker Slate for contrast */
             --nav-bg: #0d47a1;
         }
 
@@ -123,19 +123,50 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         }
 
-        /* Form Layout */
-        .table-form { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-        .tableheading {
-            background-color: #ffffff;
-            color: var(--primary-color);
-            padding: 10px 0;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: left;
-            border-bottom: 2px solid var(--primary-color);
+        /* Form Layout Refactored to match seat-allotment */
+        .table-form { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0;
+            background: #f7f9fc; 
+            border: 1px solid #dde3ee; 
+            border-radius: 4px; 
+            margin-bottom: 25px; 
+            margin-top: 5px;
         }
-        .vtext { width: 15%; padding: 8px 5px; font-weight: 600; color: #444; text-align: left; }
-        .colon { width: 2%; text-align: center; font-weight: bold; color: #666; }
+        .table-form td { padding: 5px 12px; vertical-align: middle; }
+        .tableheading {
+            background-color: transparent;
+            color: var(--primary-color);
+            padding: 10px 5px 6px 5px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .vtext { width: 15%; font-weight: bold; font-size: 12.5px; color: #333; text-align: right; white-space: nowrap; }
+        .colon { width: 1%; text-align: center; font-weight: bold; padding: 0 2px !important; }
+
+        .required-cell { width: 30%; }
+        .required-mark { color: var(--required-color); margin-left: 4px; font-weight: 800; }
+        
+        /* Compact Input controls */
+        .table-form input[type="text"], .table-form input[type="number"], .table-form select, .table-form input[type="date"] {
+            width: 100%; max-width: 250px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;
+            transition: border-color 0.2s; box-sizing: border-box;
+        }
+        .table-form input:focus, .table-form select:focus {
+            border-color: var(--secondary-color); outline: none;
+        }
+
+        .tablesubheading {
+            margin: 5px 0 8px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.4px;
+        }
         
         input[type="text"], input[type="number"], input[type="date"], input[type="email"], select, textarea {
             border: 1px solid #ccc;
@@ -146,6 +177,15 @@
             border-radius: 4px;
             background-color: #fff;
             transition: all 0.2s ease;
+        }
+
+        .datepicker-input, .datepicker-dmy {
+            background-image: url("{{ url_for('static', filename='img/calendar.svg') }}");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px 16px;
+            padding-right: 36px;
+            cursor: pointer;
         }
         input:focus, select:focus, textarea:focus { border-color: var(--secondary-color); outline: none; box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1); }
 
@@ -165,16 +205,19 @@
         }
         .grid-table td { 
             border: 1px solid #ddd; 
-            padding: 2px 12px; 
+            padding: 1px 8px; 
             font-size: 11px; 
-            height: 22px; 
+            height: 20px; 
             color: #333; 
         }
         .grid-table tr:hover { background-color: #f0f4f0; }
 
-        .action-icon { width: 24px; height: 24px; margin: 0 3px; border-radius: 4px; border: 1px solid #ddd; background-repeat: no-repeat; background-position: center; background-size: 12px; display: inline-flex; transition: all 0.2s; }
-        .icon-edit { background-color: #f5f5f5; background-image: url("{{ url_for('static', filename='img/edit.svg') }}"); filter: grayscale(1) brightness(0.5); }
-        .icon-delete { background-color: #fee2e2; background-image: url("{{ url_for('static', filename='img/delete.svg') }}"); border-color: #fecaca; }
+        .action-icon { width: 24px; height: 24px; margin: 0 3px; border-radius: 4px; border: 1px solid transparent; background-color: transparent; background-repeat: no-repeat; background-position: center; background-size: 14px; display: inline-flex; transition: all 0.2s; vertical-align: middle; }
+        .action-icon:hover { background-color: #f1f5f9; border-color: #cbd5e1; }
+        .icon-edit { background-image: url("{{ url_for('static', filename='img/edit.svg') }}"); }
+        .icon-delete { background-image: url("{{ url_for('static', filename='img/delete.svg') }}"); }
+        .icon-view { background-image: url("{{ url_for('static', filename='img/eye.svg') }}"); }
+        .icon-print { background-image: url("{{ url_for('static', filename='img/print.svg') }}"); }
 
         .flash-inline { display: inline-block; margin-left: 20px; padding: 5px 15px; border-radius: 4px; font-size: 11px; font-weight: 600; vertical-align: middle; animation: fadeIn 0.4s; }
         .flash-success-inline { color: #1b5e20; background-color: #e8f5e9; border: 1px solid #c8e6c9; }
@@ -250,6 +293,7 @@
         <div class="nav-bar">
             <ul>
                 <li><a href="{{ url_for('main.dashboard') }}">Modules</a></li>
+                <li><a href="{{ url_for('main.candidate_landing') }}">Candidate Portal</a></li>
                 <li class="dropdown">
                     <a class="main-trigger">Common Masters ▼</a>
                     <div class="dropdown-content">
@@ -282,29 +326,94 @@
                 <li class="dropdown">
                     <a class="main-trigger">Configuration Process ▼</a>
                     <div class="dropdown-content">
-                        <a>Application Fee Config</a>
-                        <a>Admission Process Configuration</a>
-                        <a>Counselling Configuration</a>
-                        <a>Admit Card Configuration</a>
-                        <a>UG Seat Matrix Master</a>
-                        <a>Roster Master</a>
+                        <a href="{{ url_for('config_mgmt.application_fee_config') }}">Application Fee Config</a>
+                        <a href="{{ url_for('config_mgmt.admission_process_configuration') }}">Admission Process Configuration</a>
+                        <a href="{{ url_for('config_mgmt.counselling_configuration') }}">Counselling Configuration</a>
+                        <a href="{{ url_for('config_mgmt.student_upward_configuration') }}">Student Upward Configuration</a>
+                        <a href="{{ url_for('config_mgmt.admit_card_configuration') }}">Admit Card Configuration</a>
+                        <a href="{{ url_for('config_mgmt.ug_seat_matrix_master') }}">UG Seat Matrix Master</a>
+                        <a href="{{ url_for('config_mgmt.roster_master') }}">Roster Master</a>
+                        <a href="{{ url_for('config_mgmt.instructions_master') }}">Instructions Master</a>
+                        <a href="{{ url_for('config_mgmt.allotment_letter_master') }}">Allotment Letter Master</a>
+                        <a href="{{ url_for('config_mgmt.duty_letter_configuration') }}">Duty Letter Configuration</a>
+                        <a href="{{ url_for('config_mgmt.category_remuneration_configuration') }}">Category Remuneration Configuration</a>
+                        <a href="{{ url_for('config_mgmt.student_additional_fee_config') }}">Student Additional Fee Config</a>
                     </div>
                 </li>
                 <li class="dropdown">
                     <a class="main-trigger">Transactions ▼</a>
                     <div class="dropdown-content">
-                        <a>Student Data Modification</a>
-                        <a>Marks Upload and Rank Generation</a>
-                        <a>Transfer Student</a>
-                        <a>Generate Merit/Seat Allotment</a>
+                        <a href="{{ url_for('transactions.student_data_modification') }}">Student Data Modification</a>
+                        <a href="{{ url_for('transactions.apply_for_upward') }}">Apply For Upward</a>
+                        <a href="{{ url_for('transactions.candidate_marks_upload') }}">Marks Upload and Rank Generation</a>
+                        <a href="{{ url_for('transactions.counselling_raw_data') }}">Counselling Raw Data</a>
+                        <a href="{{ url_for('transactions.generate_merit_seat_allotment') }}">Generate Merit Seat Allotment</a>
+                        <a href="{{ url_for('transactions.manual_merit_entry') }}">Manual Merit Entry</a>
+                        <a href="{{ url_for('transactions.ph_candidates_verifications') }}">PH Candidates Verifications</a>
+                        <a href="{{ url_for('transactions.sports_quota_document_verification') }}">Sports Quota Document Verification</a>
+                        <a href="{{ url_for('transactions.transfer_students') }}">Transfer Students</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="main-trigger">Invigilator ▼</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('invigilator.et_master') }}">ET Master</a>
+                        <a href="{{ url_for('invigilator.exam_center_master') }}">Exam Center Master</a>
+                        <a href="{{ url_for('invigilator.exam_center_copy') }}">Exam Center Copy</a>
+                        <a href="{{ url_for('invigilator.staff_type_master') }}">Staff Type Master</a>
+                        <a href="{{ url_for('invigilator.staff_category_master') }}">Staff Category Master</a>
+                        <a href="{{ url_for('invigilator.external_staff_master') }}">External Staff Master</a>
+                        <a href="{{ url_for('invigilator.exemption_et_duties') }}">Exemption ET Duties</a>
+                        <a href="{{ url_for('invigilator.staff_duties_master') }}">Staff Duties Master</a>
+                        <a href="{{ url_for('invigilator.swap_duties') }}">Swap Duties</a>
+                        <a href="{{ url_for('invigilator.invigilator_reports') }}">Invigilator Reports</a>
+                        <a href="{{ url_for('invigilator.duty_letters') }}">Duty Letters</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="main-trigger">Seat Allocation Process ▼</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('seat_allocation.seat_allotment') }}">Seat Allotment</a>
+                        <a href="{{ url_for('seat_allocation.seating_arrangement') }}">Seating Arrangement</a>
+                        <a href="{{ url_for('seat_allocation.roll_no_admit_card_generation') }}">Roll No./Admit Card Generation</a>
+                        <a href="{{ url_for('seat_allocation.exam_center_report') }}">Exam Center Report</a>
+                        <a href="{{ url_for('seat_allocation.exam_center_detail_report') }}">Exam Center Detail Report</a>
+                        <a href="{{ url_for('seat_allocation.seating_arrangement_report') }}">Seating Arrangement Report</a>
                     </div>
                 </li>
                 <li class="dropdown">
                     <a class="main-trigger">Reports ▼</a>
                     <div class="dropdown-content">
-                        <a>Candidate Export</a>
-                        <a>Candidate DashBoard</a>
-                        <a>Check Payment Status</a>
+                        <a href="{{ url_for('reports.candidate_export') }}">Candidate Export</a>
+                        <a href="{{ url_for('reports.candidate_dashboard') }}">Candidate DashBoard</a>
+                        <a href="{{ url_for('reports.room_availability') }}">Room Availability</a>
+                        <a href="{{ url_for('reports.candidate_dashboard_counselling') }}">Candidate DashBoard(Counselling)</a>
+                        <a href="{{ url_for('reports.candidate_payment_reports') }}">Candidates Payment Report</a>
+                        <a href="{{ url_for('reports.candidate_payment_reports_counselling') }}">Candidates Payment Report(Counselling)</a>
+                        <a href="{{ url_for('reports.candidate_list_counselling') }}">Candidates List(Counselling)</a>
+                        <a href="{{ url_for('reports.check_payment_status') }}">Check Payment Status</a>
+                        <a href="{{ url_for('reports.candidate_eligible_specialization_report') }}">Candidate Eligible Specialization Report</a>
+                        <a href="{{ url_for('reports.ex_student_report') }}">Ex-Student Reports</a>
+                        <a href="{{ url_for('reports.last_cutoff_report') }}">Last Cutoff Report</a>
+                        <a href="{{ url_for('reports.additional_fee_details') }}">Additional Fee Status</a>
+                        <a href="{{ url_for('reports.modify_personal_information_request') }}">Modify Personal Information Request</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="main-trigger">Merit Reports ▼</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('merit_reports.check_documents') }}">Check Documents Uploaded By Candidates</a>
+                        <a href="{{ url_for('merit_reports.filled_vacant_seat') }}">Filled/Vacant Seat Report</a>
+                        <a href="{{ url_for('merit_reports.student_upward_upgradation') }}">Student Upward Upgradation</a>
+                        <a href="{{ url_for('merit_reports.final_seat_allocation') }}">Final Seat Allocation Report</a>
+                        <a href="{{ url_for('merit_reports.collegewise_departmentwise') }}">CollegeWise DepartmentWise Report</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a class="main-trigger">Answer Key ▼</a>
+                    <div class="dropdown-content">
+                        <a href="#">Answer Key Details</a>
+                        <a href="#">Upload Answer Key</a>
                     </div>
                 </li>
             </ul>
@@ -319,6 +428,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             flatpickr(".datepicker-input", { dateFormat: "Y-m-d", allowInput: true, altInput: true, altFormat: "d-M-Y" });
+            flatpickr(".datepicker-dmy", { dateFormat: "d/m/Y", allowInput: true });
             
             var triggers = document.querySelectorAll('.main-trigger');
             triggers.forEach(function(trigger) {
@@ -339,11 +449,14 @@
             setTimeout(function() {
                 var flashes = document.querySelectorAll('.flash-inline');
                 flashes.forEach(function(f) {
-                    f.style.transition = 'opacity 0.5s ease';
-                    f.style.opacity = '0';
-                    setTimeout(function() { f.remove(); }, 500);
+                    // ONLY auto-remove success messages. Keep errors visible for troubleshooting.
+                    if (f.classList.contains('flash-success-inline')) {
+                        f.style.transition = 'opacity 0.5s ease';
+                        f.style.opacity = '0';
+                        setTimeout(function() { f.remove(); }, 500);
+                    }
                 });
-            }, 3000);
+            }, 4000);
         });
 
         window.onload = function() {

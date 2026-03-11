@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="tableheading" id="feeForm">Application Form Fee Configuration</div>
+
+<form id="feeFormTag" method="POST" action="{{ url_for('config_mgmt.application_fee_config', session_id=selected_session_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="id" value="{{ edit_record.id if edit_record else '' }}">
+    
+    <table class="table-form">
+        <tbody>
+            <tr>
+                <td class="vtext label-column">Academic Session</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="session_id" id="session_id" required onchange="updateFilters()">
+                        <option value="0">-- Select Academic Session --</option>
+                        {% for s in sessions %}
+                        <option value="{{ s.id }}" {{ 'selected' if (selected_session_id|string) == (s.id|string) else '' }}>{{ s.session_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Degree Apply For</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <select name="degree_type_id" required>
+                        <option value="">-- Select Degree Type --</option>
+                        {% for dt in degree_types %}
+                        <option value="{{ dt.id }}" {{ 'selected' if edit_record and (edit_record.degree_type_id|string) == (dt.id|string) else '' }}>{{ dt.description }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Form Fee For PH</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="number" step="0.01" name="form_fee_ph" value="{{ edit_record.form_fee_ph if edit_record else '0.00' }}" class="textbox" style="width: 120px !important;">
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Effective Date</td>
+                <td class="colon">:</td>
+                <td class="required-cell field-column">
+                    <input type="text" name="effective_date" class="datepicker-dmy" value="{{ edit_record.effective_date if edit_record else '' }}" required>
+                    <span class="required-mark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="vtext label-column">Late Fee</td>
+                <td class="colon">:</td>
+                <td class="field-column">
+                    <input type="number" step="0.01" name="late_fee" value="{{ edit_record.late_fee if edit_record else '0.00' }}" class="textbox" style="width: 120px !important;">
+                </td>
+            </tr>
+
+            <!-- CATEGORY WISE GRID -->
+            <tr><td colspan="3" class="tablesubheading section-header">Category wise Application Form Fee Details</td></tr>
+            <tr>
+                <td colspan="3" style="padding: 10px 0;">
+                    <div style="overflow-x: auto;">
+                        <table class="grid-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr class="header-style">
+                                    <th style="font-size: 10px;">S.No.</th>
+                                    <th style="font-size: 10px;">Category</th>
+                                    <th style="font-size: 10px;">Min Age</th>
+                                    <th style="font-size: 10px;">Max Age</th>
+                                    <th style="font-size: 10px;">Form Fee (HR)</th>
+                                    <th style="font-size: 10px;">Late Fee (HR)</th>
+                                    <th style="font-size: 10px;">Form Fee (Other)</th>
+                                    <th style="font-size: 10px;">Late Fee (Other)</th>
+                                    <th style="font-size: 10px;">Couns. Fee (HR)</th>
+                                    <th style="font-size: 10px;">Couns. Fee (Other)</th>
+                                    <th style="font-size: 10px;">Age Relax</th>
+                                    <th style="font-size: 10px;">AsOnDate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in detail_rows %}
+                                <tr>
+                                    <td style="text-align:center;">{{ loop.index }}</td>
+                                    <td style="font-size: 10px;">{{ d.cat_name }}<input type="hidden" name="cat_id_{{ loop.index }}" value="{{ d.cat_id }}"></td>
+                                    <td style="text-align:center;"><input type="number" name="min_age_{{ loop.index }}" value="{{ d.min_age }}" style="width:40px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" name="max_age_{{ loop.index }}" value="{{ d.max_age }}" style="width:40px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="form_fee_{{ loop.index }}" value="{{ d.form_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="late_form_fee_{{ loop.index }}" value="{{ d.late_form_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="other_form_fee_{{ loop.index }}" value="{{ d.other_form_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="other_late_form_fee_{{ loop.index }}" value="{{ d.other_late_form_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="counse_fee_{{ loop.index }}" value="{{ d.counse_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" step="0.01" name="other_counse_fee_{{ loop.index }}" value="{{ d.other_counse_fee }}" style="width:60px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="number" name="age_re_{{ loop.index }}" value="{{ d.age_re }}" style="width:40px; font-size:10px;"></td>
+                                    <td style="text-align:center;"><input type="text" name="as_on_date_{{ loop.index }}" class="datepicker-dmy" value="{{ d.as_on_date }}" style="width:80px !important; font-size:10px;"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td></td><td></td>
+                <td style="padding: 20px 0; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="submit" class="btn btn-save" id="saveBtn">{{ 'UPDATE' if edit_record else 'SAVE' }}</button>
+                        <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.application_fee_config', session_id=selected_session_id) }}'">RESET</button>
+                        
+                        <div id="waitSymbol" style="display: none; align-items: center; gap: 8px; background: #fff8e1; padding: 5px 12px; border: 1px solid #ffe082; border-radius: 4px;">
+                            <div class="spinner-small"></div>
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Wait..</span>
+                        </div>
+
+                        <div id="flashContainer">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                              {% if messages %}
+                                {% for category, message in messages %}
+                                  <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                                {% endfor %}
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<div class="tablesubheading section-header">List of Application Form Fee Configuration</div>
+
+<table class="grid-table" id="list-grid">
+    <thead>
+        <tr class="header-style">
+            <th style="width:5%">S.No.</th>
+            <th>Academic Session</th>
+            <th>Degree Type/Apply For</th>
+            <th style="width:15%">Effected From</th>
+            <th style="width:5%">EDIT</th>
+            <th style="width:5%">DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr style="{{ 'background-color:#e1f5fe; font-weight:bold;' if edit_record and (edit_record.id|string) == (r.id|string) else '' }}">
+            <td style="text-align:center;">{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+            <td style="text-align:center;">{{ r.session_name }}</td>
+            <td>{{ r.degree_type_name }}</td>
+            <td style="text-align:center;">{{ r.effective_date }}</td>
+            <td style="text-align:center;"><a href="{{ url_for('config_mgmt.application_fee_config', edit_id=r.id, session_id=selected_session_id) }}#feeForm" class="action-icon icon-edit"></a></td>
+            <td style="text-align:center;"><a href="#" class="action-icon icon-delete" onclick="return confirm('Confirm Delete?');"></a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="text-align:center;">No records found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% set endpoint = 'config_mgmt.application_fee_config' %}
+{% include 'includes/pagination.html' %}
+
+<script>
+    function updateFilters() {
+        var s = document.getElementById('session_id').value;
+        var url = new URL(window.location.href);
+        url.searchParams.set('session_id', s);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
+    (function () {
+        // Auto-scroll to form if editing
+        if (window.location.hash === '#feeForm' || {{ 'true' if edit_record else 'false' }}) {
+            setTimeout(function() {
+                var el = document.getElementById('feeForm');
+                if(el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }, 100);
+        }
+
+        var form = document.getElementById('feeFormTag');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (this.dataset.submitted === 'true') return;
+                e.preventDefault();
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('waitSymbol').style.display = 'flex';
+                var flash = document.getElementById('flashContainer');
+                if (flash) flash.style.display = 'none';
+                
+                var self = this;
+                setTimeout(function() {
+                    self.dataset.submitted = 'true';
+                    self.submit();
+                }, 800); 
+            });
+        }
+    })();
+</script>
+
+<style>
+    .spinner-small {
+        width: 16px; height: 16px; border: 2px solid #ddd; border-top: 2px solid var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .vtext.label-column { 
+        width: 180px !important; 
+        min-width: 180px !important; 
+        font-weight: 600; 
+        color: var(--primary-color); 
+        white-space: nowrap; 
+        text-align: right !important; 
+        padding-right: 10px !important;
+    }
+    .field-column { width: 750px !important; }
+    
+    .table-form input[type="text"], .table-form select, .table-form input[type="number"] { height: 24px; font-size: 11px; padding: 2px 5px; width: 300px; }
+    
+    .datepicker-dmy {
+        background-image: url('{{ url_for("static", filename="img/calendar.svg") }}');
+        background-repeat: no-repeat; background-position: right 5px center; background-size: 14px 14px;
+        padding-right: 25px !important; width: 110px !important; font-size: 11px !important; height: 24px !important;
+    }
+
+    .grid-table input { border: 1px solid #ccc; padding: 2px; }
+
+    .tablesubheading.section-header {
+        background-color: #f1f8ff !important; color: #0d47a1 !important; padding: 6px 10px !important; border-left: 4px solid #0d47a1; margin-top: 15px; border-bottom: 1px solid #d0e8ff;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

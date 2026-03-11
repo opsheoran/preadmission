@@ -1,0 +1,278 @@
+{% extends "base_candidate.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --theme-primary: #1e3a8a;
+        --theme-secondary: #2563eb;
+        --theme-accent: #f59e0b;
+        --theme-bg: #f8fafc;
+        --theme-surface: #ffffff;
+        --theme-text-main: #1e293b;
+        --theme-border: #e2e8f0;
+    }
+
+    .hero-section {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, var(--theme-primary), #0f172a);
+        color: white;
+        border-radius: 16px;
+        margin: 20px auto 40px;
+        max-width: 1280px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        animation: rotate 20s linear infinite;
+    }
+    @keyframes rotate { 100% { transform: rotate(360deg); } }
+    
+    .hero-title {
+        font-size: 42px; font-weight: 800; margin-bottom: 15px; position: relative; z-index: 1;
+        letter-spacing: -1px;
+    }
+    .hero-subtitle {
+        font-size: 18px; color: #cbd5e1; max-width: 600px; margin: 0 auto 30px; position: relative; z-index: 1;
+        line-height: 1.6;
+    }
+
+    .landing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1280px;
+        margin: 0 auto 50px;
+    }
+
+    .glass-card {
+        background: var(--theme-surface);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        padding: 35px;
+        box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
+    }
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 4px;
+        background: var(--theme-secondary);
+    }
+
+    .glass-card h3 {
+        font-size: 20px; font-weight: 800; color: var(--theme-primary);
+        margin-top: 0; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 10px;
+    }
+
+    .notice-list { list-style: none; padding: 0; margin: 0; }
+    .notice-list li {
+        margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--theme-border);
+        font-size: 14px; line-height: 1.5; color: var(--theme-text-main);
+        display: flex; align-items: flex-start; gap: 10px;
+    }
+    .notice-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .notice-list a { color: var(--theme-secondary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+    .notice-list a:hover { color: var(--theme-primary); text-decoration: underline; }
+    
+    .new-badge {
+        background: #ef4444; color: white; font-size: 10px; font-weight: 800;
+        padding: 2px 6px; border-radius: 4px; animation: pulse 2s infinite;
+        white-space: nowrap; margin-left: 5px;
+    }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+    .action-box {
+        background: #f8fafc; border: 1px solid var(--theme-border); border-radius: 12px; padding: 25px;
+    }
+    .action-box select {
+        width: 100%; height: 48px; padding: 0 16px; border: 2px solid var(--theme-border);
+        border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 20px;
+        color: var(--theme-text-main); outline: none; transition: border-color 0.2s;
+    }
+    .action-box select:focus { border-color: var(--theme-secondary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    
+    .btn-epic {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 14px 24px; font-size: 14px; font-weight: 700; text-transform: uppercase;
+        border-radius: 8px; border: none; cursor: pointer; transition: all 0.3s;
+        width: 100%; margin-bottom: 12px;
+    }
+    .btn-login { background: var(--theme-primary); color: white; box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(30,58,138,0.3); }
+    .btn-register { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 10px rgba(16,185,129,0.2); }
+    .btn-register:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16,185,129,0.3); }
+
+    .icon-svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--theme-secondary); }
+</style>
+
+<div style="padding: 0 20px;">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CCSHAU Logo" style="height: 120px; margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); position: relative; z-index: 1;">
+        <h1 class="hero-title">CCSHAU Admissions Portal</h1>
+        <p class="hero-subtitle">Welcome to the official candidate portal for Undergraduate, Postgraduate, and Ph.D. admissions for the academic session 2025-26.</p>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="landing-grid">
+        
+        <!-- Online Application Actions -->
+        <div class="glass-card" style="border-top-color: var(--theme-primary);">
+            <h3>
+                <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Start Your Application
+            </h3>
+            <div class="action-box">
+                <form id="landingForm" method="GET" action="">
+                    <select name="dtype_id" id="dtype_id" required onchange="fetchDegrees()">
+                        <option value="">-- Select Degree Type --</option>
+                        {% for dt in degree_types %}
+                            <option value="{{ dt.id }}">{{ dt.description }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="degree_id" id="degree_id" required disabled>
+                        <option value="">-- Select Degree/Diploma --</option>
+                    </select>
+
+                    <button type="button" class="btn-epic btn-login" onclick="submitLandingForm('login')">
+                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                        Candidate Login
+                    </button>
+                    <button type="button" class="btn-epic btn-register" onclick="submitLandingForm('register')">
+                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        New Registration
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="glass-card" style="border-top-color: #ef4444;">
+            <h3>
+                <svg class="icon-svg" style="color: #ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                Important Links & Notices
+            </h3>
+            <ul class="notice-list">
+                <li style="background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe; margin-bottom: 20px;">
+                    <svg class="icon-svg" style="color: var(--theme-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span><strong>For enquiry:</strong> Mail to admissions@hau.ac.in, Call 01662-255254 (For UG) and 01662-255330 (For PG). Time: 08:00am - 01:30pm</span>
+                </li>
+                {% if div1 %}
+                    {% for link in div1 %}
+                    <li>
+                        <svg class="icon-svg" style="color: #cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <a href="{{ url_for('static', filename='uploads/' + link.filename) if link.filename else '#' }}" {% if link.filename %}target="_blank"{% endif %}>{{ link.noticetext }}</a>
+                        {% if link.is_new %}<span class="new-badge">NEW</span>{% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><span style="color: #64748b;">No updates available at this time.</span></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Resources -->
+        <div class="glass-card" style="border-top-color: var(--theme-accent);">
+            <h3>
+                <svg class="icon-svg" style="color: var(--theme-accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                Syllabus & Resources
+            </h3>
+            
+            <h4 style="font-size: 13px; color: #64748b; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Syllabus</h4>
+            <ul class="notice-list" style="margin-bottom: 30px;">
+                {% if div2 %}
+                    {% for link in div2 %}
+                    <li>
+                        <svg class="icon-svg" style="width:16px;height:16px;color:#cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <a href="{{ url_for('static', filename='uploads/' + link.filename) if link.filename else '#' }}" {% if link.filename %}target="_blank"{% endif %}>{{ link.noticetext }}</a>
+                        {% if link.is_new %}<span class="new-badge">NEW</span>{% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><span style="color: #64748b;">No syllabus uploaded.</span></li>
+                {% endif %}
+            </ul>
+
+            <h4 style="font-size: 13px; color: #64748b; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Old Question Papers</h4>
+            <ul class="notice-list">
+                {% if div3 %}
+                    {% for link in div3 %}
+                    <li>
+                        <svg class="icon-svg" style="width:16px;height:16px;color:#cbd5e1;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <a href="{{ url_for('static', filename='uploads/' + link.filename) if link.filename else '#' }}" {% if link.filename %}target="_blank"{% endif %}>{{ link.noticetext }}</a>
+                        {% if link.is_new %}<span class="new-badge">NEW</span>{% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><span style="color: #64748b;">No old question papers uploaded.</span></li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function fetchDegrees() {
+        const dtypeId = document.getElementById('dtype_id').value;
+        const degreeSelect = document.getElementById('degree_id');
+        
+        degreeSelect.innerHTML = '<option value="">Loading...</option>';
+        degreeSelect.disabled = true;
+
+        if (!dtypeId) {
+            degreeSelect.innerHTML = '<option value="">-- Select Degree/Diploma --</option>';
+            return;
+        }
+
+        fetch(`{{ url_for('main.api_get_degrees', dtype_id=0) }}`.replace('0', dtypeId))
+            .then(response => response.json())
+            .then(data => {
+                degreeSelect.innerHTML = '<option value="">-- Select Degree/Diploma --</option>';
+                data.forEach(degree => {
+                    const option = document.createElement('option');
+                    option.value = degree.id;
+                    option.textContent = degree.name;
+                    degreeSelect.appendChild(option);
+                });
+                degreeSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching degrees:', error);
+                degreeSelect.innerHTML = '<option value="">Error loading degrees</option>';
+            });
+    }
+
+    function submitLandingForm(actionType) {
+        const form = document.getElementById('landingForm');
+        const dtypeId = document.getElementById('dtype_id').value;
+        const degreeId = document.getElementById('degree_id').value;
+
+        if (!dtypeId || !degreeId) {
+            alert('Please select Degree Type and Degree before proceeding.');
+            return;
+        }
+
+        if (actionType === 'login') {
+            form.action = "{{ url_for('main.candidate_login') }}";
+        } else {
+            form.action = "{{ url_for('main.candidate_instruction') }}";
+        }
+        form.submit();
+    }
+</script>
+{% endblock %}

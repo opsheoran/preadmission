@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block content %}
+<form id="mainForm" method="GET" action="{{ url_for('transactions.sports_quota_document_verification') }}">
+    <table class="table-form">
+        <tr>
+            <td colspan="7" class="tableheading">Verification Documents (Sports Quota)</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right;">Session</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required" style="width: 30%;">
+                <select name="session_id" id="session_id" class="dropdownmedium" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0"> -- Select Academic Session -- </option>
+                    {% for s in sessions %}
+                        <option value="{{ s.id }}" {% if f_session == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+            <td></td>
+            <td class="vtext" style="width: 15%; text-align: right;">Degree</td>
+            <td class="colon" style="width: 2%;">:</td>
+            <td class="required">
+                <select name="degree_id" id="degree_id" class="dropdownmedium" onchange="document.getElementById('mainForm').submit();">
+                    <option value="0"> -- All --</option>
+                    {% for d in degrees %}
+                        <option value="{{ d.id }}" {% if f_degree == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="4">
+                <button type="submit" class="btn btn-save">VIEW</button>
+            </td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td colspan="7" class="tableheading">Students List (Not Verified)</td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div class="grid-div" style="max-height: 200px; overflow-y: auto; border: 1px solid #B0B0B0;">
+                    <table class="grid-table" style="margin-top: 0; border: none;">
+                        <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+                            <th style="width: 50px; text-align: center;">S.No.</th>
+                            <th style="text-align: left;">Student Name</th>
+                            <th style="text-align: left;">Father Name</th>
+                            <th style="text-align: left;">Mobile No</th>
+                            <th style="text-align: left;">EmailID</th>
+                            <th style="text-align: left;">Registration No</th>
+                            <th style="text-align: left;">Roll No</th>
+                            <th style="text-align: left;">Degree</th>
+                            <th style="width: 80px; text-align: center;">View</th>
+                        </tr>
+                        {% if unverified_records and unverified_records|length > 0 %}
+                            {% for r in unverified_records %}
+                            <tr style="background-color: {% if edit_id == r.id|string %}#B7C7D7; font-weight: bold; color: Black;{% elif loop.index is divisibleby 2 %}#F8F8F8{% else %}White{% endif %};">
+                                <td style="text-align: center;">{{ loop.index }}</td>
+                                <td>{{ r.name }}</td>
+                                <td>{{ r.father_name }}</td>
+                                <td>{{ r.mobile }}</td>
+                                <td>{{ r.email }}</td>
+                                <td>{{ r.regno }}</td>
+                                <td>{{ r.rollno }}</td>
+                                <td>{{ r.degree }}</td>
+                                <td style="text-align: center;">
+                                    <a href="?session_id={{ f_session }}&degree_id={{ f_degree }}&edit_id={{ r.id }}" class="action-icon icon-edit" title="Edit">
+                                        <img src="{{ url_for('static', filename='img/edit.svg') }}" width="16" height="16" alt="Edit" style="border-width:0px;">
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr style="background-color: White;"><td colspan="9" style="text-align: center;">No Record Found</td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="7" class="tableheading">Students Sports Quota List</td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div class="grid-div" style="max-height: 200px; overflow-y: auto; border: 1px solid #B0B0B0;">
+                    {% if edit_id and sports_details and sports_details|length > 0 %}
+                    <form method="POST" action="{{ url_for('transactions.sports_quota_document_verification') }}" style="margin: 0; padding: 0;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="action" value="verify_sports">
+                        <input type="hidden" name="reg_id" value="{{ edit_id }}">
+                        <input type="hidden" name="session_id" value="{{ f_session }}">
+                        <input type="hidden" name="degree_id" value="{{ f_degree }}">
+                        
+                        <table class="grid-table" style="margin-top: 0; border: none;">
+                            <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+                                <th style="width: 50px; text-align: center;">S.No.</th>
+                                <th>Game Name</th>
+                                <th>Participation Level</th>
+                                <th>Participation Date</th>
+                                <th>Document</th>
+                                <th>Reason For Update Status</th>
+                                <th>Final Level</th>
+                                <th style="text-align: center;">Verify/Not Verify</th>
+                            </tr>
+                            {% for s in sports_details %}
+                            <tr style="background-color: {{ '#F8F8F8' if loop.index is divisibleby 2 else 'White' }};">
+                                <td style="text-align: center;">{{ loop.index }}</td>
+                                <td>{{ s.GameName or 'N/A' }}</td>
+                                <td>{{ s.LevelName }}</td>
+                                <td>{{ s.PartDate.strftime('%d %b %Y') if s.PartDate else '' }}</td>
+                                <td style="text-align: center;">
+                                    <a href="#" target="_blank" style="color: blue; text-decoration: underline;">View</a>
+                                </td>
+                                <td>
+                                    <input type="text" name="sports_reason_{{ s.Pk_SportsID }}" class="textbox" value="{{ s.Reason or '' }}" style="width: 90%;">
+                                </td>
+                                <td>
+                                    <select name="sports_level_{{ s.Pk_SportsID }}" class="dropdownmedium">
+                                        <option value="">--Select--</option>
+                                        <option value="Senior Level" {% if s.VerifiedLevel == 'Senior Level' %}selected{% endif %}>Senior Level</option>
+                                        <option value="Junior Level" {% if s.VerifiedLevel == 'Junior Level' %}selected{% endif %}>Junior Level</option>
+                                    </select>
+                                </td>
+                                <td style="text-align: center;">
+                                    <select name="sports_verify_{{ s.Pk_SportsID }}" class="dropdownmedium" style="width: 80px;">
+                                        <option value="0" {% if not s.Verified %}selected{% endif %}>No</option>
+                                        <option value="1" {% if s.Verified %}selected{% endif %}>Yes</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <div style="text-align: left; padding: 10px 0;">
+                            <span class="vtext" style="margin-right: 10px;">Final Status of the candidate :</span>
+                            <select name="is_verified" class="dropdownmedium">
+                                <option value="0" {% if not edit_is_verified %}selected{% endif %}>Pending/Rejected</option>
+                                <option value="1" {% if edit_is_verified %}selected{% endif %}>Verified</option>
+                            </select>
+                            <button type="submit" class="btn btn-save" style="margin-left: 15px;">DONE</button>
+                        </div>
+                    </form>
+                    {% else %}
+                        <table class="grid-table" style="margin-top: 0; border: none;">
+                            <tr style="background-color: #4a534a; color: white;"><th style="text-align: center;">S.No.</th><th>Game Name</th><th>Participation Level</th><th>Participation Date</th><th>Document</th><th>Reason For Update Status</th><th>Final Level</th><th style="text-align: center;">Verify/Not Verify</th></tr>
+                            <tr style="background-color: White;"><td colspan="8" style="text-align: center;">No Record Found</td></tr>
+                        </table>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="7" class="tableheading">Students List (Verified)</td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div class="grid-div" style="max-height: 200px; overflow-y: auto; border: 1px solid #B0B0B0;">
+                    <table class="grid-table" style="margin-top: 0; border: none;">
+                        <tr style="background-color: #4a534a; color: white; position: sticky; top: 0; z-index: 1;">
+                            <th style="width: 50px; text-align: center;">S.No.</th>
+                            <th style="text-align: left;">Student Name</th>
+                            <th style="text-align: left;">Father Name</th>
+                            <th style="text-align: left;">Mobile No</th>
+                            <th style="text-align: left;">EmailID</th>
+                            <th style="text-align: left;">Registration No</th>
+                            <th style="text-align: left;">Roll No</th>
+                            <th style="text-align: left;">Degree</th>
+                            <th style="width: 80px; text-align: center;">View</th>
+                        </tr>
+                        {% if verified_records and verified_records|length > 0 %}
+                            {% for r in verified_records %}
+                            <tr style="background-color: {% if edit_id == r.id|string %}#B7C7D7; font-weight: bold; color: Black;{% elif loop.index is divisibleby 2 %}#F8F8F8{% else %}White{% endif %};">
+                                <td style="text-align: center;">{{ loop.index }}</td>
+                                <td>{{ r.name }}</td>
+                                <td>{{ r.father_name }}</td>
+                                <td>{{ r.mobile }}</td>
+                                <td>{{ r.email }}</td>
+                                <td>{{ r.regno }}</td>
+                                <td>{{ r.rollno }}</td>
+                                <td>{{ r.degree }}</td>
+                                <td style="text-align: center;">
+                                    <a href="?session_id={{ f_session }}&degree_id={{ f_degree }}&edit_id={{ r.id }}" class="action-icon icon-edit" title="Edit">
+                                        <img src="{{ url_for('static', filename='img/edit.svg') }}" width="16" height="16" alt="Edit" style="border-width:0px;">
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr style="background-color: White;"><td colspan="9" style="text-align: center;">No Record Found</td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

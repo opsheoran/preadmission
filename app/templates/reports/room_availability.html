@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Room Availability</td>
+        </tr>
+        <tr>
+            <td class="tdgap" colspan="7" style="height: 10px;"></td>
+        </tr>
+        <form method="POST" action="{{ url_for('reports.room_availability') }}" id="reportForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        
+        <tr>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Academic Session</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="width: 30%; vertical-align: middle;">
+                <select name="session_id" id="session_id" required onchange="filterDropdowns()">
+                    <option value="">-- Select Academic Session --</option>
+                    {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if form_data.session_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td style="width: 6%;"></td>
+            <td class="vtext" style="width: 15%; text-align: right; vertical-align: middle;">Degree Type</td>
+            <td class="colon" style="width: 2%; vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="degree_id" id="degree_id" required onchange="filterDropdowns()">
+                    <option value="">-- Select Degree Type --</option>
+                    {% for dt in degrees %}
+                    <option value="{{ dt.id }}" {% if form_data.degree_id == dt.id|string %}selected{% endif %}>{{ dt.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="vtext" style="text-align: right; vertical-align: middle;">Exam Center City</td>
+            <td class="colon" style="vertical-align: middle;">:</td>
+            <td class="required-cell" style="vertical-align: middle;">
+                <select name="exam_center_id" id="exam_center_id" required>
+                    <option value="0">-- ALL --</option>
+                    {% for c in exam_centers %}
+                    <option value="{{ c.id }}" data-session="{{ c.session_id }}" data-et="{{ c.et_id }}" {% if form_data.exam_center_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="required-mark">*</span>
+            </td>
+            <td colspan="4"></td>
+        </tr>
+
+        <tr>
+            <td colspan="7" style="text-align: center; padding-top: 15px;">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <button type="button" class="btn btn-reset" onclick="window.location.href='{{ url_for('reports.room_availability') }}'">RESET</button>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+{% if records %}
+<div class="tablesubheading">Room Availability Details</div>
+<table class="grid-table">
+    <thead>
+        <tr style="position: sticky; top: 0; z-index: 1;">
+            <th style="width: 5%;">S.No.</th>
+            <th style="text-align: left;">Exam Center Name</th>
+            <th style="width: 20%;">Room No</th>
+            <th style="width: 20%;">Room Capacity</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set counter = namespace(value=1) %}
+        {% for r in records %}
+            {% for room in r.Rooms %}
+            <tr>
+                <td style="text-align: center;">{{ counter.value }}</td>
+                {% if loop.first %}
+                <td style="text-align: left; font-weight: bold; vertical-align: top; background: #fdfdfd;" rowspan="{{ r.Rooms|length }}">{{ r.CenterName }}</td>
+                {% endif %}
+                <td style="text-align: center;">{{ room.RoomNo }}</td>
+                <td style="text-align: center;">{{ room.Capacity }}</td>
+            </tr>
+            {% set counter.value = counter.value + 1 %}
+            {% endfor %}
+            <tr style="background-color: #f1f5f9; font-weight: bold;">
+                <td colspan="3" style="text-align: right; color: var(--theme-primary);">Total Capacity for {{ r.CenterName }} :</td>
+                <td style="text-align: center; color: var(--theme-primary);">{{ r.CenterTotal }}</td>
+            </tr>
+        {% endfor %}
+        <tr style="background-color: #1e293b; color: white; font-weight: bold;">
+            <td colspan="3" style="text-align: right;">GRAND TOTAL ROOM CAPACITY :</td>
+            <td style="text-align: center; font-size: 14px;">{{ grand_total }}</td>
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+
+<script>
+    function filterDropdowns() {
+        var sessionId = document.getElementById('session_id').value;
+        var degreeId = document.getElementById('degree_id').value;
+        var centerSelect = document.getElementById('exam_center_id');
+        
+        if (sessionId && sessionId !== '0' && degreeId && degreeId !== '0') {
+            fetch('/reports/get-exam-centers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({session_id: sessionId, degree_id: degreeId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    centerSelect.innerHTML = '<option value="0">-- ALL --</option>';
+                    data.centers.forEach(function(c) {
+                        var opt = document.createElement('option');
+                        opt.value = c.id;
+                        opt.text = c.name;
+                        centerSelect.appendChild(opt);
+                    });
+                    
+                    var selectedCenter = "{{ form_data.exam_center_id }}";
+                    if (selectedCenter && selectedCenter !== '0') {
+                        centerSelect.value = selectedCenter;
+                    }
+                }
+            });
+        } else {
+            centerSelect.innerHTML = '<option value="0">-- ALL --</option>';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var sessionId = document.getElementById('session_id').value;
+        var degreeId = document.getElementById('degree_id').value;
+        if (sessionId && sessionId !== '0' && degreeId && degreeId !== '0') {
+             filterDropdowns();
+        }
+    });
+</script>
+
+{% endblock %}

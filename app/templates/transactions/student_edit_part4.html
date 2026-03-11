@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .registration-steps { display: flex; justify-content: space-between; background: #e0e0e0; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; }
+    .step { padding: 5px 15px; color: #555; }
+    .step.active { background: var(--primary-color); color: white; border-radius: 4px; }
+</style>
+
+<div class="registration-steps">
+    <div class="step">Step 1: Personal Details</div>
+    <div class="step">Step 2: Address Details</div>
+    <div class="step">Step 3: Qualification Details</div>
+    <div class="step active">Step 4: Additional Information</div>
+    <div class="step">Step 5: Marks & Rank / Submit</div>
+</div>
+
+<form method="POST" action="{{ url_for('transactions.student_edit_part4', id=student_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tr>
+            <td colspan="6" class="tableheading">Additional Information</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 25%;">Are you Ex-Student of HAU?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="ex_student" class="dropdownlong">
+                    <option value=""> -- Select -- </option>
+                    <option value="Y" {% if student and student.Ex_Student == 'Y' %}selected{% endif %}>Yes</option>
+                    <option value="N" {% if not student or student.Ex_Student == 'N' %}selected{% endif %}>No</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Any other Information</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="other_info" class="dropdownlong">
+                    <option value="N" {% if not student or student.Ex_Student == 'N' %}selected{% endif %}>No</option>
+                    <option value="Y" {% if student and student.Ex_Student == 'Y' %}selected{% endif %}>Yes</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Please Specify</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="text" name="other_info_text" class="textboxmedium" value="{{ student.OtherInformation if student else '' }}">
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Are you Rural/Urban ?</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="rural_urban" class="dropdownlong">
+                    <option value=""> -- Select -- </option>
+                    <option value="R" {% if not student or student.RuralOrUrban == 'R' %}selected{% endif %}>Rural</option>
+                    <option value="U" {% if student and student.RuralOrUrban == 'U' %}selected{% endif %}>Urban</option>
+                </select> *
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" style="text-align: right; padding-top: 10px; color: #3333FF; font-size: 11px;">*Save this page before moving on the next page.</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: left; padding-top: 20px;">
+                <a href="{{ url_for('transactions.student_edit_part3', id=student_id) }}" class="btn btn-reset" style="text-decoration: none;"><< PREVIOUS</a>
+            </td>
+            <td colspan="3" style="text-align: right; padding-top: 20px;">
+                <button type="submit" class="btn btn-save">UPDATE</button>
+                <button type="submit" name="action" value="next" class="btn btn-save" style="margin-left: 10px;">NEXT >></button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

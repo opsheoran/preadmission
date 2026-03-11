@@ -1,4 +1,21 @@
-<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="16" cy="16" r="14" fill="#0d47a1"/>
-  <text x="16" y="22" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">H</text>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circular Background -->
+  <circle cx="256" cy="256" r="240" fill="#f0f2f5" stroke="#0d47a1" stroke-width="8"/>
+  
+  <!-- University Shield Metaphor -->
+  <path d="M256 60 L400 130 V280 C400 380 256 450 256 450 C256 450 112 380 112 280 V130 L256 60 Z" fill="#0d47a1"/>
+  
+  <!-- Graduation Cap -->
+  <path d="M256 120 L360 170 L256 220 L152 170 Z" fill="white"/>
+  <path d="M180 185 V240 C180 240 210 260 256 260 C302 260 332 240 332 240 V185" fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Document/Form Metaphor -->
+  <rect x="210" y="280" width="92" height="110" rx="5" fill="white"/>
+  <line x1="225" y1="310" x2="285" y2="310" stroke="#0d47a1" stroke-width="6"/>
+  <line x1="225" y1="330" x2="285" y2="330" stroke="#0d47a1" stroke-width="6"/>
+  <line x1="225" y1="350" x2="260" y2="350" stroke="#0d47a1" stroke-width="6"/>
+  
+  <!-- Admission Checkmark -->
+  <circle cx="310" cy="380" r="35" fill="#4caf50" stroke="white" stroke-width="4"/>
+  <path d="M295 380 L305 390 L330 370" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

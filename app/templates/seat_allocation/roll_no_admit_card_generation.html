@@ -1,0 +1,593 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* ── compact form controls ── */
+.sa-dd   { width: 170px; }
+.sa-dd-lg{ width: 230px; }
+.sa-tb   { width: 75px;  }
+/* ── checkbox scroll box ── */
+.chk-box {
+    border: 1px solid #bbb; border-radius: 3px;
+    height: 85px; width: 240px; overflow-y: auto;
+    padding: 4px 6px; background: #fff; font-size: 11.5px;
+    box-sizing: border-box;
+}
+.chk-box label { display: block; margin: 0; white-space: nowrap; }
+.empty-msg { color: #888; font-style: italic; }
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 20px;
+  height: 20px;
+  -webkit-animation: spin 1s linear infinite; /* Safari */
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.row-gap td { height:9px; }
+.vl { text-align:right; font-weight:bold; font-size:12.5px; color:#333;
+      padding-right:4px; white-space:nowrap; vertical-align:middle; }
+.cl { text-align:center; font-weight:bold; vertical-align:middle; padding:0 2px; }
+.fc { vertical-align:middle; }
+
+.section-header {
+    background-color: #2e5090;
+    color: white;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 15px;
+    border-radius: 3px 3px 0 0;
+}
+.section-body {
+    border: 1px solid #dde3ee;
+    padding: 10px;
+    background: #f7f9fc;
+}
+</style>
+
+<div class="tableheading">Roll No. / Admit Card Generation</div>
+
+<form method="POST" action="{{ url_for('seat_allocation.roll_no_admit_card_generation') }}" id="frmAdmit">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+<div style="background:#f7f9fc;border:1px solid #dde3ee;border-radius:4px;padding:10px 12px;margin-top:10px;">
+<table style="border-collapse:collapse;width:100%;border:none;">
+
+  <!-- Row 1: Session | ET Type | Degree Type | No. of Records -->
+  <tr>
+    <td class="vl" style="width:120px;">SESSION</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="session_id" name="session_id" class="sa-dd" onchange="fetchBySession(); fetchNotProcessed();">
+        {% for s in sessions %}
+        <option value="{{ s.id }}" {% if loop.first %}selected{% endif %}>{{ s.session_name }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="padding-left:15px;">ET TYPE</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="et_id" name="et_id" class="sa-dd" onchange="fetchCenters(); fetchNotProcessed();">
+        <option value="">-- Select ET Type --</option>
+        {% for e in ets %}
+        <option value="{{ e.id }}" {% if loop.first %}selected{% endif %}>{{ e.description }}</option>
+        {% endfor %}
+      </select>
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="padding-left:15px;">DEGREE TYPE</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="degree_id" name="degree_id" class="sa-dd-lg" onchange="fetchColleges(); fetchNotProcessed();">
+        <option value="">-- Select Degree --</option>
+        {% for d in degrees %}
+        <option value="{{ d.id }}">{{ d.name }}</option>
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="9"></td></tr>
+
+  <!-- Row 2: No. of Records | Exam Center | Room Number -->
+  <tr>
+    <td class="vl">NO.OF RECORDS</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <input type="number" id="no_of_records" name="no_of_records" class="sa-tb" value="" min="1" onchange="fetchNotProcessed();" onkeyup="fetchNotProcessed();">
+      <span class="required-mark">*</span>
+    </td>
+    <td class="vl" style="padding-left:15px;">EXAM CENTER</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="exam_center_id" name="exam_center_id" class="sa-dd-lg" onchange="fetchRooms(); fetchNotProcessed();">
+        <option value="">-- Select Exam Centre --</option>
+      </select>
+    </td>
+    <td class="vl" style="padding-left:15px;">ROOM NUMBER</td>
+    <td class="cl">:</td>
+    <td class="fc">
+      <select id="room_id" name="room_id" class="sa-dd" onchange="fetchNotProcessed();">
+        <option value="">-- All Rooms --</option>
+      </select>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="9"></td></tr>
+
+  <!-- Row 3: College Name | Specialization -->
+  <tr>
+    <td class="vl" valign="top" style="padding-top:4px;">COLLEGE NAME</td>
+    <td class="cl" valign="top" style="padding-top:4px;">:</td>
+    <td class="fc">
+      <div class="chk-box" id="collegBox">
+        <span class="empty-msg">Select Degree first…</span>
+      </div>
+    </td>
+    <td class="vl" valign="top" style="padding-top:4px;padding-left:15px;">SPECIALIZATION</td>
+    <td class="cl" valign="top" style="padding-top:4px;">:</td>
+    <td class="fc" colspan="4">
+      <div class="chk-box" id="specBox">
+        <span class="empty-msg">Select College first…</span>
+      </div>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="9"></td></tr>
+
+  <!-- Row 4: Exam Type | Subject -->
+  <tr>
+    <td class="vl" valign="top" style="padding-top:4px;">EXAM TYPE</td>
+    <td class="cl" valign="top" style="padding-top:4px;">:</td>
+    <td class="fc" colspan="4">
+      <div class="chk-box" id="etTypeBox" style="width: 100%; height: 60px;">
+        <span class="empty-msg">Select Degree first…</span>
+      </div>
+    </td>
+    <td class="vl" valign="top" style="padding-top:4px;padding-left:15px;">SUBJECT</td>
+    <td class="cl" valign="top" style="padding-top:4px;">:</td>
+    <td class="fc">
+      <div class="chk-box" id="subjBox" style="height: 60px;">
+        <span class="empty-msg">Select Exam Type first…</span>
+      </div>
+    </td>
+  </tr>
+  <tr class="row-gap"><td colspan="9"></td></tr>
+
+  <!-- Row 5: Action Buttons -->
+  <tr>
+    <td colspan="9" class="fc" style="text-align: center; padding-top: 10px;">
+      <button type="button" class="btn btn-save" id="btnViewMain" onclick="fetchNotProcessed()">View</button>
+      <button type="button" class="btn btn-reset" id="btnResetMain" style="margin-left:5px;">Reset</button>
+    </td>
+  </tr>
+</table>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+  <div class="flash-inline flash-{{ cat }}-inline" style="margin-top:10px;">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+<!-- Admit Card NOT Generated Section -->
+<div class="section-header">LIST OF CANDIDATES [ADMIT CARD NOT GENERATED]</div>
+<div class="section-body">
+    <table style="width:100%; margin-bottom:10px;">
+        <tr>
+            <td style="font-weight:bold; font-size:12px;">S.NO. FROM : </td>
+            <td><input type="number" id="not_from_sno" class="sa-tb" min="1"></td>
+            <td style="font-weight:bold; font-size:12px; padding-left:10px;">S.NO. TO : </td>
+            <td><input type="number" id="not_to_sno" class="sa-tb" min="1"></td>
+            <td><button type="button" class="btn btn-save" style="padding: 2px 10px;" onclick="fetchNotProcessedSlice()">Select</button></td>
+            
+            <td style="font-weight:bold; font-size:12px; padding-left:30px;">ROLL NO START WITH : </td>
+            <td><input type="text" id="roll_start_with" name="roll_start_with" class="sa-tb" style="width: 120px;"></td>
+            <td style="text-align:right;"><button type="submit" name="action" value="process_roll_no" class="btn btn-save" style="background:#e65100;border-color:#bf360c;" onclick="document.getElementById('frmAdmit').target=''; return confirm('Are you sure you want to process Roll Numbers for the selected candidates?');">PROCESS</button></td>
+        </tr>
+    </table>
+
+  <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc;">
+      <table class="grid-table" id="tblNotProcessed" style="margin-top:0; border-top: none;">
+        <thead style="position: sticky; top: 0; z-index: 1;">
+          <tr>
+            <th style="width:4%;text-align:center;"><input type="checkbox" id="chkAllNP" title="Select All" onchange="toggleAll('np_cand_sel', this)"></th>
+            <th style="width:5%;text-align:center;">S.No.</th>
+            <th style="text-align:center;">Registration No.</th>
+            <th>Candidate Name</th>
+            <th>Father Name</th>
+            <th>Specialization</th>
+            <th>Exam Center</th>
+            <th style="text-align:center;">Room No.</th>
+            <th style="text-align:center;">Seat No.</th>
+            <th>Degree</th>
+            <th>College Name</th>
+            <th>Exam Type</th>
+            <th>Subject</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyNotProcessed">
+          <tr><td colspan="13" style="text-align:center;color:#888;padding:12px;">Select filters and click <b>View</b> to load.</td></tr>
+        </tbody>
+      </table>
+  </div>
+  <div style="font-weight:bold;color:#c62828;margin:5px 0;" id="lblTotalNotProcessed">Total 0 Candidate(s) Found!</div>
+</div>
+
+<!-- Admit Card GENERATED Section -->
+<div class="section-header" style="background-color: #388e3c;">LIST OF CANDIDATES [ADMIT CARD GENERATED]</div>
+<div class="section-body">
+    <table style="width:100%; margin-bottom:10px;">
+        <tr>
+            <td style="font-weight:bold; font-size:12px; width:90px;">S.NO. FROM : </td>
+            <td style="width:70px;"><input type="number" id="p_from_sno" class="sa-tb" min="1" style="width:50px;"></td>
+            <td style="font-weight:bold; font-size:12px; width:70px;">S.NO. TO : </td>
+            <td style="width:70px;"><input type="number" id="p_to_sno" class="sa-tb" min="1" style="width:50px;"></td>
+            <td><button type="button" class="btn btn-save" style="padding: 2px 10px;" onclick="fetchProcessedSlice()">Select</button></td>
+        </tr>
+        <tr><td colspan="5" style="height:6px;"></td></tr>
+        <tr>
+            <td style="font-weight:bold; font-size:12px;">ET Type : </td>
+            <td colspan="4">
+              <select id="p_et_id" name="p_et_id" class="sa-dd" onchange="fetchProcessedCenters()">
+                <option value="">-- Select ET Type --</option>
+              </select>
+              <span style="font-weight:bold; font-size:12px; margin-left:15px; margin-right:5px;">Exam Centre : </span>
+              <select id="p_center_id" name="p_center_id" class="sa-dd-lg" onchange="fetchProcessedRooms()">
+                <option value="">-- Select Exam Centre --</option>
+              </select>
+              <span style="font-weight:bold; font-size:12px; margin-left:15px; margin-right:5px;">Exam Room No. : </span>
+              <select id="p_room_id" name="p_room_id" class="sa-dd" style="width: 100px;">
+                <option value="">-- All --</option>
+              </select>
+              <button type="button" class="btn btn-save" onclick="fetchProcessed()" style="margin-left:15px;">Search</button>
+              <button type="button" class="btn btn-reset" onclick="resetProcessed()" style="margin-left:5px;">Reset</button>
+            </td>
+        </tr>
+    </table>
+    <div style="margin-bottom: 10px;">
+      <button type="button" class="btn btn-save" style="background:#1565c0;border-color:#0d47a1;">PRINT ADMIT CARD</button>
+      <button type="submit" name="action" value="generate_admit_cards" class="btn btn-save" formtarget="_blank" style="background:#e65100;border-color:#bf360c;margin-left:6px;">GENERATE ADMIT CARDS (PDF)</button>
+      <button type="button" class="btn btn-save" style="background:#2e7d32;border-color:#1b5e20;margin-left:6px;">PRINT ROLL LIST</button>
+      <button type="button" class="btn btn-save" style="background:#4a148c;border-color:#311b92;margin-left:6px;">PRINT ROLL LIST [INVIG]</button>
+      <button type="submit" name="action" value="unprocess_roll_no" class="btn btn-reset" style="margin-left:6px;" onclick="document.getElementById('frmAdmit').target=''; return confirm('Are you sure you want to UNPROCESS? This will clear roll numbers for the selected Session and ET Type.');">UNPROCESS</button>
+    </div>
+
+  <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc;">
+      <table class="grid-table" id="tblProcessed" style="margin-top:0; border-top: none;">
+        <thead style="position: sticky; top: 0; z-index: 1;">
+          <tr>
+            <th style="width:4%;text-align:center;"><input type="checkbox" id="chkAllP" title="Select All" onchange="toggleAll('p_cand_sel', this)"></th>
+            <th style="width:5%;text-align:center;">S.No.</th>
+            <th style="text-align:center;">Registration No.</th>
+            <th>Candidate Name</th>
+            <th style="text-align:center;">Roll No.</th>
+            <th>Father Name</th>
+            <th>Specialization</th>
+            <th>Exam Center</th>
+            <th style="text-align:center;">Room No.</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyProcessed">
+          <tr><td colspan="9" style="text-align:center;color:#888;padding:12px;">Search to load processed candidates.</td></tr>
+        </tbody>
+      </table>
+  </div>
+  <div style="font-weight:bold;color:#c62828;margin:5px 0;" id="lblTotalProcessed">Total 0 Candidate(s) Found!</div>
+</div>
+</form>
+
+<script>
+function apiBase(){ return '{{ url_for("seat_allocation.seat_allotment") }}'.replace('/seat-allotment',''); }
+
+// Helpers
+function setLoading(el){ el.innerHTML='<div style="text-align:center; padding:10px;"><div class="loader"></div><span class="empty-msg" style="vertical-align:top;">Please Wait...</span></div>'; }
+function setEmpty(el, msg){ el.innerHTML=`<span class="empty-msg">${msg}</span>`; }
+function toggleAll(name, source) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = source.checked);
+}
+
+const sessionSel = document.getElementById('session_id');
+const etSel      = document.getElementById('et_id');
+const degreeSel  = document.getElementById('degree_id');
+const centerSel  = document.getElementById('exam_center_id');
+const roomSel    = document.getElementById('room_id');
+const collegBox  = document.getElementById('collegBox');
+const specBox    = document.getElementById('specBox');
+const etTypeBox  = document.getElementById('etTypeBox');
+const subjBox    = document.getElementById('subjBox');
+
+// State holding data for slices
+let currentNotProcessed = [];
+let currentProcessed = [];
+
+// API Cascade Fetchers
+function fetchBySession() {
+    const sesId = sessionSel.value;
+    if(!sesId) return;
+    fetch(apiBase()+`/api/get_et_by_session?session_id=${sesId}`)
+    .then(r=>r.json()).then(data=>{
+      const etOptions = '<option value="">-- Select ET Type --</option>' + data.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+      etSel.innerHTML = etOptions;
+      document.getElementById('p_et_id').innerHTML = etOptions;
+      centerSel.innerHTML = '<option value="">-- Select Exam Center --</option>';
+      roomSel.innerHTML = '<option value="">-- All Rooms --</option>';
+      document.getElementById('p_center_id').innerHTML = '<option value="">-- Select Exam Centre --</option>';
+      document.getElementById('p_room_id').innerHTML = '<option value="">-- All --</option>';
+      
+      // Update Degree
+      fetch(apiBase()+`/api/get_degrees_by_session?session_id=${sesId}`)
+      .then(r=>r.json()).then(degData=>{
+         degreeSel.innerHTML = '<option value="">-- Select Degree --</option>' + 
+            degData.map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+      });
+    });
+}
+
+function fetchCenters(){
+  const etId = etSel.value;
+  centerSel.innerHTML='<option value="">-- Select Exam Centre --</option>';
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  if(!etId) return;
+  fetch(apiBase()+`/api/get_exam_centers_by_et?et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c=>{
+        const o=document.createElement('option'); o.value=c.id; o.textContent=c.name;
+        centerSel.appendChild(o);
+      });
+    });
+}
+
+function fetchRooms(){
+  const cId = centerSel.value;
+  const etId = etSel.value;
+  roomSel.innerHTML='<option value="">-- All Rooms --</option>';
+  if(!cId) return;
+  fetch(apiBase()+`/api/get_rooms_by_center?center_id=${cId}&et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(r=>{
+        const o=document.createElement('option'); o.value=r.id; o.textContent=r.room_no;
+        roomSel.appendChild(o);
+      });
+    });
+}
+
+function fetchColleges(){
+  const degId = degreeSel.value;
+  if(!degId){ 
+      setEmpty(collegBox,'Select Degree first…'); 
+      setEmpty(specBox,'Select College first…'); 
+      setEmpty(etTypeBox,'Select Degree first…'); 
+      setEmpty(subjBox,'Select Exam Type first…'); 
+      return; 
+  }
+  setLoading(collegBox);
+  fetch(apiBase()+`/api/get_colleges?degree_id=${degId}`)
+    .then(r=>r.json()).then(data=>{
+      if(!data.length){ setEmpty(collegBox,'No colleges found.'); return; }
+      collegBox.innerHTML = data.map(c=>
+        `<label><input type="checkbox" name="college_id" value="${c.id}" checked onchange="fetchSpecializations()"> ${c.name}</label>`
+      ).join('');
+      fetchSpecializations();
+    }).catch(()=>setEmpty(collegBox,'Error loading colleges.'));
+    
+  // Also fetch Exam Types for this degree simultaneously
+  fetchExamTypesForDegree(degId);
+}
+
+function fetchExamTypesForDegree(degId){
+    setLoading(etTypeBox);
+    fetch(apiBase()+`/api/get_exam_types?degree_id=${degId}`)
+    .then(r=>r.json()).then(data=>{
+      if(!data.length){ 
+          setEmpty(etTypeBox,'No Entrance Exam required for this Degree.'); 
+          setEmpty(subjBox, 'No Subjects.');
+          return; 
+      }
+      etTypeBox.innerHTML = data.map(t=>
+        `<label><input type="checkbox" name="exam_type_id" value="${t.id}" checked onchange="fetchSubjects()"> ${t.name}</label>`
+      ).join('');
+      fetchSubjects();
+    }).catch(()=>setEmpty(etTypeBox,'Error loading exam types.'));
+}
+
+function fetchSubjects(){
+  const checked = [...document.querySelectorAll('input[name="exam_type_id"]:checked')];
+  if(!checked.length){ setEmpty(subjBox,'Select Exam Type first…'); return; }
+  const qs = checked.map(cb=>`exam_type_ids[]=${cb.value}`).join('&');
+  setLoading(subjBox);
+  fetch(apiBase()+`/api/get_subjects_by_exam_type?${qs}`)
+    .then(r=>r.json()).then(data=>{
+      if(!data.length){ setEmpty(subjBox,'No subjects found.'); return; }
+      subjBox.innerHTML = data.map(s=>
+        `<label><input type="checkbox" name="subject_id" value="${s.id}" checked> ${s.name}</label>`
+      ).join('');
+    }).catch(()=>setEmpty(subjBox,'Error loading subjects.'));
+}
+
+function fetchSpecializations(){
+  const checked = [...document.querySelectorAll('input[name="college_id"]:checked')];
+  const degId   = degreeSel.value;
+  if(!checked.length || !degId){ setEmpty(specBox,'Select College first…'); return; }
+  const qs = checked.map(cb=>`college_ids[]=${cb.value}`).join('&');
+  setLoading(specBox);
+  fetch(apiBase()+`/api/get_specializations?degree_id=${degId}&${qs}`)
+    .then(r=>r.json()).then(data=>{
+      if(!data.length){ setEmpty(specBox,'No specializations found.'); return; }
+      specBox.innerHTML = data.map(s=>
+        `<label><input type="checkbox" name="specialization_id" value="${s.id}" checked> ${s.name}</label>`
+      ).join('');
+    }).catch(()=>setEmpty(specBox,'Error loading specializations.'));
+}
+
+// Data Fetchers
+function fetchNotProcessed() {
+  const etId  = etSel.value;
+  const cId   = centerSel.value;
+  const rId   = roomSel.value;
+  const sesId = sessionSel.value;
+  
+  if(!etId){ return; }
+  
+  const tbody = document.getElementById('tbodyNotProcessed');
+  tbody.innerHTML=`<tr><td colspan="13" style="text-align:center;padding:12px;"><div class="loader"></div> Loading...</td></tr>`;
+  
+  fetch(apiBase()+`/api/get_candidates?et_id=${etId}&exam_center_id=${cId}&room_id=${rId}&session_id=${sesId}&status=unprocessed`)
+    .then(r=>r.json()).then(data=>{
+        currentNotProcessed = data;
+        
+        const noOfRecordsInput = document.getElementById('no_of_records').value;
+        if (noOfRecordsInput && parseInt(noOfRecordsInput) > 0) {
+            currentNotProcessed = currentNotProcessed.slice(0, parseInt(noOfRecordsInput));
+        }
+
+        renderNotProcessed(currentNotProcessed);
+    }).catch(()=>{
+        tbody.innerHTML=`<tr><td colspan="13" style="text-align:center;color:red;padding:8px;">Error loading data.</td></tr>`;
+    });
+}
+
+function renderNotProcessed(data) {
+    const tbody = document.getElementById('tbodyNotProcessed');
+    document.getElementById('lblTotalNotProcessed').textContent=`Total ${data.length} Candidate(s) Found!`;
+    
+    if(!data.length){
+        tbody.innerHTML=`<tr><td colspan="13" style="text-align:center;color:#888;padding:10px;">No records found.</td></tr>`;
+        return;
+    }
+    
+    let html = '';
+    data.forEach((c,i)=>{
+      html+=`<tr>
+        <td style="text-align:center;"><input type="checkbox" name="np_cand_sel" value="${c.reg_no}"></td>
+        <td style="text-align:center;">${i+1}</td>
+        <td style="text-align:center;">${c.reg_no||''}</td>
+        <td>${c.name||''}</td>
+        <td>${c.father_name||''}</td>
+        <td>${c.subject||''}</td>
+        <td>${c.center||''}</td>
+        <td style="text-align:center;">${c.room||''}</td>
+        <td style="text-align:center;">${c.seat||''}</td>
+        <td>${c.degree_type||''}</td>
+        <td>${c.center||''}</td>
+        <td>${c.exam_type||''}</td>
+        <td>${c.subject||''}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+function fetchNotProcessedSlice() {
+    const from = parseInt(document.getElementById('not_from_sno').value) || 1;
+    const to = parseInt(document.getElementById('not_to_sno').value) || currentNotProcessed.length;
+    const slice = currentNotProcessed.slice(from - 1, to);
+    renderNotProcessed(slice);
+}
+
+// Processed Cascade & Fetch
+function fetchProcessedCenters() {
+    const etId = document.getElementById('p_et_id').value;
+    const cSel = document.getElementById('p_center_id');
+    const rSel = document.getElementById('p_room_id');
+    cSel.innerHTML='<option value="">-- Select Exam Centre --</option>';
+    rSel.innerHTML='<option value="">-- All --</option>';
+    if(!etId) return;
+    fetch(apiBase()+`/api/get_exam_centers_by_et?et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(c=>{
+        const o=document.createElement('option'); o.value=c.id; o.textContent=c.name;
+        cSel.appendChild(o);
+      });
+    });
+}
+
+function fetchProcessedRooms() {
+    const cId = document.getElementById('p_center_id').value;
+    const etId = document.getElementById('p_et_id').value;
+    const rSel = document.getElementById('p_room_id');
+    rSel.innerHTML='<option value="">-- All --</option>';
+    if(!cId) return;
+    fetch(apiBase()+`/api/get_rooms_by_center?center_id=${cId}&et_id=${etId}`)
+    .then(r=>r.json()).then(data=>{
+      data.forEach(r=>{
+        const o=document.createElement('option'); o.value=r.id; o.textContent=r.room_no;
+        rSel.appendChild(o);
+      });
+    });
+}
+
+function fetchProcessed() {
+  const etId  = document.getElementById('p_et_id').value;
+  const cId   = document.getElementById('p_center_id').value;
+  const rId   = document.getElementById('p_room_id').value;
+  const sesId = sessionSel.value;
+  
+  if(!etId){ alert('Please select ET Type.'); return; }
+  
+  const tbody = document.getElementById('tbodyProcessed');
+  tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:12px;"><div class="loader"></div> Loading...</td></tr>`;
+  
+  fetch(apiBase()+`/api/get_candidates?et_id=${etId}&exam_center_id=${cId}&room_id=${rId}&session_id=${sesId}&status=processed`)
+    .then(r=>r.json()).then(data=>{
+        currentProcessed = data;
+        renderProcessed(currentProcessed);
+    }).catch(()=>{
+        tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;color:red;padding:8px;">Error loading data.</td></tr>`;
+    });
+}
+
+function renderProcessed(data) {
+    const tbody = document.getElementById('tbodyProcessed');
+    document.getElementById('lblTotalProcessed').textContent=`Total ${data.length} Candidate(s) Found!`;
+    
+    if(!data.length){
+        tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;color:#888;padding:10px;">No records found.</td></tr>`;
+        return;
+    }
+    
+    let html = '';
+    data.forEach((c,i)=>{
+      html+=`<tr>
+        <td style="text-align:center;"><input type="checkbox" name="p_cand_sel" value="${c.reg_no}"></td>
+        <td style="text-align:center;">${i+1}</td>
+        <td style="text-align:center;">${c.reg_no||''}</td>
+        <td>${c.name||''}</td>
+        <td style="text-align:center;">${c.roll_no||''}</td>
+        <td>${c.father_name||''}</td>
+        <td>${c.subject||''}</td>
+        <td>${c.center||''}</td>
+        <td style="text-align:center;">${c.room||''}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+function fetchProcessedSlice() {
+    const from = parseInt(document.getElementById('p_from_sno').value) || 1;
+    const to = parseInt(document.getElementById('p_to_sno').value) || currentProcessed.length;
+    const slice = currentProcessed.slice(from - 1, to);
+    renderProcessed(slice);
+}
+
+function resetProcessed() {
+    document.getElementById('p_et_id').value = '';
+    document.getElementById('p_center_id').innerHTML = '<option value="">-- Select Exam Centre --</option>';
+    document.getElementById('p_room_id').innerHTML = '<option value="">-- All --</option>';
+    document.getElementById('tbodyProcessed').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#888;padding:12px;">Search to load processed candidates.</td></tr>';
+    document.getElementById('lblTotalProcessed').textContent = 'Total 0 Candidate(s) Found!';
+}
+
+// Initial Setup
+document.addEventListener('DOMContentLoaded',()=>{ 
+    if(sessionSel.value) fetchBySession(); 
+    if(degreeSel.value) fetchColleges();
+});
+
+</script>
+{% endblock %}

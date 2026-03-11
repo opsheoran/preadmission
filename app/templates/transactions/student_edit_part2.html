@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .registration-steps { display: flex; justify-content: space-between; background: #e0e0e0; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; }
+    .step { padding: 5px 15px; color: #555; }
+    .step.active { background: var(--primary-color); color: white; border-radius: 4px; }
+    .photo-preview { width: 100px; margin-top: 10px; border: 1px solid #ddd; }
+</style>
+
+<div class="registration-steps">
+    <div class="step">Step 1: Personal Details</div>
+    <div class="step active">Step 2: Address Details</div>
+    <div class="step">Step 3: Qualification Details</div>
+    <div class="step">Step 4: Additional Information</div>
+    <div class="step">Step 5: Marks & Rank / Submit</div>
+</div>
+
+<form method="POST" action="{{ url_for('transactions.student_edit_part2', id=student_id) }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <table class="table-form">
+        <tr>
+            <td colspan="6" class="tableheading">Address Details</td>
+        </tr>
+        <tr>
+            <td class="vtext" style="width: 15%; vertical-align: top;">Correspondence Address</td>
+            <td class="colon" style="vertical-align: top;">:</td>
+            <td class="required">
+                <textarea name="c_address" class="textboxmedium" style="height: 60px;" required>{{ student.c_address if student and student.c_address and student.c_address != 'N/A' else '' }}</textarea> *
+            </td>
+            <td class="vtext" style="width: 15%; vertical-align: top;">Permanent Address<br><br>
+                <input type="checkbox" id="same_address" onchange="if(this.checked){document.getElementsByName('p_address')[0].value=document.getElementsByName('c_address')[0].value; document.getElementsByName('p_pincode')[0].value=document.getElementsByName('c_pincode')[0].value; document.getElementsByName('p_district')[0].value=document.getElementsByName('c_district')[0].value;}">
+                <label for="same_address" style="font-weight:normal; font-size:11px;">Same as Correspondence</label>
+            </td>
+            <td class="colon" style="vertical-align: top;">:</td>
+            <td class="required">
+                <textarea name="p_address" class="textboxmedium" style="height: 60px;" required>{{ student.p_address if student and student.p_address and student.p_address != 'N/A' else '' }}</textarea> *
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">State</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="c_state" class="dropdownlong">
+                    <option value="">--Select--</option>
+                    {% for s in states %}
+                    <option value="{{ s.id }}" {% if student and student.c_fk_stateid|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="vtext">State</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <select name="p_state" class="dropdownlong">
+                    <option value="">--Select--</option>
+                    {% for s in states %}
+                    <option value="{{ s.id }}" {% if student and student.p_fk_stateid|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">District</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="c_district" value="{{ student.c_district if student and student.c_district != 'N/A' else '' }}" class="textboxmedium" required></td>
+            <td class="vtext">District</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="p_district" value="{{ student.p_district if student and student.p_district != 'N/A' else '' }}" class="textboxmedium" required></td>
+        </tr>
+        <tr>
+            <td class="vtext">Pin Code</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="c_pincode" value="{{ student.c_pincode if student and student.c_pincode != '000000' else '' }}" class="textboxmedium" maxlength="6" required> *</td>
+            <td class="vtext">Pin Code</td>
+            <td class="colon">:</td>
+            <td class="required"><input type="text" name="p_pincode" value="{{ student.p_pincode if student and student.p_pincode != '000000' else '' }}" class="textboxmedium" maxlength="6" required> *</td>
+        </tr>
+        
+        <tr>
+            <td colspan="6" class="tableheading" style="margin-top: 15px; display: block; border-bottom: none;">Photo Information</td>
+        </tr>
+        <tr>
+            <td colspan="6" style="color: #3333FF; font-size: 11px; padding-bottom: 10px;">Note : Photo once uploaded cannot be removed but can be changed.</td>
+        </tr>
+        <tr>
+            <td class="vtext">Photo Upload</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="file" name="photo" class="uploadfiles" accept="image/*"> *<br>
+                <span style="font-size: 10px; color: #666;">[Max 50 KB, .jpg, .png]</span>
+            </td>
+            <td class="vtext">Signature Upload</td>
+            <td class="colon">:</td>
+            <td class="required">
+                <input type="file" name="signature" class="uploadfiles" accept="image/*"> *<br>
+                <span style="font-size: 10px; color: #666;">[Max 50 KB, .jpg, .png]</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="vtext">Thumb Impression</td>
+            <td class="colon">:</td>
+            <td class="required" colspan="4">
+                <input type="file" name="thumb" class="uploadfiles" accept="image/*"> *<br>
+                <span style="font-size: 10px; color: #666;">[Max 50 KB, .jpg, .png. Left Thumb for boys, Right for girls.]</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" style="text-align: center; padding-top: 20px;">
+                <table style="width: 50%; margin: 0 auto;">
+                    <tr>
+                        <td align="center" style="font-weight:bold;">Photo</td>
+                        <td align="center" style="font-weight:bold;">Signature</td>
+                        <td align="center" style="font-weight:bold;">Thumb</td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            {% if doc and doc.imgattach_p %}
+                                <img src="{{ url_for('transactions.view_student_image', reg_id=student_id, doc_type='photo') }}" class="photo-preview" alt="Photo" style="height: 120px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/placeholder_photo.svg') }}" class="photo-preview" alt="Photo" style="height: 120px; border-radius: 6px;">
+                            {% endif %}
+                        </td>
+                        <td align="center">
+                            {% if doc and doc.imgattach_s %}
+                                <img src="{{ url_for('transactions.view_student_image', reg_id=student_id, doc_type='signature') }}" class="photo-preview" alt="Signature" style="height: 60px; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/placeholder_sign.svg') }}" class="photo-preview" alt="Signature" style="height: 60px; border-radius: 4px;">
+                            {% endif %}
+                        </td>
+                        <td align="center">
+                            {% if doc and doc.imgattach_t %}
+                                <img src="{{ url_for('transactions.view_student_image', reg_id=student_id, doc_type='thumb') }}" class="photo-preview" alt="Thumb" style="height: 120px; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/placeholder_thumb.svg') }}" class="photo-preview" alt="Thumb" style="height: 120px; border-radius: 6px;">
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" style="text-align: right; padding-top: 20px; color: #3333FF; font-size: 11px;">*Save this page before moving on the next page.</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: left; padding-top: 10px;">
+                <a href="{{ url_for('transactions.student_edit_part1', id=student_id) }}" class="btn btn-reset" style="text-decoration: none;"><< PREVIOUS</a>
+            </td>
+            <td colspan="3" style="text-align: right; padding-top: 10px;">
+                <button type="submit" class="btn btn-save">UPDATE</button>
+                <button type="submit" name="action" value="next" class="btn btn-save" style="margin-left: 10px;">NEXT >></button>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

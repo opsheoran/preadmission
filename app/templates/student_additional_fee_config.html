@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table class="table-form">
+    <tbody>
+        <tr>
+            <td class="tableheading" colspan="7">Student Additional Fee Config</td>
+        </tr>
+        <form method="POST" action="{{ url_for('config_mgmt.student_additional_fee_config') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <tr>
+            <td class="vtext">Enter Registration ID</td>
+            <td class="colon">:</td>
+            <td class="required-cell">
+                <input type="text" name="registration_id" required value="">
+                <span class="required-mark">*</span>
+            </td>
+            <td colspan="4"></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="5" style="padding: 15px 5px; white-space: nowrap;">
+                <button type="submit" class="btn btn-save">VIEW</button>
+                <button type="reset" class="btn btn-reset" onclick="window.location.href='{{ url_for('config_mgmt.student_additional_fee_config') }}'">RESET</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <span class="flash-inline flash-{{ category }}-inline">{{ message }}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        </form>
+    </tbody>
+</table>
+
+<div id="list-grid" class="tablesubheading">List of Student(s)</div>
+
+<table class="grid-table">
+    <thead>
+        <tr>
+            <th style="width:10%">S. No.</th>
+            <th style="width:25%">Registration ID</th>
+            <th style="width:25%">Viewed At</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td style="text-align:center;">{{ loop.index }}</td>
+            <td style="text-align:center;">{{ r.registration_id }}</td>
+            <td style="text-align:center;">{{ r.viewed_at }}</td>
+            <td style="text-align:center; color:#777;">Not implemented</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" style="text-align:center;">No records found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
